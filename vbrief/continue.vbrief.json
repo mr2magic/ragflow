@@ -1,0 +1,46 @@
+{
+  "schema": "vbrief/1.0",
+  "saved_at": "2026-03-22",
+  "project": {
+    "name": "RAGFlow",
+    "type": "Full-stack Web App",
+    "languages": ["Python", "TypeScript"],
+    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO",
+    "repo": "https://github.com/mr2magic/ragflow"
+  },
+  "deft": {
+    "user_md": "~/.config/deft/USER.md",
+    "project_md": "./PROJECT.md",
+    "specification_md": null,
+    "strategy": "default",
+    "coverage": 85
+  },
+  "session_summary": {
+    "completed": [
+      "Fixed Docker TTY/stdin issue: added stdin_open/tty to docker-compose.yml and docker-compose-macos.yml",
+      "Switched docker-compose-macos.yml from build-from-source to pre-built image (infiniflow/ragflow:v0.24.0)",
+      "Remapped macOS ports 80→8080, 443→8443 to avoid conflict with macOS httpd",
+      "Created agent/tools/brave.py — Brave Search API tool, auto-registered via module discovery",
+      "Added BRAVE_SEARCH_API_KEY to docker/.env (untracked)",
+      "Removed docker/.env from git tracking to prevent secret commits",
+      "Deleted junk artifact files from docker/",
+      "Committed and pushed to https://github.com/mr2magic/ragflow (new fork)",
+      "Installed deft: created PROJECT.md for RAGFlow"
+    ],
+    "in_progress": [
+      "Deft Phase 3 (SPECIFICATION.md) — not yet started, offered to Dan"
+    ],
+    "next_steps": [
+      "Run deft Phase 3 to generate SPECIFICATION.md if Dan wants it",
+      "Configure Brave Search tool in the Trip Planner Charleston agent canvas",
+      "Fix sys.query empty issue in Trip Planner agent (Begin node input wiring)"
+    ]
+  },
+  "environment": {
+    "docker_compose_file": "docker/docker-compose-macos.yml",
+    "ragflow_url": "http://localhost:8080",
+    "canvas_id": "b5675ef01e5011f19a0c15cd718e15b4",
+    "canvas_name": "Trip Planner - Charleston, SC",
+    "api_token_user": "dhorn (dan.horn@me.com)"
+  }
+}
