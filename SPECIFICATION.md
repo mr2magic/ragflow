@@ -185,7 +185,7 @@ All settings are configurable per knowledge base and per document in the existin
 #### P1.6 — Test Coverage
 *(traces: NFR-4)*
 
-**Status**: Ongoing
+**Status**: ✅ COMPLETE
 
 **Goal**: Ensure all new code meets ≥85% coverage threshold.
 
