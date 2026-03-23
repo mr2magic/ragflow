@@ -18,14 +18,12 @@ struct PhoneKBListView: View {
                     }
                     if kb.id != KnowledgeBase.defaultID {
                         Button("Delete", role: .destructive) {
-                            if let idx = vm.kbs.firstIndex(of: kb) {
-                                vm.delete(at: IndexSet(integer: idx))
-                            }
+                            vm.requestDelete(kb: kb)
                         }
                     }
                 }
             }
-            .onDelete { vm.delete(at: $0) }
+            .onDelete { vm.requestDelete(at: $0) }
         }
         .navigationTitle("Knowledge Bases")
         .navigationDestination(for: KnowledgeBase.self) { kb in
@@ -57,5 +55,18 @@ struct PhoneKBListView: View {
             Button("Cancel", role: .cancel) { vm.kbToRename = nil }
         }
         .onAppear { vm.reload() }
+        .confirmationDialog(
+            "Delete \"\(vm.kbToDelete?.name ?? "this knowledge base")\"?",
+            isPresented: Binding(
+                get: { vm.kbToDelete != nil },
+                set: { if !$0 { vm.cancelDelete() } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) { vm.confirmDelete() }
+            Button("Cancel", role: .cancel) { vm.cancelDelete() }
+        } message: {
+            Text("All documents and chat history in this knowledge base will be permanently deleted.")
+        }
     }
 }

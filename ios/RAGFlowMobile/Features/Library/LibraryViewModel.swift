@@ -15,6 +15,8 @@ final class LibraryViewModel: ObservableObject {
     @Published var errorMessage = ""
     @Published var bookToRename: Book?
     @Published var renameText = ""
+    @Published var bookToDelete: Book?
+    @Published var offsetsToDelete: IndexSet?
 
     let kb: KnowledgeBase
 
@@ -75,18 +77,29 @@ final class LibraryViewModel: ObservableObject {
         }
     }
 
-    func delete(at offsets: IndexSet) {
-        for i in offsets {
-            try? db.deleteBook(filteredBooks[i].id)
+    func requestDelete(at offsets: IndexSet) {
+        offsetsToDelete = offsets
+    }
+
+    func requestDelete(book: Book) {
+        bookToDelete = book
+    }
+
+    func confirmDelete() {
+        if let book = bookToDelete {
+            try? db.deleteBook(book.id)
+            bookToDelete = nil
+        } else if let offsets = offsetsToDelete {
+            for i in offsets { try? db.deleteBook(filteredBooks[i].id) }
+            offsetsToDelete = nil
         }
         reload()
         haptics.notificationOccurred(.success)
     }
 
-    func delete(book: Book) {
-        try? db.deleteBook(book.id)
-        reload()
-        haptics.notificationOccurred(.success)
+    func cancelDelete() {
+        bookToDelete = nil
+        offsetsToDelete = nil
     }
 
     func commitRename() {

@@ -7,6 +7,7 @@ final class KBListViewModel: ObservableObject {
     @Published var newKBName = ""
     @Published var kbToRename: KnowledgeBase?
     @Published var renameText = ""
+    @Published var kbToDelete: KnowledgeBase?
 
     private let db = DatabaseService.shared
     private let haptics = UINotificationFeedbackGenerator()
@@ -27,12 +28,27 @@ final class KBListViewModel: ObservableObject {
         haptics.notificationOccurred(.success)
     }
 
-    func delete(at offsets: IndexSet) {
-        for i in offsets {
-            try? db.deleteKB(kbs[i].id)
+    func requestDelete(at offsets: IndexSet) {
+        if let first = offsets.first {
+            kbToDelete = kbs[first]
         }
+    }
+
+    func requestDelete(kb: KnowledgeBase) {
+        kbToDelete = kb
+    }
+
+    func confirmDelete(onDeleted: ((KnowledgeBase) -> Void)? = nil) {
+        guard let kb = kbToDelete else { return }
+        try? db.deleteKB(kb.id)
+        onDeleted?(kb)
+        kbToDelete = nil
         reload()
         haptics.notificationOccurred(.success)
+    }
+
+    func cancelDelete() {
+        kbToDelete = nil
     }
 
     #if DEBUG

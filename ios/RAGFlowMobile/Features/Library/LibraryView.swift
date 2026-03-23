@@ -84,6 +84,19 @@ struct LibraryView: View {
             Button("Save") { vm.commitRename() }
             Button("Cancel", role: .cancel) { vm.bookToRename = nil }
         }
+        .confirmationDialog(
+            "Delete \"\(vm.bookToDelete?.title ?? "this document")\"?",
+            isPresented: Binding(
+                get: { vm.bookToDelete != nil || vm.offsetsToDelete != nil },
+                set: { if !$0 { vm.cancelDelete() } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) { vm.confirmDelete() }
+            Button("Cancel", role: .cancel) { vm.cancelDelete() }
+        } message: {
+            Text("This removes the document and all its indexed chunks. This cannot be undone.")
+        }
     }
 
     // MARK: - Document List
@@ -98,11 +111,11 @@ struct LibraryView: View {
                             vm.bookToRename = book
                         }
                         Button("Delete", role: .destructive) {
-                            vm.delete(book: book)
+                            vm.requestDelete(book: book)
                         }
                     }
             }
-            .onDelete { vm.delete(at: $0) }
+            .onDelete { vm.requestDelete(at: $0) }
         }
         .listStyle(.insetGrouped)
         .animation(.default, value: vm.filteredBooks.map(\.id))
