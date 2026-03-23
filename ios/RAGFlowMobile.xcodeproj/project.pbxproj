@@ -1,0 +1,602 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */; };
+		09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0C19C6F20A9821E0BA0BCF /* GRDB */; };
+		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
+		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
+		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
+		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
+		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
+		60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8061DB27675BF03BF9AE6A /* OllamaService.swift */; };
+		65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */; };
+		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
+		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
+		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
+		8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */; };
+		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
+		CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */; };
+		CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */; };
+		D11228F73D903065292642F2 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3565928B2FB15DD81AAF0 /* Book.swift */; };
+		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
+		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
+		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
+		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
+		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9A76D5BD869BC86746DB7CA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF1F4525075086C1DC62636B;
+			remoteInfo = RAGFlowMobile;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0AF3565928B2FB15DD81AAF0 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
+		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
+		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
+		6397731B96AE41220DF4ADE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		69C03803E49D972603BC3295 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
+		8308457EC93E4AE662E21429 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
+		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
+		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
+		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
+		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1B2C0EEA6ED9D126942376C1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */,
+				09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		21633A9BD385C0B5E100FDD2 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */,
+				1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */,
+				361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		23ABCE1D0A3FA9E6FC7C9F38 /* RAG */ = {
+			isa = PBXGroup;
+			children = (
+				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
+				C8CED5934D63CB02BDF103DA /* RAGService.swift */,
+			);
+			path = RAG;
+			sourceTree = "<group>";
+		};
+		3980C7FFB7D0F975FB69F4CF /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				69C03803E49D972603BC3295 /* ChatView.swift */,
+				128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		44D8A205BEA0E8EA70D43C86 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */,
+				45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49912E79611A5B5E1270DA1C = {
+			isa = PBXGroup;
+			children = (
+				90FC790467F4D05481B78B80 /* RAGFlowMobile */,
+				CDEB0C38B1C841D81EB028EF /* RAGFlowMobileTests */,
+				44D8A205BEA0E8EA70D43C86 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4F4C99203F3F22E475F4DDB9 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */,
+				9353E6D15D48987663551AC9 /* LibraryViewModel.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		90FC790467F4D05481B78B80 /* RAGFlowMobile */ = {
+			isa = PBXGroup;
+			children = (
+				21633A9BD385C0B5E100FDD2 /* App */,
+				C171203E89874902CCACD3F1 /* Features */,
+				C8001C6590A69D2E31D56947 /* Models */,
+				E0A29533DCA640BB60C1B658 /* Resources */,
+				F95BA93CBD769006D0A43843 /* Services */,
+			);
+			path = RAGFlowMobile;
+			sourceTree = "<group>";
+		};
+		C171203E89874902CCACD3F1 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				3980C7FFB7D0F975FB69F4CF /* Chat */,
+				4F4C99203F3F22E475F4DDB9 /* Library */,
+				C4EFEC20BE53B2EF79FE9A3C /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		C4EFEC20BE53B2EF79FE9A3C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		C7A241C531FB4C21F1691873 /* LLM */ = {
+			isa = PBXGroup;
+			children = (
+				77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */,
+				517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */,
+				DD8061DB27675BF03BF9AE6A /* OllamaService.swift */,
+			);
+			path = LLM;
+			sourceTree = "<group>";
+		};
+		C8001C6590A69D2E31D56947 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0AF3565928B2FB15DD81AAF0 /* Book.swift */,
+				8308457EC93E4AE662E21429 /* Chunk.swift */,
+				263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */,
+				4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CDEB0C38B1C841D81EB028EF /* RAGFlowMobileTests */ = {
+			isa = PBXGroup;
+			children = (
+				1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */,
+			);
+			path = RAGFlowMobileTests;
+			sourceTree = "<group>";
+		};
+		D3EBF1A3274E654C8B60ABBC /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */,
+				C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		E0A29533DCA640BB60C1B658 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6397731B96AE41220DF4ADE9 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F95BA93CBD769006D0A43843 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C7A241C531FB4C21F1691873 /* LLM */,
+				23ABCE1D0A3FA9E6FC7C9F38 /* RAG */,
+				D3EBF1A3274E654C8B60ABBC /* Storage */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 503BC6CD7260E1D249CBD08C /* Build configuration list for PBXNativeTarget "RAGFlowMobileTests" */;
+			buildPhases = (
+				A17D4E3B72084A8D6F0B639E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				52231BD4C1A5BC4F4FF6D938 /* PBXTargetDependency */,
+			);
+			name = RAGFlowMobileTests;
+			packageProductDependencies = (
+			);
+			productName = RAGFlowMobileTests;
+			productReference = 45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EF1F4525075086C1DC62636B /* RAGFlowMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 48375E911B8F46B7CEAEE239 /* Build configuration list for PBXNativeTarget "RAGFlowMobile" */;
+			buildPhases = (
+				0D2229D2E600C81D1C2745AA /* Sources */,
+				1B2C0EEA6ED9D126942376C1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RAGFlowMobile;
+			packageProductDependencies = (
+				F3134F9E7523B881974419D8 /* EPUBKit */,
+				2C0C19C6F20A9821E0BA0BCF /* GRDB */,
+			);
+			productName = RAGFlowMobile;
+			productReference = 8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE503E073DF6964110FB5CB1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 49912E79611A5B5E1270DA1C;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */,
+				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 44D8A205BEA0E8EA70D43C86 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EF1F4525075086C1DC62636B /* RAGFlowMobile */,
+				354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0D2229D2E600C81D1C2745AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */,
+				D11228F73D903065292642F2 /* Book.swift in Sources */,
+				7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */,
+				3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */,
+				47544318EE96330B0C7905E9 /* Chunk.swift in Sources */,
+				CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */,
+				01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */,
+				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
+				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
+				8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */,
+				F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */,
+				FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */,
+				F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */,
+				DC995B82EC08C313D958A065 /* Message.swift in Sources */,
+				60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */,
+				40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */,
+				98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */,
+				F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */,
+				65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A17D4E3B72084A8D6F0B639E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		52231BD4C1A5BC4F4FF6D938 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
+			targetProxy = 9A76D5BD869BC86746DB7CA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2A7733F12D6A5F89A3169103 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RAGFlowMobile.app/RAGFlowMobile";
+			};
+			name = Debug;
+		};
+		34E9C3336BBE340A4D6BB78A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
+				SDKROOT = iphoneos;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		35A3D1AB06C2CC8CBB9B2481 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RAGFlowMobile.app/RAGFlowMobile";
+			};
+			name = Release;
+		};
+		36BF37E668C5F91A3D94E780 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A8F71F2519A89EAD3FF5478E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F0DBC057D598E4D9C53E5E65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
+				SDKROOT = iphoneos;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		48375E911B8F46B7CEAEE239 /* Build configuration list for PBXNativeTarget "RAGFlowMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34E9C3336BBE340A4D6BB78A /* Debug */,
+				F0DBC057D598E4D9C53E5E65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		503BC6CD7260E1D249CBD08C /* Build configuration list for PBXNativeTarget "RAGFlowMobileTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A7733F12D6A5F89A3169103 /* Debug */,
+				35A3D1AB06C2CC8CBB9B2481 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36BF37E668C5F91A3D94E780 /* Debug */,
+				A8F71F2519A89EAD3FF5478E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.27.0;
+			};
+		};
+		F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/witekbobrowski/EPUBKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2C0C19C6F20A9821E0BA0BCF /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+		F3134F9E7523B881974419D8 /* EPUBKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */;
+			productName = EPUBKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EE503E073DF6964110FB5CB1 /* Project object */;
+}

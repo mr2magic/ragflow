@@ -1,0 +1,42 @@
+name: RAGFlowMobile
+options:
+  bundleIdPrefix: com.dhorn
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15"
+  createIntermediateGroups: true
+
+targets:
+  RAGFlowMobile:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - RAGFlowMobile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dhorn.ragflowmobile
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.9"
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
+        INFOPLIST_FILE: RAGFlowMobile/Resources/Info.plist
+    dependencies:
+      - package: EPUBKit
+      - package: GRDB
+
+  RAGFlowMobileTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - RAGFlowMobileTests
+    dependencies:
+      - target: RAGFlowMobile
+
+packages:
+  EPUBKit:
+    url: https://github.com/witekbobrowski/EPUBKit
+    from: "0.4.1"
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: "6.27.0"

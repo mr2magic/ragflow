@@ -231,3 +231,13 @@ internal/cpp/cmake-build-debug/
 # Go server build output
 bin/*
 !bin/.gitkeep
+
+# Xcode / iOS
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcworkspace/xcshareddata/swiftpm/
+ios/DerivedData/
+ios/.build/
+ios/*.ipa
+ios/*.dSYM.zip
+ios/*.dSYM

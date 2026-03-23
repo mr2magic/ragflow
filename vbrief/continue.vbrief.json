@@ -3,44 +3,50 @@
   "saved_at": "2026-03-22",
   "project": {
     "name": "RAGFlow",
-    "type": "Full-stack Web App",
-    "languages": ["Python", "TypeScript"],
-    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO",
+    "type": "Full-stack Web App + iOS App",
+    "languages": ["Python", "TypeScript", "Swift"],
+    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit",
     "repo": "https://github.com/mr2magic/ragflow"
   },
   "deft": {
     "user_md": "~/.config/deft/USER.md",
     "project_md": "./PROJECT.md",
-    "specification_md": null,
+    "specification_md": "./SPECIFICATION.md",
     "strategy": "default",
     "coverage": 85
   },
   "session_summary": {
     "completed": [
-      "Fixed Docker TTY/stdin issue: added stdin_open/tty to docker-compose.yml and docker-compose-macos.yml",
-      "Switched docker-compose-macos.yml from build-from-source to pre-built image (infiniflow/ragflow:v0.24.0)",
-      "Remapped macOS ports 80→8080, 443→8443 to avoid conflict with macOS httpd",
-      "Created agent/tools/brave.py — Brave Search API tool, auto-registered via module discovery",
-      "Added BRAVE_SEARCH_API_KEY to docker/.env (untracked)",
-      "Removed docker/.env from git tracking to prevent secret commits",
-      "Deleted junk artifact files from docker/",
-      "Committed and pushed to https://github.com/mr2magic/ragflow (new fork)",
-      "Installed deft: created PROJECT.md for RAGFlow"
+      "Phase 1 complete: P1.1 Brave Search, P1.2 Additional Tools, P1.3 sys.query fix, P1.4 Docker stability, P1.5 Document processing, P1.6 Test coverage",
+      "Phase 2 speckit interview completed — iOS ePub reader with Claude/Ollama",
+      "Scaffolded ios/ directory: project.yml (XcodeGen), all Swift source files",
+      "Architecture: SwiftUI universal app, EPUBKit, GRDB FTS5, ClaudeService + OllamaService with streaming",
+      "Updated .gitignore with Xcode entries",
+      "Updated SPECIFICATION.md with full Phase 2 spec and scaffolded task status"
     ],
     "in_progress": [
-      "Deft Phase 3 (SPECIFICATION.md) — not yet started, offered to Dan"
+      "P2.4 — Xcode project generation (requires: brew install xcodegen && cd ios && xcodegen generate)"
     ],
     "next_steps": [
-      "Run deft Phase 3 to generate SPECIFICATION.md if Dan wants it",
-      "Configure Brave Search tool in the Trip Planner Charleston agent canvas",
-      "Fix sys.query empty issue in Trip Planner agent (Begin node input wiring)"
+      "Run: brew install xcodegen && cd ios && xcodegen generate && open RAGFlowMobile.xcodeproj",
+      "Resolve SPM packages in Xcode (EPUBKit, GRDB)",
+      "Test ePub import and chunking on real files",
+      "Test Claude streaming end-to-end",
+      "Test Ollama integration with local Ollama instance"
     ]
+  },
+  "phase_status": {
+    "P1": "COMPLETE",
+    "P2": "IN_PROGRESS"
   },
   "environment": {
     "docker_compose_file": "docker/docker-compose-macos.yml",
     "ragflow_url": "http://localhost:8080",
     "canvas_id": "b5675ef01e5011f19a0c15cd718e15b4",
     "canvas_name": "Trip Planner - Charleston, SC",
-    "api_token_user": "dhorn (dan.horn@me.com)"
+    "api_token_user": "dhorn (dan.horn@me.com)",
+    "ios_project": "ios/RAGFlowMobile.xcodeproj (generate with xcodegen)",
+    "ios_min_deployment": "iOS 17.0",
+    "ios_devices": "iPhone + iPad, portrait + landscape"
   }
 }

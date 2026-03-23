@@ -190,11 +190,11 @@ All settings are configurable per knowledge base and per document in the existin
 **Goal**: Ensure all new code meets ≥85% coverage threshold.
 
 **Tasks**:
-- [ ] T1: Add `pytest` tests for `agent/tools/brave.py` (`test/tools/test_brave.py`)
-- [ ] T2: Add tests for each new tool added in P1.2
-- [ ] T3: Add end-to-end API test for canvas completion with `sys.query` populated (P1.3)
-- [ ] T4: Configure coverage reporting in `pyproject.toml` if not already set
-- [ ] T5: Add `task test:coverage` to `Taskfile.yml` (or create `Taskfile.yml`)
+- [x] T1: Add `pytest` tests for `agent/tools/brave.py` (`test/test_tools/test_brave.py`)
+- [x] T2: Add tests for each new tool added in P1.2 (`test/test_tools/test_perplexity.py`, `test_newsapi.py`, `test_openmeteo.py`, `test_jinareader.py`, `test_youtubetranscript.py`)
+- [x] T3: Add end-to-end API test for canvas completion with `sys.query` populated (P1.3)
+- [x] T4: Configure coverage reporting in `pyproject.toml` if not already set
+- [x] T5: Add `task test:coverage` to `Taskfile.yml` (or create `Taskfile.yml`)
 
 **Acceptance**:
 - `pytest --cov` reports ≥85% on `agent/tools/` and new modules
@@ -202,20 +202,121 @@ All settings are configurable per knowledge base and per document in the existin
 
 ---
 
-### Phase 2 — iOS Standalone App *(Future)*
-*(traces: FR-6)*
+### Phase 2 — iOS Standalone App
+*(traces: FR-6 through FR-10)*
 
-**Status**: Future — spec separately when Phase 1 is stable
+**Status**: In Progress — scaffolded 2026-03-22
 
-**Outline**:
-- Swift app, no dependency on running RAGFlow server
-- On-device document ingestion (Files app, share sheet, camera)
-- RAG pipeline implemented in Swift (chunking, embedding, retrieval)
-- LLM: CoreML on-device or remote API (OpenAI/Anthropic/Ollama)
-- Agent tool calling: search, retrieval, web content extraction
-- Knowledge base management in app (SQLite + vector store)
+---
 
-**Trigger**: Begin Phase 2 spec interview after P1.3, P1.4, P1.5 are complete.
+#### Requirements
+
+| ID | Requirement |
+|----|-------------|
+| FR-6 | Chat with ePub library using Claude or Ollama |
+| FR-7 | Import ePubs from Files app and iCloud Drive |
+| FR-8 | Cross-library RAG: query answers from entire book collection |
+| FR-9 | LLM toggle: Claude API (Anthropic) or Ollama (local network) |
+| FR-10 | Universal SwiftUI app, portrait + landscape, iPhone + iPad |
+| NFR-5 | API keys stored in iOS Keychain, never in source |
+| NFR-6 | Works fully offline when using Ollama |
+
+---
+
+#### Architecture
+
+| Layer | Technology |
+|-------|-----------|
+| UI | SwiftUI, universal layout |
+| Document parsing | EPUBKit |
+| Chunking | Swift naive chunker (word-based, configurable size + overlap) |
+| Search | SQLite FTS5 (via GRDB.swift) — no external vector store for MVP |
+| Metadata store | SQLite via GRDB.swift |
+| LLM | Anthropic Claude API + Ollama (local network), toggle in Settings |
+| API key storage | iOS Keychain |
+
+---
+
+#### Directory Structure
+
+```
+ios/
+├── project.yml                         # XcodeGen config
+├── RAGFlowMobile/
+│   ├── App/                            # Entry point, AppState, ContentView
+│   ├── Features/
+│   │   ├── Library/                    # Book list + ePub import
+│   │   ├── Chat/                       # Chat UI + RAG query
+│   │   └── Settings/                   # LLM provider + API key
+│   ├── Models/                         # Book, Chunk, Message, LLMConfig
+│   ├── Services/
+│   │   ├── LLM/                        # LLMService protocol, ClaudeService, OllamaService
+│   │   ├── RAG/                        # RAGService (ingest + retrieve), Chunker
+│   │   └── Storage/                    # DatabaseService (GRDB), SettingsStore (Keychain)
+│   └── Resources/                      # Info.plist, Assets
+└── RAGFlowMobileTests/                 # XCTest — ChunkerTests + more
+```
+
+---
+
+#### Implementation Phases
+
+---
+
+##### P2.1 — ePub Ingestion ✅ SCAFFOLDED
+- [x] EPUBKit integration in `RAGService.ingest(epubURL:)`
+- [x] Word-based chunker with configurable size/overlap (`Chunker.swift`)
+- [x] SQLite storage with FTS5 full-text search (`DatabaseService.swift`)
+- [x] Files/iCloud import via SwiftUI `fileImporter` in `LibraryView`
+- [ ] Test on real ePub files; tune chunker defaults
+
+---
+
+##### P2.2 — Chat Interface ✅ SCAFFOLDED
+- [x] SwiftUI chat view with streaming token display (`ChatView.swift`)
+- [x] RAG retrieval → LLM call pipeline (`ChatViewModel.swift`)
+- [x] Portrait + landscape layout (universal)
+- [ ] Verify streaming on device
+
+---
+
+##### P2.3 — LLM Integration ✅ SCAFFOLDED
+- [x] `LLMService` protocol with `AsyncThrowingStream<String, Error>` streaming
+- [x] `ClaudeService` — Anthropic Messages API with SSE streaming
+- [x] `OllamaService` — Ollama `/api/chat` with streaming
+- [x] Settings screen with provider picker + API key (Keychain) (`SettingsView.swift`)
+- [ ] Test Claude streaming end-to-end
+- [ ] Test Ollama with local instance
+
+---
+
+##### P2.4 — Xcode Project Generation
+- [ ] Install XcodeGen: `brew install xcodegen`
+- [ ] Run `xcodegen generate` in `ios/` to create `.xcodeproj`
+- [ ] Open in Xcode, resolve SPM packages (EPUBKit, GRDB)
+- [ ] Build and run on simulator
+
+---
+
+##### P2.5 — Agent Tools *(post-MVP)*
+- [ ] Brave Search, Perplexity via Claude tool use API
+- [ ] Same tool set as web app
+
+---
+
+#### To Get Started
+
+```bash
+# One-time setup
+brew install xcodegen
+
+# Generate Xcode project
+cd ios
+xcodegen generate
+
+# Open in Xcode
+open RAGFlowMobile.xcodeproj
+```
 
 ---
 

@@ -10,13 +10,13 @@
     {
       "id": "P1",
       "name": "Web Platform Enhancements",
-      "status": "in_progress",
+      "status": "complete",
       "subphases": ["P1.1-brave-search", "P1.2-agent-tools", "P1.3-sys-query-fix", "P1.4-docker-stability", "P1.5-document-processing", "P1.6-test-coverage"]
     },
     {
       "id": "P2",
       "name": "iOS Standalone App",
-      "status": "future",
+      "status": "not_started",
       "subphases": []
     }
   ]
