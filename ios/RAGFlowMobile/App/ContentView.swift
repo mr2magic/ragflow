@@ -45,29 +45,19 @@ struct ContentView: View {
 
     // MARK: - iPad / Regular
 
-    /// 3-column split: KB sidebar | Library | Chat
-    /// Settings accessible via gear button in the sidebar toolbar.
+    /// 2-column split: KB sidebar | Chat + Documents tabs
+    /// Using 2 columns avoids showing two identical "Select a KB" placeholders on launch.
     private var padLayout: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             KBListView(selectedKB: $selectedKB)
-        } content: {
+        } detail: {
             if let kb = selectedKB {
-                LibraryView(kb: kb)
+                KBDetailView(kb: kb)
             } else {
                 ContentUnavailableView(
                     "Select a Knowledge Base",
                     systemImage: "square.stack.3d.up",
-                    description: Text("Choose a knowledge base to see its documents.")
-                )
-            }
-        } detail: {
-            if let kb = selectedKB {
-                ChatView(kb: kb)
-            } else {
-                ContentUnavailableView(
-                    "Select a Knowledge Base",
-                    systemImage: "bubble.left.and.text.bubble.right",
-                    description: Text("Select a knowledge base to start chatting.")
+                    description: Text("Choose a knowledge base from the sidebar to start chatting or browsing documents.")
                 )
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
