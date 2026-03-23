@@ -41,6 +41,7 @@
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
 		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 		517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		6397731B96AE41220DF4ADE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		69C03803E49D972603BC3295 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
 		8308457EC93E4AE662E21429 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 		E0A29533DCA640BB60C1B658 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */,
 				6397731B96AE41220DF4ADE9 /* Info.plist */,
 			);
 			path = Resources;
@@ -308,6 +311,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 48375E911B8F46B7CEAEE239 /* Build configuration list for PBXNativeTarget "RAGFlowMobile" */;
 			buildPhases = (
+				AA11BB22CC33DD44EE55FF88 /* Resources */,
 				0D2229D2E600C81D1C2745AA /* Sources */,
 				1B2C0EEA6ED9D126942376C1 /* Frameworks */,
 			);
@@ -358,6 +362,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA11BB22CC33DD44EE55FF88 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA11BB22CC33DD44EE55FF66 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0D2229D2E600C81D1C2745AA /* Sources */ = {

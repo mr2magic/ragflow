@@ -1,6 +1,17 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+// Pulled out so Swift's type checker doesn't time out inside body.
+private let supportedImportTypes: [UTType] = {
+    var types: [UTType] = [.pdf, .epub, .plainText, .html, .xml, .json, .commaSeparatedText]
+    let extensions = ["md", "mdx", "rtf", "jsonl", "yml", "yaml", "csv", "tsv",
+                      "py", "js", "ts", "swift", "sql", "sh"]
+    for ext in extensions {
+        types.append(UTType(filenameExtension: ext) ?? .plainText)
+    }
+    return types
+}()
+
 struct LibraryView: View {
     let kb: KnowledgeBase
     @StateObject private var vm: LibraryViewModel
@@ -26,29 +37,7 @@ struct LibraryView: View {
         .toolbar { toolbarContent }
         .fileImporter(
             isPresented: $vm.showImporter,
-            allowedContentTypes: [
-                .pdf,
-                .epub,
-                .plainText,
-                .html,
-                .xml,
-                .json,
-                .commaSeparatedText,
-                UTType(filenameExtension: "md")      ?? .plainText,
-                UTType(filenameExtension: "mdx")     ?? .plainText,
-                UTType(filenameExtension: "rtf")     ?? .plainText,
-                UTType(filenameExtension: "jsonl")   ?? .json,
-                UTType(filenameExtension: "yml")     ?? .plainText,
-                UTType(filenameExtension: "yaml")    ?? .plainText,
-                UTType(filenameExtension: "csv")     ?? .commaSeparatedText,
-                UTType(filenameExtension: "tsv")     ?? .plainText,
-                UTType(filenameExtension: "py")      ?? .plainText,
-                UTType(filenameExtension: "js")      ?? .plainText,
-                UTType(filenameExtension: "ts")      ?? .plainText,
-                UTType(filenameExtension: "swift")   ?? .plainText,
-                UTType(filenameExtension: "sql")     ?? .plainText,
-                UTType(filenameExtension: "sh")      ?? .plainText,
-            ],
+            allowedContentTypes: supportedImportTypes,
             allowsMultipleSelection: true
         ) { result in
             Task { await vm.importFiles(result: result) }
