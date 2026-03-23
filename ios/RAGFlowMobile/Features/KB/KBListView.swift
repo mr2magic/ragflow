@@ -3,6 +3,7 @@ import SwiftUI
 struct KBListView: View {
     @Binding var selectedKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
+    @State private var showSettings = false
 
     var body: some View {
         List(selection: $selectedKB) {
@@ -38,11 +39,19 @@ struct KBListView: View {
                     Image(systemName: "plus")
                 }
             }
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
             #if DEBUG
             ToolbarItem(placement: .secondaryAction) {
                 Button("Seed Test Data") { vm.seedDummy() }
             }
             #endif
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
         .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)

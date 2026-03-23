@@ -1,10 +1,43 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    // iPad / regular state
     @State private var selectedKB: KnowledgeBase?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
+        if sizeClass == .compact {
+            phoneLayout
+        } else {
+            padLayout
+        }
+    }
+
+    // MARK: - iPhone / Compact
+
+    /// Tab 1: KB list → drill into KB → Library + Chat tabs
+    /// Tab 2: Settings
+    private var phoneLayout: some View {
+        TabView {
+            NavigationStack {
+                PhoneKBListView()
+            }
+            .tabItem { Label("Library", systemImage: "books.vertical") }
+
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem { Label("Settings", systemImage: "gearshape") }
+        }
+    }
+
+    // MARK: - iPad / Regular
+
+    /// 3-column split: KB sidebar | Library | Chat
+    /// Settings accessible via gear button in the sidebar toolbar.
+    private var padLayout: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             KBListView(selectedKB: $selectedKB)
         } content: {
