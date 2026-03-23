@@ -74,6 +74,24 @@ final class DatabaseService {
         try migrator.migrate(dbQueue)
     }
 
+    // MARK: - Debug helpers
+
+    #if DEBUG
+    func wipeAllData() throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM chunks_fts")
+            try db.execute(sql: "DELETE FROM chunks")
+            try db.execute(sql: "DELETE FROM books")
+            try db.execute(sql: "DELETE FROM knowledge_bases")
+            // Re-seed default KB
+            try db.execute(
+                sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                arguments: [KnowledgeBase.defaultID, "My Library", Date()]
+            )
+        }
+    }
+    #endif
+
     // MARK: - Knowledge Bases
 
     func allKBs() throws -> [KnowledgeBase] {

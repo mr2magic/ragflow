@@ -10,11 +10,16 @@ final class OllamaService: LLMService {
     }
 
     func complete(messages: [LLMMessage], context: [Chunk]) async throws -> AsyncThrowingStream<String, Error> {
+        guard !host.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw LLMError.missingApiKey
+        }
+        guard let url = URL(string: "\(host)/api/chat") else {
+            throw LLMError.missingApiKey
+        }
         let system = buildSystemPrompt(context: context)
         var allMessages = [LLMMessage(role: .system, content: system)] + messages
-
-        let url = URL(string: "\(host)/api/chat")!
-        var request = URLRequest(url: url, timeoutInterval: 300)
+        var request = URLRequest(url: url, timeoutInterval: 120)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: [

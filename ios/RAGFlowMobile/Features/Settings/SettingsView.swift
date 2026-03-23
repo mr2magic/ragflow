@@ -18,6 +18,9 @@ struct SettingsView: View {
                 if store.config.provider == .ollama { ollamaSection }
                 agentToolsSection
                 aboutSection
+                #if DEBUG
+                debugSection
+                #endif
             }
             .navigationTitle("Settings")
             .onChange(of: store.config.provider) { _, _ in store.save() }
@@ -135,6 +138,35 @@ struct SettingsView: View {
             LabeledContent("Build", value: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—")
         }
     }
+
+    // MARK: - Debug
+
+    #if DEBUG
+    private var debugSection: some View {
+        Section {
+            Button(role: .destructive, action: resetOnboarding) {
+                Label("Reset Onboarding", systemImage: "arrow.counterclockwise")
+            }
+            Button(role: .destructive, action: resetAllData) {
+                Label("Wipe All App Data", systemImage: "trash")
+            }
+        } header: {
+            Text("Debug")
+        } footer: {
+            Text("These options are only visible in DEBUG builds.")
+                .font(.footnote)
+        }
+    }
+
+    private func resetOnboarding() {
+        UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+    }
+
+    private func resetAllData() {
+        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
+        try? DatabaseService.shared.wipeAllData()
+    }
+    #endif
 
     // MARK: - Actions
 

@@ -14,6 +14,9 @@ final class ClaudeService: LLMService {
     }
 
     func complete(messages: [LLMMessage], context: [Chunk]) async throws -> AsyncThrowingStream<String, Error> {
+        guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw LLMError.missingApiKey
+        }
         let system = buildSystemPrompt(context: context)
         let tools = AgentTools.all.map(\.asDict)
         let executor = ToolExecutor(braveApiKey: self.braveApiKey)
@@ -145,7 +148,7 @@ enum LLMError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .badResponse: return "LLM returned an unexpected response."
-        case .missingApiKey: return "No API key configured. Go to Settings."
+        case .missingApiKey: return "No AI provider configured. Open Settings and add your Claude API key or Ollama host."
         }
     }
 }

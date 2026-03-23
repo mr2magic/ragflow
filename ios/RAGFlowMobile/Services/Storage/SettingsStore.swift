@@ -12,6 +12,15 @@ final class SettingsStore: ObservableObject {
         load()
     }
 
+    /// True when the active provider has enough configuration to attempt a request.
+    var isConfigured: Bool {
+        switch config.provider {
+        case .claude:  return !config.claudeApiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        case .ollama:  return !config.ollamaHost.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                           && !config.ollamaModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+    }
+
     func save() {
         defaults.set(config.provider.rawValue, forKey: "llm_provider")
         defaults.set(config.ollamaHost, forKey: "ollama_host")

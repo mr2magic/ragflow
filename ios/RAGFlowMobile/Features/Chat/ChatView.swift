@@ -4,6 +4,8 @@ struct ChatView: View {
     let kb: KnowledgeBase
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
+    @ObservedObject private var settings = SettingsStore.shared
+    @State private var showSettings = false
 
     init(kb: KnowledgeBase) {
         self.kb = kb
@@ -14,10 +16,14 @@ struct ChatView: View {
         VStack(spacing: 0) {
             kbScopeBar
             Divider()
+            if !settings.isConfigured {
+                providerBanner
+            }
             messageList
             Divider()
             inputBar
         }
+        .sheet(isPresented: $showSettings) { SettingsView() }
         .navigationTitle("Chat")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbarContent }
@@ -73,6 +79,32 @@ struct ChatView: View {
             .padding(.vertical, 8)
         }
         .background(.bar)
+    }
+
+    // MARK: - Provider Banner
+
+    private var providerBanner: some View {
+        Button(action: { showSettings = true }) {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("No AI provider configured")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Tap to open Settings and add your API key.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(Color.orange.opacity(0.10))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Message List

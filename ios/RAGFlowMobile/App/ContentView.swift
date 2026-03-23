@@ -7,6 +7,7 @@ struct ContentView: View {
     // iPad / regular state
     @State private var selectedKB: KnowledgeBase?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+    @State private var showPadSettings = false
 
     var body: some View {
         Group {
@@ -68,8 +69,16 @@ struct ContentView: View {
                     systemImage: "bubble.left.and.text.bubble.right",
                     description: Text("Select a knowledge base to start chatting.")
                 )
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button { showPadSettings = true } label: {
+                            Image(systemName: "gearshape")
+                        }
+                    }
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .sheet(isPresented: $showPadSettings) { SettingsView() }
     }
 }
