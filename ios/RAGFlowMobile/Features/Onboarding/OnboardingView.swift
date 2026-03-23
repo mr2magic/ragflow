@@ -28,7 +28,7 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "square.stack.3d.up.fill",
         tint: .blue,
         title: "Knowledge Bases",
-        subtitle: "Organize your library your way",
+        subtitle: "Organize your knowledge your way",
         bullets: [
             ("plus.circle",                        "Tap + to create a new Knowledge Base"),
             ("rectangle.3.group",                  "Separate collections keep chats focused and relevant"),
@@ -53,7 +53,7 @@ private let onboardingPages: [OnboardingPage] = [
         subtitle: "Ask anything — get cited answers",
         bullets: [
             ("text.magnifyingglass",               "Relevant passages are retrieved for every question"),
-            ("doc.text.magnifyingglass",           "Tap 'N sources' under any reply to see exact excerpts"),
+            ("doc.text.magnifyingglass",           "Tap 'N passages used' under any reply to see the exact text passages"),
             ("stop.circle",                        "Hit the stop button to cancel a response mid-stream"),
         ]
     ),

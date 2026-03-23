@@ -47,7 +47,9 @@ struct KBListView: View {
         }
         .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)
-            Button("Create") { vm.createKB() }
+            Button("Create") {
+                if let kb = vm.createKB() { selectedKB = kb }
+            }
             Button("Cancel", role: .cancel) { vm.newKBName = "" }
         }
         .alert("Rename", isPresented: Binding(

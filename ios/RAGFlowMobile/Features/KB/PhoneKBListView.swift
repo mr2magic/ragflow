@@ -4,6 +4,7 @@ import SwiftUI
 /// Reuses KBListViewModel for all CRUD logic.
 struct PhoneKBListView: View {
     @StateObject private var vm = KBListViewModel()
+    @State private var newKBDestination: KnowledgeBase?
 
     var body: some View {
         List {
@@ -29,6 +30,9 @@ struct PhoneKBListView: View {
         .navigationDestination(for: KnowledgeBase.self) { kb in
             KBDetailView(kb: kb)
         }
+        .navigationDestination(item: $newKBDestination) { kb in
+            KBDetailView(kb: kb, initialTab: 1)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { vm.showCreateAlert = true } label: {
@@ -43,7 +47,7 @@ struct PhoneKBListView: View {
         }
         .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)
-            Button("Create") { vm.createKB() }
+            Button("Create") { newKBDestination = vm.createKB() }
             Button("Cancel", role: .cancel) { vm.newKBName = "" }
         }
         .alert("Rename", isPresented: Binding(

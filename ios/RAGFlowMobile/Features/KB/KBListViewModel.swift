@@ -18,14 +18,16 @@ final class KBListViewModel: ObservableObject {
         kbs = (try? db.allKBs()) ?? []
     }
 
-    func createKB() {
+    @discardableResult
+    func createKB() -> KnowledgeBase? {
         let name = newKBName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !name.isEmpty else { return }
+        guard !name.isEmpty else { return nil }
         let kb = KnowledgeBase(id: UUID().uuidString, name: name, createdAt: Date())
         try? db.saveKB(kb)
         newKBName = ""
         reload()
         haptics.notificationOccurred(.success)
+        return kb
     }
 
     func requestDelete(at offsets: IndexSet) {
