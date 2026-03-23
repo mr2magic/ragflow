@@ -6,11 +6,11 @@ struct KBDetailView: View {
 
     var body: some View {
         TabView {
-            LibraryView(kb: kb)
-                .tabItem { Label("Documents", systemImage: "folder") }
-
             ChatView(kb: kb)
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.text.bubble.right") }
+
+            LibraryView(kb: kb)
+                .tabItem { Label("Documents", systemImage: "folder") }
         }
         .toolbar(.hidden, for: .tabBar) // hides the outer Library/Settings tab bar while in KB detail
     }

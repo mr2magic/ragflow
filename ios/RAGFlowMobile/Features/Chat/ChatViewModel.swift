@@ -10,13 +10,32 @@ final class ChatViewModel: ObservableObject {
     @Published var errorMessage = ""
 
     let kb: KnowledgeBase
+    @Published var activeKBs: [KnowledgeBase]
+
     private let rag = RAGService.shared
     private let settings = SettingsStore.shared
+    private let db = DatabaseService.shared
     private var streamTask: Task<Void, Never>?
     private let haptics = UIImpactFeedbackGenerator(style: .light)
 
     init(kb: KnowledgeBase) {
         self.kb = kb
+        self.activeKBs = [kb]
+    }
+
+    var availableKBsToAdd: [KnowledgeBase] {
+        let activeIDs = Set(activeKBs.map(\.id))
+        return ((try? db.allKBs()) ?? []).filter { !activeIDs.contains($0.id) }
+    }
+
+    func addKB(_ kb: KnowledgeBase) {
+        guard !activeKBs.contains(where: { $0.id == kb.id }) else { return }
+        activeKBs.append(kb)
+    }
+
+    func removeKB(_ kb: KnowledgeBase) {
+        guard activeKBs.count > 1 else { return } // must keep at least one
+        activeKBs.removeAll { $0.id == kb.id }
     }
 
     func send() async {
@@ -68,13 +87,22 @@ final class ChatViewModel: ObservableObject {
     }
 
     private func retrieveChunks(for query: String) async throws -> [Chunk] {
+        var results: [Chunk] = []
         if settings.config.provider == .ollama {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
             if let queryVec = try? await embService.embed(text: query) {
-                return try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: kb.id)
+                for activeKB in activeKBs {
+                    let chunks = try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: activeKB.id)
+                    results.append(contentsOf: chunks)
+                }
+                return results
             }
         }
-        return try rag.retrieve(query: query, kbId: kb.id)
+        for activeKB in activeKBs {
+            let chunks = try rag.retrieve(query: query, kbId: activeKB.id)
+            results.append(contentsOf: chunks)
+        }
+        return results
     }
 
     func stop() {

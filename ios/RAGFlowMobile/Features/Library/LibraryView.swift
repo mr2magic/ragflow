@@ -26,8 +26,29 @@ struct LibraryView: View {
         .toolbar { toolbarContent }
         .fileImporter(
             isPresented: $vm.showImporter,
-            allowedContentTypes: [.epub, .pdf, .plainText,
-                                  UTType(filenameExtension: "md") ?? .plainText],
+            allowedContentTypes: [
+                .pdf,
+                .epub,
+                .plainText,
+                .html,
+                .xml,
+                .json,
+                .commaSeparatedText,
+                UTType(filenameExtension: "md")      ?? .plainText,
+                UTType(filenameExtension: "mdx")     ?? .plainText,
+                UTType(filenameExtension: "rtf")     ?? .plainText,
+                UTType(filenameExtension: "jsonl")   ?? .json,
+                UTType(filenameExtension: "yml")     ?? .plainText,
+                UTType(filenameExtension: "yaml")    ?? .plainText,
+                UTType(filenameExtension: "csv")     ?? .commaSeparatedText,
+                UTType(filenameExtension: "tsv")     ?? .plainText,
+                UTType(filenameExtension: "py")      ?? .plainText,
+                UTType(filenameExtension: "js")      ?? .plainText,
+                UTType(filenameExtension: "ts")      ?? .plainText,
+                UTType(filenameExtension: "swift")   ?? .plainText,
+                UTType(filenameExtension: "sql")     ?? .plainText,
+                UTType(filenameExtension: "sh")      ?? .plainText,
+            ],
             allowsMultipleSelection: true
         ) { result in
             Task { await vm.importFiles(result: result) }
@@ -37,7 +58,7 @@ struct LibraryView: View {
             Button("Import from URL") { vm.showURLEntry = true }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a PDF or document.")
+            Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a supported document.")
         }
         .alert("Import from URL", isPresented: $vm.showURLEntry) {
             TextField("https://example.com/report.pdf", text: $vm.urlInput)
@@ -112,7 +133,7 @@ struct LibraryView: View {
             // 3-step workflow
             VStack(alignment: .leading, spacing: 14) {
                 WorkflowStep(number: "1", icon: "arrow.down.doc.fill", color: .blue,
-                             title: "Import", detail: "PDF, ePub, TXT — from Files or a URL")
+                             title: "Import", detail: "PDF, ePub, TXT, HTML, CSV, RTF, JSON, code — from Files or a URL")
                 WorkflowStep(number: "2", icon: "bolt.fill", color: .orange,
                              title: "Index", detail: "AI chunks and embeds automatically")
                 WorkflowStep(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,

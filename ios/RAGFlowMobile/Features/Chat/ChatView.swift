@@ -12,11 +12,13 @@ struct ChatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            kbScopeBar
+            Divider()
             messageList
             Divider()
             inputBar
         }
-        .navigationTitle(kb.name)
+        .navigationTitle("Chat")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbarContent }
         .alert("Error", isPresented: $vm.showError) {
@@ -24,6 +26,53 @@ struct ChatView: View {
         } message: {
             Text(vm.errorMessage)
         }
+    }
+
+    // MARK: - KB Scope Bar
+
+    private var kbScopeBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(vm.activeKBs) { activeKB in
+                    HStack(spacing: 4) {
+                        Image(systemName: "square.stack.3d.up.fill")
+                            .font(.caption2)
+                        Text(activeKB.name)
+                            .font(.caption.weight(.medium))
+                        if vm.activeKBs.count > 1 {
+                            Button(action: { vm.removeKB(activeKB) }) {
+                                Image(systemName: "xmark")
+                                    .font(.caption2.weight(.bold))
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(.tint.opacity(0.12), in: Capsule())
+                    .foregroundStyle(.tint)
+                }
+
+                if !vm.availableKBsToAdd.isEmpty {
+                    Menu {
+                        ForEach(vm.availableKBsToAdd) { kb in
+                            Button(action: { vm.addKB(kb) }) {
+                                Label(kb.name, systemImage: "square.stack.3d.up")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle")
+                            .font(.caption.weight(.medium))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color.secondary.opacity(0.1), in: Capsule())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+        }
+        .background(.bar)
     }
 
     // MARK: - Message List

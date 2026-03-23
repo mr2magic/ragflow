@@ -16,10 +16,22 @@ final class RAGService: ObservableObject {
 
     func ingest(url: URL, kbId: String) async throws -> Book {
         switch url.pathExtension.lowercased() {
-        case "epub":       return try await ingestEPUB(url: url, kbId: kbId)
-        case "pdf":        return try await ingestPDF(url: url, kbId: kbId)
-        case "txt", "md":  return try await ingestText(url: url, kbId: kbId)
-        default:           throw IngestError.unsupportedFormat
+        case "epub":
+            return try await ingestEPUB(url: url, kbId: kbId)
+        case "pdf":
+            return try await ingestPDF(url: url, kbId: kbId)
+        case "txt", "md", "mdx", "markdown",
+             "csv", "tsv",
+             "json", "jsonl", "ldjson",
+             "py", "js", "ts", "swift", "java", "c", "cpp", "h", "go",
+             "sh", "sql", "yaml", "yml", "xml":
+            return try await ingestText(url: url, kbId: kbId)
+        case "htm", "html":
+            return try await ingestHTML(url: url, kbId: kbId)
+        case "rtf":
+            return try await ingestRTF(url: url, kbId: kbId)
+        default:
+            throw IngestError.unsupportedFormat
         }
     }
 
@@ -28,17 +40,7 @@ final class RAGService: ObservableObject {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw IngestError.parseFailure
         }
-        let bookId = UUID().uuidString
-        let title = url.deletingPathExtension().lastPathComponent
-        let allChunks = chunker.chunk(text: text, bookId: bookId, chapterTitle: nil)
-        let book = Book(
-            id: bookId, kbId: kbId, title: title, author: "",
-            filePath: url.path, addedAt: Date(), chunkCount: allChunks.count
-        )
-        try db.save(book)
-        try db.saveChunks(allChunks)
-        await embedChunks(allChunks)
-        return book
+        return try await ingestPlain(text: text, url: url, kbId: kbId)
     }
 
     private func ingestEPUB(url: URL, kbId: String) async throws -> Book {
@@ -103,6 +105,43 @@ final class RAGService: ObservableObject {
             chunkCount: allChunks.count
         )
 
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        await embedChunks(allChunks)
+        return book
+    }
+
+    private func ingestHTML(url: URL, kbId: String) async throws -> Book {
+        let html = try String(contentsOf: url, encoding: .utf8)
+        let text = stripHTML(html)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw IngestError.parseFailure
+        }
+        return try await ingestPlain(text: text, url: url, kbId: kbId)
+    }
+
+    private func ingestRTF(url: URL, kbId: String) async throws -> Book {
+        let data = try Data(contentsOf: url)
+        let attrString = try NSAttributedString(
+            data: data,
+            options: [.documentType: NSAttributedString.DocumentType.rtf],
+            documentAttributes: nil
+        )
+        let text = attrString.string
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw IngestError.parseFailure
+        }
+        return try await ingestPlain(text: text, url: url, kbId: kbId)
+    }
+
+    private func ingestPlain(text: String, url: URL, kbId: String) async throws -> Book {
+        let bookId = UUID().uuidString
+        let title = url.deletingPathExtension().lastPathComponent
+        let allChunks = chunker.chunk(text: text, bookId: bookId, chapterTitle: nil)
+        let book = Book(
+            id: bookId, kbId: kbId, title: title, author: "",
+            filePath: url.path, addedAt: Date(), chunkCount: allChunks.count
+        )
         try db.save(book)
         try db.saveChunks(allChunks)
         await embedChunks(allChunks)
@@ -179,7 +218,7 @@ final class RAGService: ObservableObject {
 
         var errorDescription: String? {
             switch self {
-            case .unsupportedFormat: return "Only ePub and PDF files are supported."
+            case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, TXT, MD, HTML, RTF, CSV, JSON, and common code files."
             case .parseFailure: return "Could not parse the document."
             }
         }
