@@ -30,7 +30,16 @@ final class OllamaService: LLMService {
 
         let (bytes, response) = try await URLSession.shared.bytes(for: request)
 
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+        guard let http = response as? HTTPURLResponse else { throw LLMError.badResponse }
+        if http.statusCode != 200 {
+            // Read the error body so we can surface Ollama's actual message (e.g. "model not found").
+            var body = ""
+            for try await line in bytes.lines { body += line }
+            if let data = body.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let msg = json["error"] as? String {
+                throw LLMError.serverError("Ollama: \(msg)")
+            }
             throw LLMError.badResponse
         }
 

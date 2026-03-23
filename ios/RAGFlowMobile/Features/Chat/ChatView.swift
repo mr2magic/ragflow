@@ -276,12 +276,21 @@ private struct MessageBubble: View {
             isExpanded: $showSources,
             content: {
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(message.sources) { source in
+                    Text("Passages from your documents the AI read to form this answer. Numbers match [1] [2] references in the response.")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                        .padding(.bottom, 2)
+                    ForEach(Array(message.sources.enumerated()), id: \.element.id) { index, source in
                         VStack(alignment: .leading, spacing: 2) {
-                            if let title = source.chapterTitle {
-                                Text(title)
-                                    .font(.caption.bold())
+                            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                Text("[\(index + 1)]")
+                                    .font(.caption.bold().monospacedDigit())
                                     .foregroundStyle(.secondary)
+                                if let title = source.chapterTitle {
+                                    Text(title)
+                                        .font(.caption.bold())
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                             Text(source.preview + "…")
                                 .font(.caption)
@@ -297,7 +306,7 @@ private struct MessageBubble: View {
                 .padding(.top, 4)
             },
             label: {
-                Label("\(message.sources.count) sources", systemImage: "doc.text.magnifyingglass")
+                Label("\(message.sources.count) passages used", systemImage: "doc.text.magnifyingglass")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -32,7 +32,7 @@ final class SettingsStore: ObservableObject {
     private func load() {
         let provider = LLMProvider(rawValue: defaults.string(forKey: "llm_provider") ?? "") ?? .claude
         let ollamaHost = defaults.string(forKey: "ollama_host") ?? "http://localhost:11434"
-        let ollamaModel = defaults.string(forKey: "ollama_model") ?? "llama3.2"
+        let ollamaModel = defaults.string(forKey: "ollama_model") ?? ""
         let claudeKey = loadFromKeychain(key: "claude_api_key") ?? ""
         let braveKey = loadFromKeychain(key: "brave_search_api_key") ?? ""
 

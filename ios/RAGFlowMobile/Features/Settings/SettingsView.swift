@@ -81,6 +81,9 @@ struct SettingsView: View {
                 }
             } else {
                 Picker("Model", selection: $store.config.ollamaModel) {
+                    if store.config.ollamaModel.isEmpty {
+                        Text("Select a model…").tag("")
+                    }
                     ForEach(ollamaModels, id: \.self) { model in
                         Text(model).tag(model)
                     }
