@@ -241,3 +241,4 @@ ios/.build/
 ios/*.ipa
 ios/*.dSYM.zip
 ios/*.dSYM
+ios/*.xcodeproj/project.xcworkspace/xcuserdata/
