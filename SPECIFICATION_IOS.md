@@ -12,7 +12,7 @@
 A native Swift/SwiftUI app that brings RAGFlow to iPhone and iPad. The app operates in two modes:
 
 - **Connected mode**: Communicates with a local RAGFlow instance (Docker on Mac, home network) over LAN. RAGFlow handles chunking, embedding, indexing, and LLM. No corpus content reaches the internet.
-- **Standalone mode**: No RAGFlow reachable. Full on-device RAG pipeline using Foundation Models (iOS 26) and NLEmbedding. Knowledge bases stored in local SQLite.
+- **Standalone mode**: No RAGFlow reachable. Full on-device RAG pipeline using `FoundationModels.framework` (text generation + tool-calling) and `NLEmbedding` (vector embeddings). Knowledge bases stored in local SQLite.
 
 Documents are always parsed on-device before anything is sent anywhere. Original files never leave the device. In connected mode, parsed text is sent to local RAGFlow over the home network — not the internet.
 
@@ -132,9 +132,9 @@ This is a hard architectural constraint, not a preference:
 - Chunking: sentence-boundary chunking in Swift (~300 tokens per chunk, 50-token overlap)
 - Knowledge bases created offline are local-only until synced to RAGFlow
 
-**Open question at implementation time**: Does `FoundationModels.framework` in the shipped iOS 26 expose a public embedding API? If yes, prefer it over `NLEmbedding`. If no, `NLEmbedding` is the fallback. Architecture supports either.
+**Resolved (2026-03-23)**: `FoundationModels.framework` in iOS 26 exposes text generation, guided generation, and tool-calling only — no public embedding API. **Decision: use `NLEmbedding` for all on-device vector embeddings.**
 
-**Open question at implementation time**: Is sqlite-vec available as a Swift Package for iOS by the time of implementation? If yes, use it for ANN search. If no, brute-force cosine similarity is sufficient for personal-scale knowledge bases (<50K chunks).
+**Resolved (2026-03-23)**: sqlite-vec ships precompiled iOS binaries but not as an official Swift Package. Integration requires a custom binary module or a hand-rolled SPM wrapper around the iOS build. **Decision: use brute-force Accelerate/vDSP cosine similarity (already implemented); defer sqlite-vec to P3 if corpus scale demands it.**
 
 ### Document Parser Layer
 
@@ -145,7 +145,7 @@ Always runs on-device, before anything is sent anywhere.
 | PDF (born-digital) | PDFKit | `PDFDocument` text extraction per page |
 | PDF (scanned) | Vision `VNRecognizeTextRequest` | On-device OCR, accurate layout |
 | JPEG / PNG / HEIC / image | Vision `VNRecognizeTextRequest` | On-device OCR |
-| MP3 / M4A / WAV / audio | `SFSpeechRecognizer` | `requiresOnDeviceRecognition = true`. Chunk at silence boundaries using `AVAudioEngine`. |
+| MP3 / M4A / WAV / audio | `SFSpeechRecognizer` (< 60s segments) or `SpeechAnalyzer` (iOS 26, longer audio) | `requiresOnDeviceRecognition = true`. Chunk at silence boundaries with `AVAudioEngine`. Segments must be < ~60s for `SFSpeechRecognizer`; use `SpeechAnalyzer`/`SpeechModules` for longer files on iOS 26+. |
 | MP4 / MOV / video | `AVAssetImageGenerator` + Speech | Extract audio track via `AVAssetExportSession`, then transcribe |
 | TXT / MD / RTF | `NSAttributedString` / native | Trivial |
 | CSV | Swift `split` | Rows joined as structured text |
@@ -201,7 +201,7 @@ App Documents/
 - [ ] T2: Share Sheet extension — receive files from other apps
 - [ ] T3: PDF parser (PDFKit for digital, Vision for scanned — auto-detect by checking if PDFPage has text)
 - [ ] T4: Image OCR (Vision `VNRecognizeTextRequest`, accurate mode)
-- [ ] T5: Audio transcription (Speech framework, on-device, chunked at silence with `AVAudioEngine`)
+- [ ] T5: Audio transcription — `SFSpeechRecognizer` for segments < 60s; `SpeechAnalyzer`/`SpeechModules` (iOS 26) for longer files; chunk at silence boundaries with `AVAudioEngine`
 - [ ] T6: Video ingestion (extract audio via AVFoundation, then T5 pipeline)
 - [ ] T7: Plain text formats (TXT, MD, RTF, CSV)
 - [ ] T8: EPUB parser (ZipArchive + OPF manifest + HTML strip)
@@ -231,8 +231,8 @@ App Documents/
 - [ ] T6: Local KB management UI (create, rename, delete local knowledge bases)
 - [ ] T7: Sync queue — track offline-ingested documents, upload to RAGFlow on reconnect
 - [ ] T8: Mode auto-switch — seamless transition when network state changes mid-session
-- [ ] T9: Resolve open question: Foundation Models embedding API available? If yes, prefer over NLEmbedding.
-- [ ] T10: Resolve open question: sqlite-vec iOS SPM available? If yes, replace brute-force search.
+- [x] T9: ~~Resolve open question: Foundation Models embedding API~~ — **resolved**: no embedding API in iOS 26. Use `NLEmbedding` exclusively.
+- [x] T10: ~~Resolve open question: sqlite-vec iOS SPM~~ — **resolved**: no official SPM. Use Accelerate/vDSP cosine similarity; defer sqlite-vec binary integration to P3 if needed.
 
 **Acceptance**:
 - Full query cycle works with no network
@@ -271,13 +271,13 @@ App Documents/
 
 ## Open Questions
 
-These are unresolved at spec time. Must be answered before P2.3 begins.
+All original open questions resolved 2026-03-23.
 
-| # | Question | Impact | How to resolve |
-|---|----------|--------|----------------|
-| OQ-1 | Does shipped iOS 26 `FoundationModels` expose a public embedding API? | If yes: use it instead of `NLEmbedding`, better quality | Check Apple Developer docs / release notes |
-| OQ-2 | Is sqlite-vec available as an iOS Swift Package? | If yes: replace brute-force cosine search, better ANN performance at scale | Check sqlite-vec GitHub releases |
-| OQ-3 | SFSpeechRecognizer on-device session limits in iOS 26? | Affects audio chunking strategy | Test on device / check release notes |
+| # | Question | Resolution |
+|---|----------|------------|
+| OQ-1 | Does iOS 26 `FoundationModels` expose a public embedding API? | **No.** Text generation, guided generation, and tool-calling only. Use `NLEmbedding`. |
+| OQ-2 | Is sqlite-vec available as an iOS Swift Package? | **No official SPM.** Precompiled iOS binaries only (custom binary module required). Use Accelerate/vDSP brute-force; revisit for P3 if scale demands it. |
+| OQ-3 | `SFSpeechRecognizer` on-device limits in iOS 26? | **No server-side quota for on-device.** Practical limit ~60s per segment. iOS 26 introduces `SpeechAnalyzer`/`SpeechModules` for longer/more flexible workloads — use for audio > 60s. |
 
 ---
 
@@ -315,5 +315,6 @@ All Apple frameworks used (`PDFKit`, `Vision`, `Speech`, `AVFoundation`, `Natura
 
 ---
 
-**Approved**: pending
+**Approved**: 2026-03-22
 **Generated**: 2026-03-22
+**OQ resolved**: 2026-03-23 (OQ-1, OQ-2, OQ-3 — all closed)
