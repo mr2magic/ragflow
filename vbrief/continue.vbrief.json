@@ -1,11 +1,11 @@
 {
   "schema": "vbrief/1.0",
-  "saved_at": "2026-03-22",
+  "saved_at": "2026-03-23",
   "project": {
     "name": "RAGFlow",
     "type": "Full-stack Web App + iOS App",
     "languages": ["Python", "TypeScript", "Swift"],
-    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit",
+    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit, PDFKit, Accelerate",
     "repo": "https://github.com/mr2magic/ragflow"
   },
   "deft": {
@@ -18,26 +18,31 @@
   "session_summary": {
     "completed": [
       "Phase 1 complete: P1.1 Brave Search, P1.2 Additional Tools, P1.3 sys.query fix, P1.4 Docker stability, P1.5 Document processing, P1.6 Test coverage",
-      "Phase 2 speckit interview completed — iOS ePub reader with Claude/Ollama",
-      "Scaffolded ios/ directory: project.yml (XcodeGen), all Swift source files",
-      "Architecture: SwiftUI universal app, EPUBKit, GRDB FTS5, ClaudeService + OllamaService with streaming",
-      "Updated .gitignore with Xcode entries",
-      "Updated SPECIFICATION.md with full Phase 2 spec and scaffolded task status"
+      "Phase 2 fully scaffolded and building: NavigationSplitView, search, streaming, citations",
+      "P2 high-value features implemented and tested end-to-end:",
+      "  - PDFKit: PDFParser.swift extracts text page-by-page grouped in 5-page sections",
+      "  - EmbeddingService: Ollama nomic-embed-text + Accelerate/vDSP cosine similarity",
+      "  - DatabaseService v2: embedding BLOB column, FTS5 standalone table with porter tokenizer",
+      "  - RAGService: hybrid retrieval (FTS5 + vector re-ranking), PDF+ePub ingest routing",
+      "  - ClaudeService: tool-use loop (brave_search + jina_reader via ToolService.swift)",
+      "  - ChatView: typing indicator, stop button, DisclosureGroup citations, suggested prompts",
+      "  - LibraryView: NavigationSplitView binding, embed progress, PDF file type support",
+      "Demo test: 2 books ingested (P&P 300 chunks + Sherlock PDF 1 chunk), 301/301 embedded",
+      "RAG query 'Who are the main characters?' retrieved 5 sources, Claude cited [2]-[5] correctly",
+      "Committed 58dff954f, pushed to mr2magic/ragflow main"
     ],
-    "in_progress": [
-      "P2.4 — Xcode project generation (requires: brew install xcodegen && cd ios && xcodegen generate)"
-    ],
+    "in_progress": [],
     "next_steps": [
-      "Run: brew install xcodegen && cd ios && xcodegen generate && open RAGFlowMobile.xcodeproj",
-      "Resolve SPM packages in Xcode (EPUBKit, GRDB)",
-      "Test ePub import and chunking on real files",
-      "Test Claude streaming end-to-end",
-      "Test Ollama integration with local Ollama instance"
+      "P2.5 — Settings: add Brave Search API key field, test agent tool flow end-to-end",
+      "P2.5 — Add OllamaModelsService model picker in SettingsView (dynamic from /api/tags)",
+      "P2.5 — iPad landscape orientation testing (NavigationSplitView two-column)",
+      "P3 — Consider: iCloud sync, background ingest, share sheet import, widget",
+      "P3 — App Store submission preparation (icons, screenshots, privacy policy)"
     ]
   },
   "phase_status": {
     "P1": "COMPLETE",
-    "P2": "IN_PROGRESS"
+    "P2": "COMPLETE (P2.1-P2.4 done; P2.5 polish optional)"
   },
   "environment": {
     "docker_compose_file": "docker/docker-compose-macos.yml",
@@ -45,8 +50,11 @@
     "canvas_id": "b5675ef01e5011f19a0c15cd718e15b4",
     "canvas_name": "Trip Planner - Charleston, SC",
     "api_token_user": "dhorn (dan.horn@me.com)",
-    "ios_project": "ios/RAGFlowMobile.xcodeproj (generate with xcodegen)",
+    "ios_project": "ios/RAGFlowMobile.xcodeproj",
+    "ios_simulator": "iPhone 16 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
+    "ios_bundle_id": "com.dhorn.ragflowmobile",
     "ios_min_deployment": "iOS 17.0",
-    "ios_devices": "iPhone + iPad, portrait + landscape"
+    "ios_devices": "iPhone + iPad, portrait + landscape",
+    "ios_app_data": "~/Library/Developer/CoreSimulator/Devices/5EF314CD-.../Data/Application/7BD63214-..."
   }
 }
