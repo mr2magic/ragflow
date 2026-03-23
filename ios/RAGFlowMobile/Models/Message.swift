@@ -11,6 +11,11 @@ struct Message: Identifiable {
     enum Role {
         case user, assistant
     }
+
+    init(role: Role, content: String) {
+        self.role = role
+        self.content = content
+    }
 }
 
 struct ChunkSource: Identifiable {
@@ -22,5 +27,11 @@ struct ChunkSource: Identifiable {
         self.id = chunk.id
         self.chapterTitle = chunk.chapterTitle
         self.preview = String(chunk.content.prefix(120)).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    init(id: String, chapterTitle: String?, preview: String) {
+        self.id = id
+        self.chapterTitle = chapterTitle
+        self.preview = preview
     }
 }

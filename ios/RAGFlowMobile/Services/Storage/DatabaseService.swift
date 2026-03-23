@@ -71,6 +71,22 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v4") { db in
+            try db.create(table: "messages", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("role", .text).notNull()
+                t.column("content", .text).notNull()
+                t.column("timestamp", .datetime).notNull()
+            }
+            try db.create(table: "message_sources", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("messageId", .text).notNull().references("messages", onDelete: .cascade)
+                t.column("chapterTitle", .text)
+                t.column("preview", .text).notNull()
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -79,6 +95,8 @@ final class DatabaseService {
     #if DEBUG
     func wipeAllData() throws {
         try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM message_sources")
+            try db.execute(sql: "DELETE FROM messages")
             try db.execute(sql: "DELETE FROM chunks_fts")
             try db.execute(sql: "DELETE FROM chunks")
             try db.execute(sql: "DELETE FROM books")
@@ -204,6 +222,59 @@ final class DatabaseService {
                     SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT ?
                 )
                 """, arguments: [kbId, pattern, limit])
+        }
+    }
+
+    // MARK: - Messages
+
+    func saveMessages(_ messages: [Message], kbId: String) throws {
+        try dbQueue.write { db in
+            for msg in messages {
+                let roleStr = msg.role == .user ? "user" : "assistant"
+                try db.execute(sql: """
+                    INSERT OR REPLACE INTO messages (id, kbId, role, content, timestamp)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, arguments: [msg.id.uuidString, kbId, roleStr, msg.content, msg.timestamp])
+                try db.execute(sql: "DELETE FROM message_sources WHERE messageId = ?",
+                               arguments: [msg.id.uuidString])
+                for src in msg.sources {
+                    try db.execute(sql: """
+                        INSERT INTO message_sources (id, messageId, chapterTitle, preview)
+                        VALUES (?, ?, ?, ?)
+                        """, arguments: [src.id, msg.id.uuidString, src.chapterTitle, src.preview])
+                }
+            }
+        }
+    }
+
+    func loadMessages(kbId: String) throws -> [Message] {
+        try dbQueue.read { db in
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT * FROM messages WHERE kbId = ? ORDER BY timestamp ASC
+                """, arguments: [kbId])
+            return try rows.map { row -> Message in
+                let msgId: String = row["id"]
+                let srcRows = try Row.fetchAll(db, sql: """
+                    SELECT * FROM message_sources WHERE messageId = ?
+                    """, arguments: [msgId])
+                let sources = srcRows.map { r in
+                    ChunkSource(id: r["id"], chapterTitle: r["chapterTitle"], preview: r["preview"])
+                }
+                var msg = Message(
+                    role: (row["role"] as String) == "user" ? .user : .assistant,
+                    content: row["content"]
+                )
+                msg.id = UUID(uuidString: msgId) ?? UUID()
+                msg.sources = sources
+                msg.timestamp = row["timestamp"]
+                return msg
+            }
+        }
+    }
+
+    func deleteMessages(kbId: String) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM messages WHERE kbId = ?", arguments: [kbId])
         }
     }
 

@@ -21,6 +21,7 @@ final class ChatViewModel: ObservableObject {
     init(kb: KnowledgeBase) {
         self.kb = kb
         self.activeKBs = [kb]
+        self.messages = (try? db.loadMessages(kbId: kb.id)) ?? []
     }
 
     var availableKBsToAdd: [KnowledgeBase] {
@@ -67,6 +68,13 @@ final class ChatViewModel: ObservableObject {
                     if Task.isCancelled { break }
                     isTyping = false
                     messages[assistantIndex].content += token
+                }
+
+                // Persist both messages once the stream completes normally
+                if !Task.isCancelled {
+                    let userMsg = messages[assistantIndex - 1]
+                    let assistantMsg = messages[assistantIndex]
+                    try? db.saveMessages([userMsg, assistantMsg], kbId: kb.id)
                 }
             } catch is CancellationError {
                 if messages[assistantIndex].content.isEmpty {
@@ -115,6 +123,7 @@ final class ChatViewModel: ObservableObject {
     func clearConversation() {
         stop()
         messages.removeAll()
+        try? db.deleteMessages(kbId: kb.id)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 }
