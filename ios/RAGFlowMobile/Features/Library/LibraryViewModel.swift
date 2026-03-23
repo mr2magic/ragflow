@@ -11,6 +11,10 @@ final class LibraryViewModel: ObservableObject {
     @Published var ingestProgress: String = ""
     @Published var showError = false
     @Published var errorMessage = ""
+    @Published var bookToRename: Book?
+    @Published var renameText = ""
+
+    let kb: KnowledgeBase
 
     enum SortOrder: String, CaseIterable, Identifiable {
         case dateAdded = "Date Added"
@@ -37,27 +41,28 @@ final class LibraryViewModel: ObservableObject {
     private let rag = RAGService.shared
     private let haptics = UINotificationFeedbackGenerator()
 
-    init() {
+    init(kb: KnowledgeBase) {
+        self.kb = kb
         reload()
         Task { await scanDocumentsFolder() }
     }
 
     func reload() {
-        books = (try? db.allBooks()) ?? []
+        books = (try? db.allBooks(kbId: kb.id)) ?? []
     }
 
     func scanDocumentsFolder() async {
         guard let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         let existing = Set(books.map { $0.filePath })
         guard let files = try? FileManager.default.contentsOfDirectory(at: docs, includingPropertiesForKeys: nil) else { return }
-        let epubs = files.filter {
+        let supported = files.filter {
             ["epub", "pdf"].contains($0.pathExtension.lowercased()) && !existing.contains($0.path)
         }
-        guard !epubs.isEmpty else { return }
-        await ingest(urls: epubs)
+        guard !supported.isEmpty else { return }
+        await ingest(urls: supported)
     }
 
-    func importEPUBs(result: Result<[URL], Error>) async {
+    func importFiles(result: Result<[URL], Error>) async {
         switch result {
         case .failure(let error):
             show(error: error.localizedDescription)
@@ -76,6 +81,24 @@ final class LibraryViewModel: ObservableObject {
         haptics.notificationOccurred(.success)
     }
 
+    func delete(book: Book) {
+        try? db.deleteBook(book.id)
+        reload()
+        haptics.notificationOccurred(.success)
+    }
+
+    func commitRename() {
+        guard let book = bookToRename else { return }
+        let name = renameText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { bookToRename = nil; return }
+        var updated = book
+        updated.title = name
+        try? db.save(updated)
+        bookToRename = nil
+        renameText = ""
+        reload()
+    }
+
     private func ingest(urls: [URL]) async {
         isIngesting = true
         defer { isIngesting = false; ingestProgress = "" }
@@ -83,7 +106,7 @@ final class LibraryViewModel: ObservableObject {
         for (i, url) in urls.enumerated() {
             ingestProgress = "Importing \(i + 1) of \(urls.count)…"
             do {
-                _ = try await rag.ingest(epubURL: url)
+                _ = try await rag.ingest(url: url, kbId: kb.id)
                 succeeded += 1
             } catch {
                 show(error: "Failed to import \(url.lastPathComponent): \(error.localizedDescription)")

@@ -9,14 +9,14 @@ final class ChatViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
 
-    let book: Book
+    let kb: KnowledgeBase
     private let rag = RAGService.shared
     private let settings = SettingsStore.shared
     private var streamTask: Task<Void, Never>?
     private let haptics = UIImpactFeedbackGenerator(style: .light)
 
-    init(book: Book) {
-        self.book = book
+    init(kb: KnowledgeBase) {
+        self.kb = kb
     }
 
     func send() async {
@@ -34,7 +34,6 @@ final class ChatViewModel: ObservableObject {
 
         streamTask = Task {
             do {
-                // Retrieve chunks — use vector search if embeddings available
                 let chunks = try await retrieveChunks(for: query)
                 messages[assistantIndex].sources = chunks.map { ChunkSource(from: $0) }
 
@@ -69,14 +68,13 @@ final class ChatViewModel: ObservableObject {
     }
 
     private func retrieveChunks(for query: String) async throws -> [Chunk] {
-        // Try vector search if Ollama is configured
         if settings.config.provider == .ollama {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
             if let queryVec = try? await embService.embed(text: query) {
-                return try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec)
+                return try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: kb.id)
             }
         }
-        return try rag.retrieve(query: query)
+        return try rag.retrieve(query: query, kbId: kb.id)
     }
 
     func stop() {

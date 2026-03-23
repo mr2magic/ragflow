@@ -51,17 +51,62 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            // Seed the default KB
+            try db.execute(
+                sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                arguments: [KnowledgeBase.defaultID, "My Library", Date()]
+            )
+            // Add kbId to books, defaulting all existing books to "My Library"
+            let columns = try db.columns(in: "books").map { $0.name }
+            if !columns.contains("kbId") {
+                try db.alter(table: "books") { t in
+                    t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+                }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
-    // MARK: - Books
+    // MARK: - Knowledge Bases
+
+    func allKBs() throws -> [KnowledgeBase] {
+        try dbQueue.read { db in
+            try KnowledgeBase.order(Column("createdAt")).fetchAll(db)
+        }
+    }
+
+    func saveKB(_ kb: KnowledgeBase) throws {
+        try dbQueue.write { db in try kb.save(db) }
+    }
+
+    func deleteKB(_ id: String) throws {
+        guard id != KnowledgeBase.defaultID else { return } // protect default KB
+        try dbQueue.write { db in
+            // Books in this KB will cascade-delete their chunks via FK
+            try db.execute(sql: "DELETE FROM books WHERE kbId = ?", arguments: [id])
+            try KnowledgeBase.deleteOne(db, key: id)
+        }
+    }
+
+    // MARK: - Books (Documents)
 
     func save(_ book: Book) throws {
         try dbQueue.write { db in try book.save(db) }
     }
 
-    func allBooks() throws -> [Book] {
-        try dbQueue.read { db in try Book.fetchAll(db) }
+    func allBooks(kbId: String) throws -> [Book] {
+        try dbQueue.read { db in
+            try Book.filter(Column("kbId") == kbId)
+                .order(Column("addedAt").desc)
+                .fetchAll(db)
+        }
     }
 
     func deleteBook(_ id: String) throws {
@@ -88,14 +133,31 @@ final class DatabaseService {
         }
     }
 
-    func updateEmbedding(chunkId: String, embedding: Data) throws {
-        try dbQueue.write { db in
-            try db.execute(
-                sql: "UPDATE chunks SET embedding = ? WHERE id = ?",
-                arguments: [embedding, chunkId]
-            )
-        }
+    #if DEBUG
+    func seedDummyData() throws {
+        let existing = (try? allKBs()) ?? []
+        guard existing.count <= 1 else { return } // only seed once
+
+        let scifi = KnowledgeBase(id: UUID().uuidString, name: "Sci-Fi Classics", createdAt: Date().addingTimeInterval(-86400 * 14))
+        let philosophy = KnowledgeBase(id: UUID().uuidString, name: "Philosophy", createdAt: Date().addingTimeInterval(-86400 * 7))
+        try saveKB(scifi)
+        try saveKB(philosophy)
+
+        let dummyBooks: [Book] = [
+            // My Library
+            Book(id: UUID().uuidString, kbId: KnowledgeBase.defaultID, title: "Pride and Prejudice", author: "Jane Austen", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 10), chunkCount: 312),
+            Book(id: UUID().uuidString, kbId: KnowledgeBase.defaultID, title: "Sherlock Holmes", author: "Arthur Conan Doyle", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 5), chunkCount: 47),
+            // Sci-Fi Classics
+            Book(id: UUID().uuidString, kbId: scifi.id, title: "Dune", author: "Frank Herbert", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 12), chunkCount: 892),
+            Book(id: UUID().uuidString, kbId: scifi.id, title: "Foundation", author: "Isaac Asimov", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 8), chunkCount: 445),
+            Book(id: UUID().uuidString, kbId: scifi.id, title: "Neuromancer", author: "William Gibson", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 3), chunkCount: 267),
+            // Philosophy
+            Book(id: UUID().uuidString, kbId: philosophy.id, title: "Meditations", author: "Marcus Aurelius", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 6), chunkCount: 198),
+            Book(id: UUID().uuidString, kbId: philosophy.id, title: "Nicomachean Ethics", author: "Aristotle", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 2), chunkCount: 341),
+        ]
+        for book in dummyBooks { try save(book) }
     }
+    #endif
 
     func updateEmbeddingsBatch(_ updates: [(id: String, embedding: Data)]) throws {
         try dbQueue.write { db in
@@ -108,9 +170,9 @@ final class DatabaseService {
         }
     }
 
-    // MARK: - Search
+    // MARK: - Search (KB-scoped)
 
-    func keywordSearch(query: String, limit: Int = 20) throws -> [Chunk] {
+    func keywordSearch(query: String, kbId: String, limit: Int = 20) throws -> [Chunk] {
         guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
         return try dbQueue.read { db in
             guard let pattern = FTS5Pattern(matchingAllTokensIn: query) else {
@@ -118,20 +180,22 @@ final class DatabaseService {
             }
             return try Chunk.fetchAll(db, sql: """
                 SELECT chunks.* FROM chunks
-                WHERE chunks.id IN (
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = ?
+                AND chunks.id IN (
                     SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT ?
                 )
-                """, arguments: [pattern, limit])
+                """, arguments: [kbId, pattern, limit])
         }
     }
 
-    func allChunksWithEmbeddings(bookId: String? = nil) throws -> [(Chunk, Data)] {
+    func allChunksWithEmbeddings(kbId: String) throws -> [(Chunk, Data)] {
         try dbQueue.read { db in
-            let sql = bookId != nil
-                ? "SELECT * FROM chunks WHERE bookId = ? AND embedding IS NOT NULL"
-                : "SELECT * FROM chunks WHERE embedding IS NOT NULL"
-            let args: StatementArguments = bookId != nil ? [bookId!] : []
-            let rows = try Row.fetchAll(db, sql: sql, arguments: args)
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = ? AND chunks.embedding IS NOT NULL
+                """, arguments: [kbId])
             return rows.compactMap { row -> (Chunk, Data)? in
                 guard let embedding = row["embedding"] as? Data else { return nil }
                 let chunk = Chunk(
@@ -143,12 +207,6 @@ final class DatabaseService {
                 )
                 return (chunk, embedding)
             }
-        }
-    }
-
-    func chunksWithoutEmbeddings(bookId: String) throws -> [Chunk] {
-        try dbQueue.read { db in
-            try Chunk.fetchAll(db, sql: "SELECT * FROM chunks WHERE bookId = ? AND embedding IS NULL", arguments: [bookId])
         }
     }
 }

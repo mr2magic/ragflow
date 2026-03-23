@@ -2,8 +2,13 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct LibraryView: View {
-    @Binding var selectedBook: Book?
-    @StateObject private var vm = LibraryViewModel()
+    let kb: KnowledgeBase
+    @StateObject private var vm: LibraryViewModel
+
+    init(kb: KnowledgeBase) {
+        self.kb = kb
+        _vm = StateObject(wrappedValue: LibraryViewModel(kb: kb))
+    }
 
     var body: some View {
         Group {
@@ -13,15 +18,15 @@ struct LibraryView: View {
                 bookList
             }
         }
-        .navigationTitle("Library")
-        .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search books")
+        .navigationTitle(kb.name)
+        .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search documents")
         .toolbar { toolbarContent }
         .fileImporter(
             isPresented: $vm.showImporter,
             allowedContentTypes: [.epub, .pdf],
             allowsMultipleSelection: true
         ) { result in
-            Task { await vm.importEPUBs(result: result) }
+            Task { await vm.importFiles(result: result) }
         }
         .overlay { ingestOverlay }
         .alert("Import Error", isPresented: $vm.showError) {
@@ -29,15 +34,31 @@ struct LibraryView: View {
         } message: {
             Text(vm.errorMessage)
         }
+        .alert("Rename Document", isPresented: Binding(
+            get: { vm.bookToRename != nil },
+            set: { if !$0 { vm.bookToRename = nil } }
+        )) {
+            TextField("Title", text: $vm.renameText)
+            Button("Save") { vm.commitRename() }
+            Button("Cancel", role: .cancel) { vm.bookToRename = nil }
+        }
     }
 
-    // MARK: - Book List
+    // MARK: - Document List
 
     private var bookList: some View {
-        List(selection: $selectedBook) {
+        List {
             ForEach(vm.filteredBooks) { book in
                 BookRow(book: book)
-                    .tag(book)
+                    .contextMenu {
+                        Button("Rename") {
+                            vm.renameText = book.title
+                            vm.bookToRename = book
+                        }
+                        Button("Delete", role: .destructive) {
+                            vm.delete(book: book)
+                        }
+                    }
             }
             .onDelete { vm.delete(at: $0) }
         }
@@ -49,20 +70,20 @@ struct LibraryView: View {
 
     private var emptyState: some View {
         VStack(spacing: 20) {
-            Image(systemName: "books.vertical")
+            Image(systemName: "doc.badge.plus")
                 .font(.system(size: 64))
                 .foregroundStyle(.tertiary)
 
-            Text("No Books Yet")
+            Text("No Documents Yet")
                 .font(.title2.bold())
 
-            Text("Import ePubs from Files or iCloud Drive.")
+            Text("Import ePubs or PDFs to start chatting with \(kb.name).")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
             Button(action: { vm.showImporter = true }) {
-                Label("Import Books", systemImage: "plus.circle.fill")
+                Label("Import Documents", systemImage: "plus.circle.fill")
                     .font(.headline)
             }
             .buttonStyle(.borderedProminent)

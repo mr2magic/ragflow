@@ -14,15 +14,15 @@ final class RAGService: ObservableObject {
 
     // MARK: - Ingest
 
-    func ingest(epubURL url: URL) async throws -> Book {
+    func ingest(url: URL, kbId: String) async throws -> Book {
         switch url.pathExtension.lowercased() {
-        case "epub": return try await ingestEPUB(url: url)
-        case "pdf":  return try await ingestPDF(url: url)
+        case "epub": return try await ingestEPUB(url: url, kbId: kbId)
+        case "pdf":  return try await ingestPDF(url: url, kbId: kbId)
         default:     throw IngestError.unsupportedFormat
         }
     }
 
-    private func ingestEPUB(url: URL) async throws -> Book {
+    private func ingestEPUB(url: URL, kbId: String) async throws -> Book {
         guard let document = EPUBDocument(url: url) else { throw IngestError.parseFailure }
 
         let bookId = UUID().uuidString
@@ -40,6 +40,7 @@ final class RAGService: ObservableObject {
 
         let book = Book(
             id: bookId,
+            kbId: kbId,
             title: document.metadata.title ?? url.deletingPathExtension().lastPathComponent,
             author: document.metadata.creator?.name ?? "",
             filePath: url.path,
@@ -53,14 +54,13 @@ final class RAGService: ObservableObject {
         return book
     }
 
-    private func ingestPDF(url: URL) async throws -> Book {
+    private func ingestPDF(url: URL, kbId: String) async throws -> Book {
         let sections = pdfParser.parse(url: url)
         guard !sections.isEmpty else { throw IngestError.parseFailure }
 
         let bookId = UUID().uuidString
         var allChunks: [Chunk] = []
 
-        // Try to read title from PDF metadata
         let pdfDoc = PDFDocument(url: url)
         let title = (pdfDoc?.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String)
             ?? url.deletingPathExtension().lastPathComponent
@@ -76,6 +76,7 @@ final class RAGService: ObservableObject {
 
         let book = Book(
             id: bookId,
+            kbId: kbId,
             title: title,
             author: author,
             filePath: url.path,
@@ -120,31 +121,20 @@ final class RAGService: ObservableObject {
         embedProgress = 1.0
     }
 
-    // MARK: - Retrieve (Hybrid)
+    // MARK: - Retrieve (Hybrid, KB-scoped)
 
-    func retrieve(query: String, topK: Int = 5) throws -> [Chunk] {
-        // 1. Keyword candidates (wider net)
-        let candidates = (try? db.keywordSearch(query: query, limit: 20)) ?? []
-
-        // 2. If we have embeddings, re-rank by vector similarity
-        let settings = SettingsStore.shared
-        guard settings.config.provider == .ollama else {
-            return Array(candidates.prefix(topK))
-        }
-
-        // Synchronous fallback if no embeddings available
+    func retrieve(query: String, kbId: String, topK: Int = 5) throws -> [Chunk] {
+        let candidates = (try? db.keywordSearch(query: query, kbId: kbId, limit: 20)) ?? []
         return Array(candidates.prefix(topK))
     }
 
-    func retrieveWithEmbedding(query: String, queryEmbedding: [Float], topK: Int = 5) throws -> [Chunk] {
-        // Load all chunks that have embeddings
-        let chunksWithVectors = (try? db.allChunksWithEmbeddings()) ?? []
+    func retrieveWithEmbedding(query: String, queryEmbedding: [Float], kbId: String, topK: Int = 5) throws -> [Chunk] {
+        let chunksWithVectors = (try? db.allChunksWithEmbeddings(kbId: kbId)) ?? []
 
         guard !chunksWithVectors.isEmpty else {
-            return (try? db.keywordSearch(query: query, limit: topK)) ?? []
+            return (try? db.keywordSearch(query: query, kbId: kbId, limit: topK)) ?? []
         }
 
-        // Score by cosine similarity
         let scored = chunksWithVectors.map { (chunk, data) -> (Chunk, Float) in
             let vector = EmbeddingService.dataToFloats(data)
             let score = EmbeddingService.cosineSimilarity(queryEmbedding, vector)

@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct ChatView: View {
-    let book: Book
+    let kb: KnowledgeBase
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
 
-    init(book: Book) {
-        self.book = book
-        _vm = StateObject(wrappedValue: ChatViewModel(book: book))
+    init(kb: KnowledgeBase) {
+        self.kb = kb
+        _vm = StateObject(wrappedValue: ChatViewModel(kb: kb))
     }
 
     var body: some View {
@@ -16,7 +16,7 @@ struct ChatView: View {
             Divider()
             inputBar
         }
-        .navigationTitle(book.title)
+        .navigationTitle(kb.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbarContent }
         .alert("Error", isPresented: $vm.showError) {
@@ -68,7 +68,7 @@ struct ChatView: View {
                 .foregroundStyle(.tertiary)
                 .padding(.bottom, 8)
 
-            Text("Ask anything about **\(book.title)**")
+            Text("Ask anything about **\(kb.name)**")
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
@@ -104,7 +104,7 @@ struct ChatView: View {
 
     private var inputBar: some View {
         HStack(alignment: .bottom, spacing: 10) {
-            TextField("Ask about \(book.title)…", text: $vm.input, axis: .vertical)
+            TextField("Ask about \(kb.name)…", text: $vm.input, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...5)
                 .padding(.vertical, 8)
