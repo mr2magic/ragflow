@@ -16,7 +16,7 @@ struct LLMMessage {
 func makeLLMService(config: LLMConfig) -> any LLMService {
     switch config.provider {
     case .claude:
-        return ClaudeService(apiKey: config.claudeApiKey)
+        return ClaudeService(apiKey: config.claudeApiKey, braveApiKey: config.braveSearchApiKey)
     case .ollama:
         return OllamaService(host: config.ollamaHost, model: config.ollamaModel)
     }

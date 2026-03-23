@@ -16,11 +16,13 @@ struct SettingsView: View {
                 providerSection
                 if store.config.provider == .claude { claudeSection }
                 if store.config.provider == .ollama { ollamaSection }
+                agentToolsSection
                 aboutSection
             }
             .navigationTitle("Settings")
             .onChange(of: store.config.provider) { _, _ in store.save() }
             .onChange(of: store.config.claudeApiKey) { _, _ in store.save() }
+            .onChange(of: store.config.braveSearchApiKey) { _, _ in store.save() }
             .onChange(of: store.config.ollamaHost) { _, _ in store.save() }
             .onChange(of: store.config.ollamaModel) { _, _ in store.save() }
             .task { await loadOllamaModels() }
@@ -105,6 +107,22 @@ struct SettingsView: View {
             Text("Ollama")
         } footer: {
             Text("Connect to an Ollama instance on your local network or at localhost.")
+                .font(.footnote)
+        }
+    }
+
+    // MARK: - Agent Tools
+
+    private var agentToolsSection: some View {
+        Section {
+            SecureField("Brave Search API Key", text: $store.config.braveSearchApiKey)
+                .textContentType(.password)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+        } header: {
+            Text("Agent Tools")
+        } footer: {
+            Text("Optional. Enables web search when chatting with Claude. Get a free key at brave.com/search/api.")
                 .font(.footnote)
         }
     }

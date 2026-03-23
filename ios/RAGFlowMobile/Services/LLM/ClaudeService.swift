@@ -2,19 +2,21 @@ import Foundation
 
 final class ClaudeService: LLMService {
     private let apiKey: String
+    private let braveApiKey: String
     private let model = "claude-sonnet-4-6"
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
 
     var onToolActivity: ((String?) -> Void)?   // reports "Searching Brave…" etc.
 
-    init(apiKey: String) {
+    init(apiKey: String, braveApiKey: String = "") {
         self.apiKey = apiKey
+        self.braveApiKey = braveApiKey
     }
 
     func complete(messages: [LLMMessage], context: [Chunk]) async throws -> AsyncThrowingStream<String, Error> {
         let system = buildSystemPrompt(context: context)
         let tools = AgentTools.all.map(\.asDict)
-        let executor = ToolExecutor(braveApiKey: "")   // key wired via Settings later
+        let executor = ToolExecutor(braveApiKey: self.braveApiKey)
 
         return AsyncThrowingStream { continuation in
             Task {
