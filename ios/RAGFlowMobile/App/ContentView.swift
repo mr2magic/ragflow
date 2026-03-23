@@ -2,16 +2,25 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     // iPad / regular state
     @State private var selectedKB: KnowledgeBase?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
-        if sizeClass == .compact {
-            phoneLayout
-        } else {
-            padLayout
+        Group {
+            if sizeClass == .compact {
+                phoneLayout
+            } else {
+                padLayout
+            }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { !hasCompletedOnboarding },
+            set: { _ in }
+        )) {
+            OnboardingView()
         }
     }
 
