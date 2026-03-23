@@ -211,17 +211,33 @@ final class DatabaseService {
     func keywordSearch(query: String, kbId: String, limit: Int = 20) throws -> [Chunk] {
         guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
         return try dbQueue.read { db in
-            guard let pattern = FTS5Pattern(matchingAllTokensIn: query) else {
-                return try Chunk.limit(limit).fetchAll(db)
+            // Try broad match first (any token) — better recall for natural-language questions.
+            // Fall back to first N chunks by position when no FTS tokens match (e.g. meta-queries
+            // like "summarize this corpus" where the words don't appear in the documents).
+            let ftsResults: [Chunk]
+            if let pattern = FTS5Pattern(matchingAnyTokenIn: query) {
+                ftsResults = try Chunk.fetchAll(db, sql: """
+                    SELECT chunks.* FROM chunks
+                    JOIN books ON books.id = chunks.bookId
+                    WHERE books.kbId = ?
+                    AND chunks.id IN (
+                        SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT ?
+                    )
+                    """, arguments: [kbId, pattern, limit])
+            } else {
+                ftsResults = []
             }
+
+            if !ftsResults.isEmpty { return ftsResults }
+
+            // Fallback: return a spread of chunks across the KB so the LLM always has context.
             return try Chunk.fetchAll(db, sql: """
                 SELECT chunks.* FROM chunks
                 JOIN books ON books.id = chunks.bookId
                 WHERE books.kbId = ?
-                AND chunks.id IN (
-                    SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT ?
-                )
-                """, arguments: [kbId, pattern, limit])
+                ORDER BY books.addedAt DESC, chunks.position ASC
+                LIMIT ?
+                """, arguments: [kbId, limit])
         }
     }
 

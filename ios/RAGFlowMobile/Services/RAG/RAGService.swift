@@ -36,27 +36,30 @@ final class RAGService: ObservableObject {
         }
     }
 
-    // PDF parse + chunk run on a background thread; only DB writes stay on main actor.
+    // PDFKit is not thread-safe — parse on @MainActor, only chunk on background thread.
     private func ingestPDF(url: URL, kbId: String) async throws -> Book {
         ingestPhase = "Parsing PDF…"
-        let parser = pdfParser
+        let sections = pdfParser.parse(url: url)
+        guard !sections.isEmpty else { throw IngestError.parseFailure }
+
+        let pdfDoc = PDFDocument(url: url)
+        let title = (pdfDoc?.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String)
+            ?? url.deletingPathExtension().lastPathComponent
+        let author = (pdfDoc?.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String) ?? ""
+
+        ingestPhase = "Chunking…"
+        let bookId = UUID().uuidString
         let c = chunker
-        let (book, allChunks): (Book, [Chunk]) = try await Task.detached(priority: .utility) {
-            let sections = parser.parse(url: url)
-            guard !sections.isEmpty else { throw IngestError.parseFailure }
-            let bookId = UUID().uuidString
-            let pdfDoc = PDFDocument(url: url)
-            let title = (pdfDoc?.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String)
-                ?? url.deletingPathExtension().lastPathComponent
-            let author = (pdfDoc?.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String) ?? ""
+        let allChunks: [Chunk] = await Task.detached(priority: .utility) {
             var chunks: [Chunk] = []
             for section in sections {
                 chunks.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
             }
-            let book = Book(id: bookId, kbId: kbId, title: title, author: author,
-                            filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
-            return (book, chunks)
+            return chunks
         }.value
+
+        let book = Book(id: bookId, kbId: kbId, title: title, author: author,
+                        filePath: url.path, addedAt: Date(), chunkCount: allChunks.count)
         ingestPhase = "Saving chunks…"
         try db.save(book)
         try db.saveChunks(allChunks)
@@ -74,15 +77,19 @@ final class RAGService: ObservableObject {
             guard let document = EPUBDocument(url: url) else { throw IngestError.parseFailure }
             let bookId = UUID().uuidString
             var chunks: [Chunk] = []
+            var sectionIndex = 1
             for spineItem in document.spine.items {
                 guard let manifestItem = document.manifest.items[spineItem.idref] else { continue }
                 let fileURL = document.contentDirectory.appendingPathComponent(manifestItem.path)
                 guard let html = try? String(contentsOf: fileURL, encoding: .utf8) else { continue }
                 let text = RAGService.stripHTMLStatic(html)
-                guard !text.isEmpty else { continue }
-                let title = URL(fileURLWithPath: manifestItem.path).deletingPathExtension().lastPathComponent
+                // Skip very short sections (cover, TOC, nav, metadata pages)
+                guard text.count > 150 else { continue }
+                let title = "Section \(sectionIndex)"
                 chunks.append(contentsOf: c.chunk(text: text, bookId: bookId, chapterTitle: title))
+                sectionIndex += 1
             }
+            guard !chunks.isEmpty else { throw RAGService.IngestError.parseFailure }
             let book = Book(
                 id: bookId, kbId: kbId,
                 title: document.metadata.title ?? url.deletingPathExtension().lastPathComponent,
@@ -151,29 +158,35 @@ final class RAGService: ObservableObject {
         let settings = SettingsStore.shared
         guard settings.config.provider == .ollama else { return }
 
-        let service = EmbeddingService(host: settings.config.ollamaHost)
-        let batchSize = 10
+        let host = settings.config.ollamaHost
+        let db = self.db
+        let total = chunks.count
         embedProgress = 0
 
-        var processed = 0
-        var i = 0
-        while i < chunks.count {
-            let batch = Array(chunks[i..<min(i + batchSize, chunks.count)])
-            let texts = batch.map(\.content)
+        // Run entirely in background — network I/O + DB writes all off the main thread.
+        await Task.detached(priority: .utility) { [weak self] in
+            let service = EmbeddingService(host: host)
+            let batchSize = 10
+            var processed = 0
+            var i = 0
+            while i < chunks.count {
+                let batch = Array(chunks[i..<min(i + batchSize, chunks.count)])
+                let texts = batch.map(\.content)
 
-            if let embeddings = try? await service.embed(texts: texts) {
-                let updates = zip(batch, embeddings).map { (chunk, vector) in
-                    (id: chunk.id, embedding: EmbeddingService.floatsToData(vector))
+                if let embeddings = try? await service.embed(texts: texts) {
+                    let updates = zip(batch, embeddings).map { (chunk, vector) in
+                        (id: chunk.id, embedding: EmbeddingService.floatsToData(vector))
+                    }
+                    try? db.updateEmbeddingsBatch(updates)
                 }
-                try? db.updateEmbeddingsBatch(updates)
+
+                processed += batch.count
+                let progress = Double(processed) / Double(total)
+                await MainActor.run { self?.embedProgress = progress }
+                i += batchSize
             }
-
-            processed += batch.count
-            embedProgress = Double(processed) / Double(chunks.count)
-            i += batchSize
-        }
-
-        embedProgress = 1.0
+            await MainActor.run { self?.embedProgress = 1.0 }
+        }.value
     }
 
     // MARK: - Retrieve (Hybrid, KB-scoped)
