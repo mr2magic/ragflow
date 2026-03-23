@@ -45,10 +45,16 @@ final class LibraryViewModel: ObservableObject {
     private let rag = RAGService.shared
     private let haptics = UINotificationFeedbackGenerator()
 
+    // Scan once per app session regardless of how many LibraryViewModels are created.
+    private static var hasScannedDocumentsFolder = false
+
     init(kb: KnowledgeBase) {
         self.kb = kb
         reload()
-        Task { await scanDocumentsFolder() }
+        if !LibraryViewModel.hasScannedDocumentsFolder {
+            LibraryViewModel.hasScannedDocumentsFolder = true
+            Task { await scanDocumentsFolder() }
+        }
     }
 
     func reload() {

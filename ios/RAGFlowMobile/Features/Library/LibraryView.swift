@@ -190,6 +190,11 @@ struct LibraryView: View {
                     Text(vm.ingestProgress.isEmpty ? "Importing…" : vm.ingestProgress)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    if !ragService.ingestPhase.isEmpty {
+                        Text(ragService.ingestPhase)
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
                     if ragService.embedProgress > 0 && ragService.embedProgress < 1 {
                         VStack(spacing: 6) {
                             ProgressView(value: ragService.embedProgress)
