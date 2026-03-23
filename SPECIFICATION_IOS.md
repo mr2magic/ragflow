@@ -1,31 +1,33 @@
 # RAGFlow iOS — Specification
 
-**Date**: 2026-03-22
-**Platform**: iOS 26+ / iPadOS 26+
-**Status**: Draft
-**Parent spec**: [SPECIFICATION.md](SPECIFICATION.md)
+**Date**: 2026-03-23
+**Platform**: iOS 17+ / iPadOS 17+
+**Status**: Approved
+**Replaces**: previous draft 2026-03-22
 
 ---
 
-## Overview
+## Vision
 
-A native Swift/SwiftUI app that brings RAGFlow to iPhone and iPad. The app operates in two modes:
+A native Swift/SwiftUI app that is a **complete, independent RAGFlow implementation** — not a client for any server. All features of RAGFlow run on-device. No Docker. No backend. No dependency on any RAGFlow instance, ever.
 
-- **Connected mode**: Communicates with a local RAGFlow instance (Docker on Mac, home network) over LAN. RAGFlow handles chunking, embedding, indexing, and LLM. No corpus content reaches the internet.
-- **Standalone mode**: No RAGFlow reachable. Full on-device RAG pipeline using `FoundationModels.framework` (text generation + tool-calling) and `NLEmbedding` (vector embeddings). Knowledge bases stored in local SQLite.
-
-Documents are always parsed on-device before anything is sent anywhere. Original files never leave the device. In connected mode, parsed text is sent to local RAGFlow over the home network — not the internet.
+The only optional external connections are:
+- **Ollama** (local network LLM/embedding server — user's own Mac or NAS)
+- **Claude API** (Anthropic hosted LLM — requires user's API key)
+- **FoundationModels** (Apple on-device LLM/generation — iOS 26, no key, no network)
+- **Agent tool APIs** (Brave Search, Jina Reader — only invoked when the LLM calls a tool, never receives corpus content)
 
 ---
 
-## Corpus Privacy Constraint
+## Corpus Privacy
 
-This is a hard architectural constraint, not a preference:
+Hard architectural constraint — not a preference:
 
-- Original document files: never transmitted. Stay on device.
-- Parsed text: may be sent to local RAGFlow (same home network). Never to internet.
-- Retrieved chunks used as LLM context: sent to local RAGFlow LLM layer only. Never to cloud LLM APIs directly from the app.
-- URLs ingested: fetched from the public web (intended behavior). Resulting content stored locally.
+- Original files: never leave the device
+- Parsed text: stays on device; sent to Ollama only if user configures it and Ollama is on the same local network
+- LLM context (retrieved chunks): sent only to the user-configured LLM backend (Ollama LAN, Claude API, or on-device FoundationModels)
+- No document content is ever sent to any cloud service except a user-configured Claude API key
+- Agent tools (web search, URL fetch) receive only the search query or URL — never document chunks
 
 ---
 
@@ -35,286 +37,266 @@ This is a hard architectural constraint, not a preference:
 
 | ID | Requirement |
 |----|-------------|
-| FR-1 | Connect to a local RAGFlow instance by IP/hostname; authenticate via Bearer token |
-| FR-2 | Browse and query all knowledge bases on the connected RAGFlow instance |
-| FR-3 | Chat interface against any RAGFlow knowledge base or canvas |
-| FR-4 | Ingest documents from Files app, Photos, Share Sheet, clipboard, and direct camera capture |
-| FR-5 | Supported ingest formats: PDF, JPEG/PNG/HEIC/image (OCR), MP3/M4A/WAV/audio (transcription), MP4/MOV/video (transcription), TXT/MD/RTF/CSV, EPUB, Pages/Numbers/Keynote (best-effort), URLs |
-| FR-6 | All document parsing runs on-device before any data leaves the phone |
-| FR-7 | Standalone offline mode: full RAG pipeline on-device when RAGFlow unreachable |
-| FR-8 | Local knowledge bases in standalone mode persist in on-device SQLite |
-| FR-9 | URL ingestion: fetch and clean web content via Jina Reader, store locally |
-| FR-10 | Sync: documents ingested offline can be pushed to RAGFlow when reconnected |
-| FR-11 | iPad: full split-view and multitasking support |
+| FR-1 | Multiple named knowledge bases — create, rename, delete, select as active |
+| FR-2 | Ingest documents into any KB: PDF, ePub, JPEG/PNG/HEIC, MP3/M4A/WAV, MP4/MOV, TXT/MD/RTF/CSV, URL |
+| FR-3 | PDF: PDFKit for born-digital; Vision OCR for scanned (auto-detect) |
+| FR-4 | Image: Vision `VNRecognizeTextRequest`, on-device, accurate mode |
+| FR-5 | Audio: `SFSpeechRecognizer` (< 60s segments) or `SpeechAnalyzer`/`SpeechModules` (iOS 26, longer audio) — `requiresOnDeviceRecognition = true` |
+| FR-6 | Video: extract audio via `AVFoundation`, then FR-5 pipeline |
+| FR-7 | URL: fetch via `URLSession` → clean with Jina Reader (`r.jina.ai/{url}`), store locally |
+| FR-8 | Share Sheet extension: receive files from any app and ingest into selected KB |
+| FR-9 | Chunking: sentence-boundary (~300 tokens, 50-token overlap) — default strategy |
+| FR-10 | Embeddings: pluggable — Ollama (local), NLEmbedding (on-device, no server) |
+| FR-11 | Hybrid search: FTS5 keyword candidates + vector cosine similarity re-rank (Accelerate/vDSP) |
+| FR-12 | Chat against any KB; LLM backend pluggable: FoundationModels, Ollama, Claude API |
+| FR-13 | Agent tools available during chat: Brave Search, Jina Reader URL fetch |
+| FR-14 | Source citations shown for every assistant response — expandable chunk previews |
+| FR-15 | Conversation history per KB, persisted across launches |
+| FR-16 | Document management within each KB: list, preview metadata, delete |
+| FR-17 | iPad: NavigationSplitView with KB list + document list + chat in three columns |
+| FR-18 | Import via Files app, drag-and-drop (iPad), camera scan (VisionKit) |
 
 ### Non-Functional
 
 | ID | Requirement |
 |----|-------------|
-| NFR-1 | Corpus privacy: no document content transmitted to internet under any circumstance |
-| NFR-2 | iOS 26+ / iPadOS 26+ minimum. No visionOS target. |
-| NFR-3 | All parsing and standalone inference runs on-device, no cloud dependency |
-| NFR-4 | Initial setup (no model download in connected mode): under 2 minutes |
-| NFR-5 | Query response in connected mode: follows RAGFlow latency (~3-10s) |
-| NFR-6 | Query response in standalone mode: under 15s on A16+ |
-| NFR-7 | App binary under 50MB. Models downloaded separately on demand. |
-| NFR-8 | Sideload-first. App Store packaging deferred to Phase 4. |
+| NFR-1 | Zero Docker dependency — the app has no knowledge of or connection to any RAGFlow server |
+| NFR-2 | Fully offline capable when FoundationModels + NLEmbedding are used |
+| NFR-3 | All document parsing runs on-device before any text goes anywhere |
+| NFR-4 | API keys (Claude, Brave) stored in Keychain only |
+| NFR-5 | App binary under 50MB; models downloaded on demand (Ollama) or system-provided (FoundationModels) |
+| NFR-6 | Minimum deployment: iOS 17; FoundationModels features gated behind iOS 26 availability check |
+| NFR-7 | No original file ever transmitted; parsed text sent only to user-configured local LLM |
 
 ---
 
 ## Architecture
 
-### Two-Mode Design
+### Layer Map
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                    iOS App                           │
-│                                                      │
-│   ┌─────────────────┐     ┌──────────────────────┐  │
-│   │  Capture &      │     │   Chat / Query UI    │  │
-│   │  Ingestion UI   │     │                      │  │
-│   └────────┬────────┘     └──────────┬───────────┘  │
-│            │                         │               │
-│   ┌────────▼─────────────────────────▼───────────┐  │
-│   │              Document Parser                 │  │
-│   │   PDFKit │ Vision │ Speech │ Text │ EPUB     │  │
-│   │          Always on-device                    │  │
-│   └────────────────────┬─────────────────────────┘  │
-│                        │                             │
-│   ┌────────────────────▼─────────────────────────┐  │
-│   │              Mode Router                     │  │
-│   │         RAGFlow reachable? Y / N             │  │
-│   └──────────┬───────────────────────┬───────────┘  │
-│              │                       │               │
-│   ┌──────────▼──────────┐ ┌──────────▼────────────┐ │
-│   │   Connected Mode    │ │   Standalone Mode      │ │
-│   │                     │ │                        │ │
-│   │  RAGFlow REST API   │ │  Foundation Models     │ │
-│   │  (local LAN only)   │ │  NLEmbedding           │ │
-│   │  KB browse/query    │ │  SQLite vector store   │ │
-│   │  Document upload    │ │  On-device chunking    │ │
-│   └─────────────────────┘ └────────────────────────┘ │
-│                                                      │
-│   ┌──────────────────────────────────────────────┐  │
-│   │           Local Storage (always)             │  │
-│   │  Original files │ Parsed text │ Local SQLite │  │
-│   │  Pending sync queue for offline ingestion    │  │
-│   └──────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────┘
-                    │ LAN only, never internet
-                    ▼
-          ┌──────────────────────┐
-          │   RAGFlow on Mac     │
-          │   Docker :8080       │
-          │   Existing instance  │
-          └──────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│  SwiftUI Views                                           │
+│  KBListView  DocumentListView  ChatView  SettingsView    │
+├─────────────────────────────────────────────────────────┤
+│  ViewModels (MainActor ObservableObject)                 │
+│  KBViewModel  DocumentViewModel  ChatViewModel           │
+├──────────────────┬──────────────────┬───────────────────┤
+│  RAG Pipeline    │  LLM Services    │  Storage          │
+│  IngestService   │  LLMService      │  DatabaseService  │
+│  ChunkService    │   ├ FoundationLLM│  (GRDB, SQLite)   │
+│  EmbedService    │   ├ OllamaLLM    │                   │
+│  RetrieveService │   └ ClaudeAPI    │                   │
+├──────────────────┴──────────────────┴───────────────────┤
+│  Document Parsers                                        │
+│  PDFParser  EPUBParser  OCRParser  SpeechParser          │
+│  VideoParser  TextParser  URLParser                      │
+├─────────────────────────────────────────────────────────┤
+│  Agent Tools                                             │
+│  ToolExecutor  BraveSearch  JinaReader  (extensible)     │
+└─────────────────────────────────────────────────────────┘
+             ↕ Ollama (LAN, optional)
+             ↕ Claude API (internet, optional, key required)
+             ↕ FoundationModels (on-device, iOS 26)
 ```
 
-### Connected Mode Detail
-
-- Discovers RAGFlow by manually configured IP:port (e.g. `192.168.1.x:8080`)
-- Authenticates with user's RAGFlow Bearer token (stored in iOS Keychain)
-- Uses existing RAGFlow REST API:
-  - `GET /v1/dataset` — list knowledge bases
-  - `POST /v1/dataset/{id}/document` — upload parsed document text
-  - `POST /v1/canvas/{id}/completion` — chat with canvas (query field)
-  - `POST /v1/retrieval` — direct retrieval if needed
-- Parsed text (not original file) is what gets sent to RAGFlow
-- RAGFlow's configured LLM (Claude, OpenAI, Ollama, etc.) handles generation
-- No changes required to the RAGFlow backend
-
-### Standalone Mode Detail
-
-- Triggered automatically when RAGFlow is unreachable
-- LLM: `FoundationModels.framework` — Apple Intelligence on-device model (iOS 26, no download)
-- Embeddings: `NLEmbedding` (`NaturalLanguage.framework`) — built-in sentence embeddings, no download
-- Vector store: SQLite with manual cosine similarity search (pure Swift, no extension dependency)
-- Chunking: sentence-boundary chunking in Swift (~300 tokens per chunk, 50-token overlap)
-- Knowledge bases created offline are local-only until synced to RAGFlow
-
-**Resolved (2026-03-23)**: `FoundationModels.framework` in iOS 26 exposes text generation, guided generation, and tool-calling only — no public embedding API. **Decision: use `NLEmbedding` for all on-device vector embeddings.**
-
-**Resolved (2026-03-23)**: sqlite-vec ships precompiled iOS binaries but not as an official Swift Package. Integration requires a custom binary module or a hand-rolled SPM wrapper around the iOS build. **Decision: use brute-force Accelerate/vDSP cosine similarity (already implemented); defer sqlite-vec to P3 if corpus scale demands it.**
-
-### Document Parser Layer
-
-Always runs on-device, before anything is sent anywhere.
-
-| Format | Framework | Notes |
-|--------|-----------|-------|
-| PDF (born-digital) | PDFKit | `PDFDocument` text extraction per page |
-| PDF (scanned) | Vision `VNRecognizeTextRequest` | On-device OCR, accurate layout |
-| JPEG / PNG / HEIC / image | Vision `VNRecognizeTextRequest` | On-device OCR |
-| MP3 / M4A / WAV / audio | `SFSpeechRecognizer` (< 60s segments) or `SpeechAnalyzer` (iOS 26, longer audio) | `requiresOnDeviceRecognition = true`. Chunk at silence boundaries with `AVAudioEngine`. Segments must be < ~60s for `SFSpeechRecognizer`; use `SpeechAnalyzer`/`SpeechModules` for longer files on iOS 26+. |
-| MP4 / MOV / video | `AVAssetImageGenerator` + Speech | Extract audio track via `AVAssetExportSession`, then transcribe |
-| TXT / MD / RTF | `NSAttributedString` / native | Trivial |
-| CSV | Swift `split` | Rows joined as structured text |
-| EPUB | `ZipArchive` + XML | Parse OPF manifest, read HTML content files in spine order, strip tags |
-| Pages / Numbers / Keynote | `QLPreviewController` text extraction | Best-effort. Lossy for structured content. Labeled as such in UI. |
-| URL | `URLSession` + Jina Reader (`r.jina.ai/{url}`) | Fetches public web content. Result stored locally as corpus. |
-
-### Local Storage
+### Data Model
 
 ```
-App Documents/
-├── originals/          # Original files, never transmitted
-│   └── {uuid}.{ext}
-├── parsed/             # Extracted text per document
-│   └── {uuid}.txt
-└── ragflow_ios.sqlite  # Local KB, chunks, embeddings, sync queue
-    ├── documents
-    ├── chunks
-    ├── embeddings      # NLEmbedding float arrays (blob)
-    ├── local_kbs
-    └── sync_queue      # Pending uploads for when reconnected
+KnowledgeBase
+  id, name, description, createdAt, embeddingModel, llmBackend
+
+Document
+  id, kbId, title, sourceType (pdf/epub/image/audio/video/url/text)
+  filePath (original, device-only), parsedAt, chunkCount
+
+Chunk
+  id, documentId, kbId, content, chapterTitle, position
+  embedding BLOB (float32 array)
+
+Conversation
+  id, kbId, createdAt, title
+
+Message
+  id, conversationId, role, content, sources [ChunkSource], createdAt
+```
+
+### LLM Backend Protocol
+
+```swift
+protocol LLMService {
+    func complete(messages: [LLMMessage], context: [Chunk]) async throws
+        -> AsyncThrowingStream<String, Error>
+}
+// Implementations: FoundationLLMService, OllamaService, ClaudeService
+```
+
+### Embedding Backend Protocol
+
+```swift
+protocol EmbeddingService {
+    func embed(texts: [String]) async throws -> [[Float]]
+}
+// Implementations: NLEmbeddingService (on-device), OllamaEmbeddingService
 ```
 
 ---
 
-## Implementation Plan
+## Implementation Phases
 
-### P2.1 — Connected Mode: RAGFlow Client
+### P2.2 — Knowledge Base Management *(highest priority)*
 
-**Goal**: Working mobile frontend to existing RAGFlow.
-
-**Tasks**:
-- [ ] T1: Xcode project, SwiftUI app target, iOS 26 deployment target
-- [ ] T2: Settings screen — RAGFlow URL, Bearer token input, stored in Keychain
-- [ ] T3: Reachability check — ping RAGFlow health endpoint on launch and network change
-- [ ] T4: Knowledge base list screen (`GET /v1/dataset`)
-- [ ] T5: Chat screen against selected KB via canvas completion API (`POST /v1/canvas/{id}/completion`, `query` field)
-- [ ] T6: Streaming response display (SSE parsing from RAGFlow)
-- [ ] T7: Mode indicator in UI (connected / standalone)
-
-**Acceptance**:
-- Can connect to local RAGFlow, browse KBs, and chat against them from iPhone/iPad
-- Bearer token stored securely in Keychain, not in UserDefaults
-
----
-
-### P2.2 — Document Ingestion Pipeline
-
-**Goal**: Parse any supported file on-device and upload parsed text to RAGFlow.
+**Goal**: Replace flat book library with multiple named knowledge bases. This is the structural foundation everything else builds on.
 
 **Tasks**:
-- [ ] T1: File picker (`UIDocumentPickerViewController`) — all supported UTTypes
-- [ ] T2: Share Sheet extension — receive files from other apps
-- [ ] T3: PDF parser (PDFKit for digital, Vision for scanned — auto-detect by checking if PDFPage has text)
-- [ ] T4: Image OCR (Vision `VNRecognizeTextRequest`, accurate mode)
-- [ ] T5: Audio transcription — `SFSpeechRecognizer` for segments < 60s; `SpeechAnalyzer`/`SpeechModules` (iOS 26) for longer files; chunk at silence boundaries with `AVAudioEngine`
-- [ ] T6: Video ingestion (extract audio via AVFoundation, then T5 pipeline)
-- [ ] T7: Plain text formats (TXT, MD, RTF, CSV)
-- [ ] T8: EPUB parser (ZipArchive + OPF manifest + HTML strip)
-- [ ] T9: Pages/Numbers/Keynote (QuickLook text, labeled best-effort in UI)
-- [ ] T10: URL ingestion (URLSession → `r.jina.ai/{url}` → store content)
-- [ ] T11: Chunking (sentence-boundary, ~300 tokens, 50-token overlap, pure Swift)
-- [ ] T12: Upload parsed text to RAGFlow selected KB (`POST /v1/dataset/{id}/document`)
-- [ ] T13: Ingestion progress UI (per-file status, error states)
+- [ ] T1: SQLite schema — `knowledge_bases` table; migrate existing `books` → default KB "My Library"
+- [ ] T2: `KBListView` — list KBs, swipe-to-delete, rename, create new
+- [ ] T3: `DocumentListView` — documents within a KB, chunk count, source type badge
+- [ ] T4: Three-column iPad layout: KB list | Document list | Chat
+- [ ] T5: `KBViewModel` + `DocumentViewModel` — CRUD operations
+- [ ] T6: Settings per KB: embedding model picker, LLM backend picker
+- [ ] T7: Migrate `ChatView` to be scoped to a KB (not a single Book)
+- [ ] T8: Conversation history persisted per KB
 
 **Acceptance**:
-- All formats ingest without transmitting original files
-- Parsed text visible in RAGFlow KB after upload
-- Failed ingestion shows clear error; partial success handled per-file
+- User can create "Work Notes", "Research", "Fiction" as separate KBs
+- Documents in one KB are not retrieved when chatting in another
+- Existing ePub + PDF ingest works into any KB
 
 ---
 
-### P2.3 — Standalone Offline Mode
+### P2.3 — Full Document Format Support
 
-**Goal**: Full RAG pipeline on-device when RAGFlow is unreachable.
+**Goal**: Match RAGFlow's document ingestion breadth — every common format handled on-device.
 
 **Tasks**:
-- [ ] T1: SQLite schema for local KBs, chunks, embeddings, sync queue (`GRDB.swift`)
-- [ ] T2: `NLEmbedding` integration — embed chunks at ingestion time, store as blob
-- [ ] T3: Cosine similarity search in Swift — top-k retrieval from local embeddings
-- [ ] T4: `FoundationModels` integration — `LanguageModelSession`, RAG prompt assembly
-- [ ] T5: Fallback chain: Foundation Models unavailable → surface clear error to user
-- [ ] T6: Local KB management UI (create, rename, delete local knowledge bases)
-- [ ] T7: Sync queue — track offline-ingested documents, upload to RAGFlow on reconnect
-- [ ] T8: Mode auto-switch — seamless transition when network state changes mid-session
-- [x] T9: ~~Resolve open question: Foundation Models embedding API~~ — **resolved**: no embedding API in iOS 26. Use `NLEmbedding` exclusively.
-- [x] T10: ~~Resolve open question: sqlite-vec iOS SPM~~ — **resolved**: no official SPM. Use Accelerate/vDSP cosine similarity; defer sqlite-vec binary integration to P3 if needed.
+- [ ] T1: `OCRParser.swift` — Vision `VNRecognizeTextRequest`, accurate mode, page layout preserved
+- [ ] T2: Scanned PDF auto-detection — check `PDFPage.string` length; fall back to OCR if < 50 chars/page
+- [ ] T3: `SpeechParser.swift` — audio transcription; `SFSpeechRecognizer` for < 60s; `SpeechAnalyzer` for longer (iOS 26+); chunk at silence boundaries with `AVAudioEngine`
+- [ ] T4: `VideoParser.swift` — extract audio track via `AVAssetExportSession`, then T3 pipeline
+- [ ] T5: `URLParser.swift` — `URLSession` → `r.jina.ai/{url}` → store cleaned text as document
+- [ ] T6: File picker expansion — add image, audio, video UTTypes to `fileImporter`
+- [ ] T7: Share Sheet extension target — receive files from other apps, KB picker, ingest
+- [ ] T8: Camera scan — `VNDocumentCameraViewController` (VisionKit), multi-page, then OCR pipeline
+- [ ] T9: Drag-and-drop iPad ingest — `onDrop` handler in `DocumentListView`
 
 **Acceptance**:
-- Full query cycle works with no network
-- Answers grounded in local documents
-- On reconnect, pending documents sync to RAGFlow automatically
+- Photo of a whiteboard → searchable text chunks
+- 10-minute podcast → transcribed, chunked, retrievable
+- Any web URL → content ingested and citable in chat
 
 ---
 
-### P2.4 — iPad & Polish
+### P2.4 — On-Device LLM + Embeddings (Full Offline)
 
-**Goal**: Full iPad support, UX polish, sideload-ready.
+**Goal**: Zero network dependency. App works with no Ollama, no Claude API, no internet.
 
 **Tasks**:
-- [ ] T1: iPad split-view layout (KB list + chat side by side)
-- [ ] T2: Drag-and-drop file ingestion on iPad
-- [ ] T3: Camera capture — live document scan via VisionKit `VNDocumentCameraViewController`
-- [ ] T4: Haptics, loading states, empty states, error messages
-- [ ] T5: On-device diagnostic view (chunk count, embedding count, sync queue depth) — no corpus content exposed
-- [ ] T6: Dark mode, Dynamic Type, accessibility labels
+- [ ] T1: `NLEmbeddingService.swift` — wrap `NLEmbedding.sentenceEmbedding(for:)`, return `[Float]` arrays; same `EmbeddingService` protocol as Ollama
+- [ ] T2: `FoundationLLMService.swift` — `LanguageModelSession`, RAG prompt assembly, tool-calling via `FoundationModels` tool API; stream tokens as `AsyncThrowingStream`
+- [ ] T3: Embedding backend picker in KB settings — "On-Device (NLEmbedding)" / "Ollama"
+- [ ] T4: LLM backend picker in KB settings — "On-Device (Apple Intelligence)" / "Ollama" / "Claude API"
+- [ ] T5: iOS 26 availability gate — `if #available(iOS 26, *)` wraps FoundationModels usage; graceful error on iOS 17-25 if selected
+- [ ] T6: Re-embed trigger — if embedding model changes for a KB, offer to re-embed all chunks
+- [ ] T7: Offline indicator — Settings shows "Fully offline capable" when NLEmbedding + FoundationModels selected
 
 **Acceptance**:
-- App usable one-handed on iPhone and in split-view on iPad
-- No crashes on file types that fail parsing — graceful degradation
+- Airplane mode: ingest a PDF, ask a question, get a grounded answer — zero network calls
+- Embedding model swap re-embeds existing chunks correctly
 
 ---
 
-### P2.5 — App Store Prep *(Deferred)*
+### P2.5 — Advanced Retrieval + Agent Tools
 
-- Proper provisioning, entitlements review
-- Privacy manifest (`PrivacyInfo.xcprivacy`) — document all API usage
-- App Store screenshots, description
-- Apple Intelligence / Foundation Models entitlement if required
-- Review guideline audit
+**Goal**: Close the remaining retrieval quality and tool coverage gaps vs. RAGFlow.
+
+**Tasks**:
+- [ ] T1: Re-ranking — score FTS5 + vector candidates with combined BM25+cosine score; expose top-k tunable per KB
+- [ ] T2: Chunking strategy options per KB — Sentence (default), Paragraph, Q&A extraction (extract question+answer pairs), Fixed-size
+- [ ] T3: Q&A chunker — extract implicit Q&A pairs using LLM at ingest time, store as dedicated chunk type
+- [ ] T4: Tool executor expansion — add Wikipedia search, calculator, `DateTool` (current date/time)
+- [ ] T5: Brave Search API key field in Settings (already partially wired)
+- [ ] T6: Tool activity UI — named labels per tool type in chat ("Searching Wikipedia…", "Calculating…")
+- [ ] T7: Retrieval diagnostics view — show which chunks were retrieved, their scores, for any response
+
+**Acceptance**:
+- Q&A chunking on a textbook produces better answers than sentence chunking
+- Tool use cites its sources (search results) separately from document citations
 
 ---
 
-## Open Questions
+### P2.6 — iPad & UX Polish
 
-All original open questions resolved 2026-03-23.
+**Goal**: Full iPad support, accessibility, App Store-ready UX.
 
-| # | Question | Resolution |
-|---|----------|------------|
-| OQ-1 | Does iOS 26 `FoundationModels` expose a public embedding API? | **No.** Text generation, guided generation, and tool-calling only. Use `NLEmbedding`. |
-| OQ-2 | Is sqlite-vec available as an iOS Swift Package? | **No official SPM.** Precompiled iOS binaries only (custom binary module required). Use Accelerate/vDSP brute-force; revisit for P3 if scale demands it. |
-| OQ-3 | `SFSpeechRecognizer` on-device limits in iOS 26? | **No server-side quota for on-device.** Practical limit ~60s per segment. iOS 26 introduces `SpeechAnalyzer`/`SpeechModules` for longer/more flexible workloads — use for audio > 60s. |
+**Tasks**:
+- [ ] T1: Three-column `NavigationSplitView` — KB list | Document list | Chat (already partially done)
+- [ ] T2: Keyboard shortcuts (⌘N new KB, ⌘D new document, ⌘K search)
+- [ ] T3: Dark mode audit — all custom colors use semantic system colors
+- [ ] T4: Dynamic Type — all text scales correctly to accessibility sizes
+- [ ] T5: VoiceOver labels on all interactive elements
+- [ ] T6: Haptics — success/error feedback on ingest complete, message send
+- [ ] T7: Empty states — every screen has a clear empty state with a call to action
+- [ ] T8: Ingest progress — per-document progress, cancellable, background capable
+- [ ] T9: `PrivacyInfo.xcprivacy` — document all API usage for App Store review
+
+---
+
+### P2.7 — App Store
+
+- Provisioning profiles, signing certificates
+- App Store screenshots (iPhone 16, iPad Pro 13")
+- Privacy policy URL (required for API key usage)
+- App Store description and keywords
+- TestFlight beta distribution first
+
+---
+
+## Resolved Decisions
+
+| Topic | Decision |
+|-------|----------|
+| Docker / RAGFlow server | Not involved. Removed entirely from scope. |
+| Connected mode (P2.1) | Cancelled. No server sync of any kind. |
+| On-device embeddings | `NLEmbedding` — confirmed no embedding API in `FoundationModels` iOS 26 |
+| Vector search | Accelerate/vDSP cosine similarity — sufficient for personal KB scale |
+| sqlite-vec | Deferred to P3; no official iOS SPM; brute-force is fine |
+| Audio transcription | `SFSpeechRecognizer` < 60s; `SpeechAnalyzer`/`SpeechModules` (iOS 26) for longer |
+| LLM on-device | `FoundationModels.LanguageModelSession` — text generation + tool-calling confirmed |
+
+---
+
+## What's Already Built (P2.1 baseline)
+
+| Component | File | Status |
+|-----------|------|--------|
+| ePub ingest + chunking | `RAGService.swift`, `EPUBParser` via EPUBKit | ✅ |
+| PDF ingest (born-digital) | `PDFParser.swift` | ✅ |
+| Embeddings (Ollama) | `EmbeddingService.swift` | ✅ |
+| FTS5 + vector hybrid search | `DatabaseService.swift` | ✅ |
+| Claude API LLM + streaming | `ClaudeService.swift` | ✅ |
+| Ollama LLM + streaming | `OllamaService.swift` | ✅ |
+| Tool use (Brave, Jina) | `ToolService.swift` | ✅ |
+| Source citations UI | `ChatView.swift` | ✅ |
+| Library + Chat UI | `LibraryView`, `ChatView` | ✅ |
+| Settings + Keychain | `SettingsView`, `SettingsStore` | ✅ |
+| NavigationSplitView (iPhone) | `ContentView.swift` | ✅ |
 
 ---
 
 ## Testing Strategy
 
-| Layer | Approach | Note |
-|-------|----------|------|
-| Parsers | Unit tests with fixture files (PDF, image, audio, EPUB) | No network needed |
-| Chunker | Unit tests — verify chunk count, overlap, boundaries | Pure logic |
-| Embedding + retrieval | Unit tests with known vectors, assert top-k correct | Deterministic |
-| Connected mode API | Integration tests against local RAGFlow — mock for CI | Requires running instance for full test |
-| Standalone mode E2E | XCTest UI test — ingest file, query, assert non-empty response | On-device only |
-| Privacy | Manual audit: Charles Proxy on same network, assert zero corpus traffic to internet | Per release |
+| Layer | Approach |
+|-------|----------|
+| Parsers (PDF, OCR, Speech) | Unit tests with fixture files; assert chunk count and content |
+| Chunker | Unit tests — chunk count, overlap boundaries, Q&A pair extraction |
+| Embedding + retrieval | Unit tests with known vectors; assert top-k order is deterministic |
+| LLM services | Protocol mock; assert message format and tool-call handling |
+| KB CRUD | Integration tests against in-memory GRDB database |
+| Full chat pipeline | XCTest UI test — ingest file, ask question, assert non-empty cited response |
+| Privacy | Manual: Charles Proxy on LAN — assert zero corpus content reaches internet |
 
 ---
 
-## Secrets & Configuration
-
-- RAGFlow Bearer token: iOS Keychain (`kSecClassGenericPassword`)
-- RAGFlow URL: `UserDefaults` (not sensitive)
-- No API keys in source code
-- No analytics, no crash reporting (corpus privacy constraint precludes any telemetry)
-
----
-
-## Dependencies
-
-| Library | Purpose | Why |
-|---------|---------|-----|
-| `GRDB.swift` | SQLite ORM | Well-maintained, Swift-native, no C bridging needed |
-| `ZipArchive` (or `ZIPFoundation`) | EPUB unpacking | EPUB is a ZIP container |
-| No networking library | URLSession is sufficient | Avoid dependencies for security-sensitive data paths |
-
-All Apple frameworks used (`PDFKit`, `Vision`, `Speech`, `AVFoundation`, `NaturalLanguage`, `FoundationModels`) are built-in. No ML model downloads required for core functionality.
-
----
-
-**Approved**: 2026-03-22
-**Generated**: 2026-03-22
-**OQ resolved**: 2026-03-23 (OQ-1, OQ-2, OQ-3 — all closed)
+**Approved**: 2026-03-23
+**OQ resolved**: 2026-03-23 (all)

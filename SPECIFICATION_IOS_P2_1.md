@@ -1,8 +1,9 @@
 # P2.1 — Connected Mode: RAGFlow Client
 
 **Parent spec**: `SPECIFICATION_IOS.md`
-**Status**: Approved
-**Approved**: 2026-03-23
+**Status**: CANCELLED — 2026-03-23
+**Reason**: iOS app is a complete independent RAGFlow implementation. No Docker, no server connection, no sync of any kind. See updated `SPECIFICATION_IOS.md`.
+**Approved**: 2026-03-23 (subsequently cancelled same day)
 
 ---
 
