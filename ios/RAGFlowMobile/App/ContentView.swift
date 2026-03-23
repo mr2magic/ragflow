@@ -1,17 +1,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var appState: AppState
+    @State private var selectedBook: Book?
+    @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
-        TabView(selection: $appState.selectedTab) {
-            LibraryView()
-                .tabItem { Label("Library", systemImage: "books.vertical") }
-                .tag(AppState.Tab.library)
-
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gear") }
-                .tag(AppState.Tab.settings)
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            LibraryView(selectedBook: $selectedBook)
+        } detail: {
+            if let book = selectedBook {
+                ChatView(book: book)
+            } else {
+                ContentUnavailableView(
+                    "Select a Book",
+                    systemImage: "text.book.closed",
+                    description: Text("Choose a book from your library to start chatting.")
+                )
+            }
         }
+        .navigationSplitViewStyle(.balanced)
     }
 }
