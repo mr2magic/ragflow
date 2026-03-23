@@ -20,7 +20,7 @@ private let onboardingPages: [OnboardingPage] = [
         subtitle: "Your AI-powered reading companion",
         bullets: [
             ("bubble.left.and.text.bubble.right", "Chat with any book or document using AI"),
-            ("square.stack.3d.up",                "Organize your reading into Knowledge Bases"),
+            ("square.stack.3d.up",                "Organize documents into Knowledge Bases"),
             ("lock.shield",                        "Runs locally with Ollama, or in the cloud with Claude"),
         ]
     ),
@@ -39,17 +39,17 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "doc.badge.plus",
         tint: .green,
         title: "Import Documents",
-        subtitle: "ePub and PDF, straight from the Files app",
+        subtitle: "PDF, ePub, TXT — from Files or a URL",
         bullets: [
-            ("plus",                               "Tap + in the Library to import one or more files"),
-            ("doc.richtext",                       "Supports ePub and PDF formats"),
-            ("bolt.fill",                          "Each file is chunked, indexed, and ready to chat in seconds"),
+            ("plus",                               "Tap + in the Documents tab to import files"),
+            ("doc.richtext",                       "Supports PDF, ePub, and plain-text formats"),
+            ("link",                               "Or paste a web URL to import directly from the internet"),
         ]
     ),
     .init(
         systemImage: "bubble.left.and.text.bubble.right.fill",
         tint: .orange,
-        title: "Chat with Your Books",
+        title: "Chat with Your Documents",
         subtitle: "Ask anything — get cited answers",
         bullets: [
             ("text.magnifyingglass",               "Relevant passages are retrieved for every question"),

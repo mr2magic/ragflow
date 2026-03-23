@@ -16,10 +16,29 @@ final class RAGService: ObservableObject {
 
     func ingest(url: URL, kbId: String) async throws -> Book {
         switch url.pathExtension.lowercased() {
-        case "epub": return try await ingestEPUB(url: url, kbId: kbId)
-        case "pdf":  return try await ingestPDF(url: url, kbId: kbId)
-        default:     throw IngestError.unsupportedFormat
+        case "epub":       return try await ingestEPUB(url: url, kbId: kbId)
+        case "pdf":        return try await ingestPDF(url: url, kbId: kbId)
+        case "txt", "md":  return try await ingestText(url: url, kbId: kbId)
+        default:           throw IngestError.unsupportedFormat
         }
+    }
+
+    private func ingestText(url: URL, kbId: String) async throws -> Book {
+        let text = try String(contentsOf: url, encoding: .utf8)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw IngestError.parseFailure
+        }
+        let bookId = UUID().uuidString
+        let title = url.deletingPathExtension().lastPathComponent
+        let allChunks = chunker.chunk(text: text, bookId: bookId, chapterTitle: nil)
+        let book = Book(
+            id: bookId, kbId: kbId, title: title, author: "",
+            filePath: url.path, addedAt: Date(), chunkCount: allChunks.count
+        )
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        await embedChunks(allChunks)
+        return book
     }
 
     private func ingestEPUB(url: URL, kbId: String) async throws -> Book {

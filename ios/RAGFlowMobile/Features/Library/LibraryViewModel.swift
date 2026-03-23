@@ -7,6 +7,8 @@ final class LibraryViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var sortOrder: SortOrder = .dateAdded
     @Published var showImporter = false
+    @Published var showURLEntry = false
+    @Published var urlInput = ""
     @Published var isIngesting = false
     @Published var ingestProgress: String = ""
     @Published var showError = false
@@ -97,6 +99,33 @@ final class LibraryViewModel: ObservableObject {
         bookToRename = nil
         renameText = ""
         reload()
+    }
+
+    func importFromURL() async {
+        let urlString = urlInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        urlInput = ""
+        guard let url = URL(string: urlString),
+              let scheme = url.scheme, ["http", "https"].contains(scheme) else {
+            show(error: "Please enter a valid http or https URL.")
+            return
+        }
+        isIngesting = true
+        defer { isIngesting = false; ingestProgress = "" }
+        ingestProgress = "Downloading…"
+        do {
+            let (tmpURL, _) = try await URLSession.shared.download(from: url)
+            let ext = url.pathExtension.lowercased().isEmpty ? "pdf" : url.pathExtension.lowercased()
+            let destURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension(ext)
+            try FileManager.default.moveItem(at: tmpURL, to: destURL)
+            ingestProgress = "Indexing…"
+            _ = try await rag.ingest(url: destURL, kbId: kb.id)
+            reload()
+            haptics.notificationOccurred(.success)
+        } catch {
+            show(error: "Could not import from URL: \(error.localizedDescription)")
+        }
     }
 
     private func ingest(urls: [URL]) async {

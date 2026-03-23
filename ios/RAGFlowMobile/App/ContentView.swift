@@ -33,7 +33,7 @@ struct ContentView: View {
             NavigationStack {
                 PhoneKBListView()
             }
-            .tabItem { Label("Library", systemImage: "books.vertical") }
+            .tabItem { Label("Knowledge Bases", systemImage: "square.stack.3d.up") }
 
             NavigationStack {
                 SettingsView()

@@ -5,6 +5,7 @@ struct LibraryView: View {
     let kb: KnowledgeBase
     @StateObject private var vm: LibraryViewModel
     @ObservedObject private var ragService = RAGService.shared
+    @State private var showImportOptions = false
 
     init(kb: KnowledgeBase) {
         self.kb = kb
@@ -25,10 +26,28 @@ struct LibraryView: View {
         .toolbar { toolbarContent }
         .fileImporter(
             isPresented: $vm.showImporter,
-            allowedContentTypes: [.epub, .pdf],
+            allowedContentTypes: [.epub, .pdf, .plainText,
+                                  UTType(filenameExtension: "md") ?? .plainText],
             allowsMultipleSelection: true
         ) { result in
             Task { await vm.importFiles(result: result) }
+        }
+        .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
+            Button("Browse Files (iPhone & iCloud)") { vm.showImporter = true }
+            Button("Import from URL") { vm.showURLEntry = true }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a PDF or document.")
+        }
+        .alert("Import from URL", isPresented: $vm.showURLEntry) {
+            TextField("https://example.com/report.pdf", text: $vm.urlInput)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .keyboardType(.URL)
+            Button("Import") { Task { await vm.importFromURL() } }
+            Button("Cancel", role: .cancel) { vm.urlInput = "" }
+        } message: {
+            Text("Paste a direct link to a PDF, ePub, or text file.")
         }
         .overlay { ingestOverlay }
         .alert("Import Error", isPresented: $vm.showError) {
@@ -71,27 +90,46 @@ struct LibraryView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "doc.badge.plus")
-                .font(.system(size: 64))
+        VStack(spacing: 0) {
+            Spacer()
+
+            Image(systemName: "tray.and.arrow.down")
+                .font(.system(size: 56))
                 .foregroundStyle(.tertiary)
+                .padding(.bottom, 16)
 
             Text("No Documents Yet")
                 .font(.title2.bold())
+                .padding(.bottom, 6)
 
-            Text("Import ePubs or PDFs to start chatting with \(kb.name).")
+            Text("Add PDFs, ePubs, or text files to \(kb.name) — then ask questions about them.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 28)
 
-            Button(action: { vm.showImporter = true }) {
+            // 3-step workflow
+            VStack(alignment: .leading, spacing: 14) {
+                WorkflowStep(number: "1", icon: "arrow.down.doc.fill", color: .blue,
+                             title: "Import", detail: "PDF, ePub, TXT — from Files or a URL")
+                WorkflowStep(number: "2", icon: "bolt.fill", color: .orange,
+                             title: "Index", detail: "AI chunks and embeds automatically")
+                WorkflowStep(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,
+                             title: "Ask", detail: "Chat with cited answers from your corpus")
+            }
+            .padding(.horizontal, 36)
+            .padding(.bottom, 28)
+
+            Button(action: { showImportOptions = true }) {
                 Label("Import Documents", systemImage: "plus.circle.fill")
                     .font(.headline)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+
+            Spacer()
         }
-        .padding(40)
     }
 
     // MARK: - Toolbar
@@ -99,7 +137,7 @@ struct LibraryView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
-            Button(action: { vm.showImporter = true }) {
+            Button(action: { showImportOptions = true }) {
                 Image(systemName: "plus")
             }
         }
@@ -169,6 +207,29 @@ private struct BookRow: View {
             .foregroundStyle(.tertiary)
         }
         .padding(.vertical, 6)
+    }
+}
+
+// MARK: - Workflow Step
+
+private struct WorkflowStep: View {
+    let number: String
+    let icon: String
+    let color: Color
+    let title: String
+    let detail: String
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle().fill(color.opacity(0.15)).frame(width: 40, height: 40)
+                Image(systemName: icon).font(.system(size: 16, weight: .semibold)).foregroundStyle(color)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(number). \(title)").font(.subheadline.bold())
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+        }
     }
 }
 

@@ -68,7 +68,7 @@ struct ChatView: View {
                 .foregroundStyle(.tertiary)
                 .padding(.bottom, 8)
 
-            Text("Ask anything about **\(kb.name)**")
+            Text("Ask anything about the documents in **\(kb.name)**")
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
@@ -94,9 +94,9 @@ struct ChatView: View {
 
     private var suggestedPrompts: [String] {
         [
-            "Who are the main characters?",
-            "What is the central theme?",
-            "Summarize the opening chapter."
+            "Summarize the key points in this corpus.",
+            "What are the most important findings or conclusions?",
+            "What topics are covered across these documents?"
         ]
     }
 
