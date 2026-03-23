@@ -18,7 +18,7 @@ struct LibraryView: View {
         .toolbar { toolbarContent }
         .fileImporter(
             isPresented: $vm.showImporter,
-            allowedContentTypes: [.epub],
+            allowedContentTypes: [.epub, .pdf],
             allowsMultipleSelection: true
         ) { result in
             Task { await vm.importEPUBs(result: result) }
@@ -106,6 +106,15 @@ struct LibraryView: View {
                     Text(vm.ingestProgress.isEmpty ? "Importing…" : vm.ingestProgress)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    if RAGService.shared.embedProgress > 0 && RAGService.shared.embedProgress < 1 {
+                        VStack(spacing: 6) {
+                            ProgressView(value: RAGService.shared.embedProgress)
+                                .frame(width: 180)
+                            Text("Embedding \(Int(RAGService.shared.embedProgress * 100))%")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
                 }
                 .padding(32)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))

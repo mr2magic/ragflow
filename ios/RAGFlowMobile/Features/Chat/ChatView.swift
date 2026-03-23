@@ -155,26 +155,32 @@ struct ChatView: View {
 
 private struct MessageBubble: View {
     let message: Message
-    @State private var copied = false
+    @State private var showSources = false
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 6) {
-            if message.role == .user { Spacer(minLength: 60) }
+        VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 6) {
+            HStack(alignment: .bottom, spacing: 6) {
+                if message.role == .user { Spacer(minLength: 60) }
 
-            Text(message.content.isEmpty ? " " : message.content)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(bubbleBackground)
-                .foregroundStyle(message.role == .user ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
-                .clipShape(BubbleShape(role: message.role))
-                .contextMenu {
-                    Button(action: copyMessage) {
-                        Label(copied ? "Copied!" : "Copy", systemImage: "doc.on.doc")
+                Text(message.content.isEmpty ? " " : message.content)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(bubbleBackground)
+                    .foregroundStyle(message.role == .user ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .contextMenu {
+                        Button(action: copyMessage) {
+                            Label("Copy", systemImage: "doc.on.doc")
+                        }
                     }
-                }
-                .textSelection(.enabled)
+                    .textSelection(.enabled)
 
-            if message.role == .assistant { Spacer(minLength: 60) }
+                if message.role == .assistant { Spacer(minLength: 60) }
+            }
+
+            if message.role == .assistant && !message.sources.isEmpty {
+                sourcesDisclosure
+            }
         }
     }
 
@@ -184,11 +190,44 @@ private struct MessageBubble: View {
             : AnyShapeStyle(Color(.secondarySystemBackground))
     }
 
+    private var sourcesDisclosure: some View {
+        DisclosureGroup(
+            isExpanded: $showSources,
+            content: {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(message.sources) { source in
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let title = source.chapterTitle {
+                                Text(title)
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.secondary)
+                            }
+                            Text(source.preview + "…")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                                .lineLimit(3)
+                        }
+                        .padding(.vertical, 4)
+                        if source.id != message.sources.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+                .padding(.top, 4)
+            },
+            label: {
+                Label("\(message.sources.count) sources", systemImage: "doc.text.magnifyingglass")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        )
+        .padding(.horizontal, 4)
+        .frame(maxWidth: 280, alignment: .leading)
+    }
+
     private func copyMessage() {
         UIPasteboard.general.string = message.content
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        copied = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { copied = false }
     }
 }
 

@@ -14,17 +14,22 @@
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
+		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
+		5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */; };
 		60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8061DB27675BF03BF9AE6A /* OllamaService.swift */; };
 		65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */; };
+		6E7131165A087613B0E74BCF /* ToolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCD7F43E645413DA3A8D513 /* ToolService.swift */; };
 		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
 		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
 		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
 		8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */; };
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
+		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
 		CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */; };
 		CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */; };
 		D11228F73D903065292642F2 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3565928B2FB15DD81AAF0 /* Book.swift */; };
+		D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD98A707C4F55AF2534157A /* PDFParser.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
@@ -44,6 +49,8 @@
 
 /* Begin PBXFileReference section */
 		0AF3565928B2FB15DD81AAF0 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
+		0CD98A707C4F55AF2534157A /* PDFParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
+		0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
@@ -61,6 +68,9 @@
 		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
+		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
+		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
@@ -76,6 +86,8 @@
 			files = (
 				28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */,
 				09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */,
+				AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */,
+				5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
+				AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */,
+				0CD98A707C4F55AF2534157A /* PDFParser.swift */,
 				C8CED5934D63CB02BDF103DA /* RAGService.swift */,
 			);
 			path = RAG;
@@ -124,6 +138,7 @@
 			children = (
 				90FC790467F4D05481B78B80 /* RAGFlowMobile */,
 				CDEB0C38B1C841D81EB028EF /* RAGFlowMobileTests */,
+				CF26EB3B52F9ADE4ED6271A9 /* Frameworks */,
 				44D8A205BEA0E8EA70D43C86 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -174,6 +189,7 @@
 				517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */,
 				F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */,
 				DD8061DB27675BF03BF9AE6A /* OllamaService.swift */,
+				ADCD7F43E645413DA3A8D513 /* ToolService.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -195,6 +211,15 @@
 				1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */,
 			);
 			path = RAGFlowMobileTests;
+			sourceTree = "<group>";
+		};
+		CF26EB3B52F9ADE4ED6271A9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */,
+				C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D3EBF1A3274E654C8B60ABBC /* Storage */ = {
@@ -314,6 +339,7 @@
 				01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */,
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
+				4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */,
 				8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */,
 				F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */,
 				FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */,
@@ -321,10 +347,12 @@
 				DC995B82EC08C313D958A065 /* Message.swift in Sources */,
 				B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */,
 				60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */,
+				D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */,
 				40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */,
 				98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */,
 				F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */,
 				65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */,
+				6E7131165A087613B0E74BCF /* ToolService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

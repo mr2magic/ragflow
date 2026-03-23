@@ -5,7 +5,7 @@ final class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var input = ""
     @Published var isLoading = false
-    @Published var isTyping = false       // true before first token arrives
+    @Published var isTyping = false
     @Published var showError = false
     @Published var errorMessage = ""
 
@@ -34,11 +34,15 @@ final class ChatViewModel: ObservableObject {
 
         streamTask = Task {
             do {
-                let chunks = try rag.retrieve(query: query)
+                // Retrieve chunks — use vector search if embeddings available
+                let chunks = try await retrieveChunks(for: query)
+                messages[assistantIndex].sources = chunks.map { ChunkSource(from: $0) }
+
                 let llm = makeLLMService(config: settings.config)
                 let history = messages.dropLast().map {
                     LLMMessage(role: $0.role == .user ? .user : .assistant, content: $0.content)
                 }
+
                 let stream = try await llm.complete(messages: Array(history), context: chunks)
 
                 for try await token in stream {
@@ -48,8 +52,7 @@ final class ChatViewModel: ObservableObject {
                 }
             } catch is CancellationError {
                 if messages[assistantIndex].content.isEmpty {
-                    messages.remove(at: assistantIndex)
-                    messages.removeLast()
+                    messages.removeLast(2)
                 }
             } catch {
                 isTyping = false
@@ -63,6 +66,17 @@ final class ChatViewModel: ObservableObject {
         }
 
         await streamTask?.value
+    }
+
+    private func retrieveChunks(for query: String) async throws -> [Chunk] {
+        // Try vector search if Ollama is configured
+        if settings.config.provider == .ollama {
+            let embService = EmbeddingService(host: settings.config.ollamaHost)
+            if let queryVec = try? await embService.embed(text: query) {
+                return try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec)
+            }
+        }
+        return try rag.retrieve(query: query)
     }
 
     func stop() {

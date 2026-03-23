@@ -50,7 +50,9 @@ final class LibraryViewModel: ObservableObject {
         guard let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         let existing = Set(books.map { $0.filePath })
         guard let files = try? FileManager.default.contentsOfDirectory(at: docs, includingPropertiesForKeys: nil) else { return }
-        let epubs = files.filter { $0.pathExtension.lowercased() == "epub" && !existing.contains($0.path) }
+        let epubs = files.filter {
+            ["epub", "pdf"].contains($0.pathExtension.lowercased()) && !existing.contains($0.path)
+        }
         guard !epubs.isEmpty else { return }
         await ingest(urls: epubs)
     }
