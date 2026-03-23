@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct LibraryView: View {
     let kb: KnowledgeBase
     @StateObject private var vm: LibraryViewModel
+    @ObservedObject private var ragService = RAGService.shared
 
     init(kb: KnowledgeBase) {
         self.kb = kb
@@ -19,6 +20,7 @@ struct LibraryView: View {
             }
         }
         .navigationTitle(kb.name)
+        .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search documents")
         .toolbar { toolbarContent }
         .fileImporter(
@@ -127,11 +129,11 @@ struct LibraryView: View {
                     Text(vm.ingestProgress.isEmpty ? "Importing…" : vm.ingestProgress)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    if RAGService.shared.embedProgress > 0 && RAGService.shared.embedProgress < 1 {
+                    if ragService.embedProgress > 0 && ragService.embedProgress < 1 {
                         VStack(spacing: 6) {
-                            ProgressView(value: RAGService.shared.embedProgress)
+                            ProgressView(value: ragService.embedProgress)
                                 .frame(width: 180)
-                            Text("Embedding \(Int(RAGService.shared.embedProgress * 100))%")
+                            Text("Embedding \(Int(ragService.embedProgress * 100))%")
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
