@@ -320,7 +320,8 @@ final class DatabaseService {
     }
 
     func saveWorkflow(_ workflow: Workflow) throws {
-        try dbQueue.write { db in try workflow.save(db) }
+        var w = workflow
+        try dbQueue.write { db in try w.save(db) }
     }
 
     func deleteWorkflow(_ id: String) throws {
@@ -338,7 +339,8 @@ final class DatabaseService {
     }
 
     func saveWorkflowRun(_ run: WorkflowRun) throws {
-        try dbQueue.write { db in try run.save(db) }
+        var r = run
+        try dbQueue.write { db in try r.save(db) }
     }
 
     func deleteRunsForWorkflow(_ workflowId: String) throws {

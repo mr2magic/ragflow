@@ -20,7 +20,7 @@ final class WorkflowRunner: ObservableObject {
         var ctx: StepContext = ["input": input]
         var finalOutput = ""
         var failed = false
-        var log: [String] = []
+        var entries: [String] = []
 
         let steps = workflow.steps
 
@@ -28,7 +28,7 @@ final class WorkflowRunner: ObservableObject {
             guard !Task.isCancelled else { failed = true; break }
 
             currentStep = step.label
-            log(into: &log, "▶ \(step.label)")
+            log(into: &entries, "▶ \(step.label)")
 
             do {
                 switch step.type {
@@ -52,13 +52,13 @@ final class WorkflowRunner: ObservableObject {
                         chunks = try rag.retrieve(query: query, kbId: kbId, topK: step.topK)
                     }
 
-                    let contextText = chunks.map { c in
-                        let title = c.chapterTitle.map { "[\($0)]" } ?? ""
-                        return "\(title) \(c.content)"
+                    let contextText = chunks.map { c -> String in
+                        if let t = c.chapterTitle { return "[\(t)] \(c.content)" }
+                        return c.content
                     }.joined(separator: "\n\n")
 
                     ctx[step.outputSlot] = contextText
-                    log(into: &log, "  Retrieved \(chunks.count) chunks")
+                    log(into: &entries, "  Retrieved \(chunks.count) chunks")
 
                 case .llm:
                     let prompt = ctx.render(step.promptTemplate)
@@ -75,22 +75,22 @@ final class WorkflowRunner: ObservableObject {
                         if isLastLLM { streamingOutput = response }
                     }
                     ctx[step.outputSlot] = response
-                    log(into: &log, "  LLM response: \(response.prefix(80))…")
+                    log(into: &entries, "  LLM response: \(response.prefix(80))…")
 
                 case .answer:
                     finalOutput = ctx[step.outputSlot] ?? ctx["output"] ?? ""
                 }
             } catch {
-                log(into: &log, "  ✗ Error: \(error.localizedDescription)")
+                log(into: &entries, "  ✗ Error: \(error.localizedDescription)")
                 failed = true
                 break
             }
         }
 
         if finalOutput.isEmpty { finalOutput = ctx["output"] ?? streamingOutput }
-        stepLog = log
+        stepLog = entries
 
-        let encodedLog = (try? String(data: JSONEncoder().encode(log), encoding: .utf8)) ?? "[]"
+        let encodedLog = (try? String(data: JSONEncoder().encode(entries), encoding: .utf8)) ?? "[]"
         return WorkflowRun(
             id: UUID().uuidString,
             workflowId: workflow.id,

@@ -141,11 +141,11 @@ struct LibraryView: View {
 
             // 3-step workflow
             VStack(alignment: .leading, spacing: 14) {
-                WorkflowStep(number: "1", icon: "arrow.down.doc.fill", color: .blue,
+                IngestStepRow(number: "1", icon: "arrow.down.doc.fill", color: .blue,
                              title: "Import", detail: "PDF, ePub, TXT, HTML, CSV, RTF, JSON, code — from Files or a URL")
-                WorkflowStep(number: "2", icon: "bolt.fill", color: .orange,
+                IngestStepRow(number: "2", icon: "bolt.fill", color: .orange,
                              title: "Index", detail: "AI chunks and embeds automatically")
-                WorkflowStep(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,
+                IngestStepRow(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,
                              title: "Ask", detail: "Chat with cited answers from your corpus")
             }
             .padding(.horizontal, 36)
@@ -247,7 +247,7 @@ private struct BookRow: View {
 
 // MARK: - Workflow Step
 
-private struct WorkflowStep: View {
+private struct IngestStepRow: View {
     let number: String
     let icon: String
     let color: Color
