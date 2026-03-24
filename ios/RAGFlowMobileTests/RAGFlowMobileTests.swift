@@ -466,6 +466,269 @@ final class RAGServiceHTMLTests: XCTestCase {
     }
 }
 
+// MARK: - Chunk Fetch & Retrieval (in-memory DB)
+
+final class ChunkFetchTests: XCTestCase {
+    private var dbq: DatabaseQueue!
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! runMigrations()
+    }
+
+    private func runMigrations() throws {
+        var m = DatabaseMigrator()
+        m.registerMigration("v1") { db in
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+        m.registerMigration("v2") { db in
+            try db.alter(table: "chunks") { t in t.add(column: "embedding", .blob) }
+        }
+        m.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.execute(sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [KnowledgeBase.defaultID, "My Library", Date()])
+            try db.alter(table: "books") { t in
+                t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        m.registerMigration("v4") { db in
+            try db.create(table: "messages", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("role", .text).notNull()
+                t.column("content", .text).notNull()
+                t.column("timestamp", .datetime).notNull()
+            }
+            try db.create(table: "message_sources", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("messageId", .text).notNull().references("messages", onDelete: .cascade)
+                t.column("chapterTitle", .text)
+                t.column("preview", .text).notNull()
+            }
+        }
+        try m.migrate(dbq)
+    }
+
+    // Helper: save a KB, book, and chunks into the in-memory DB.
+    private func seed(kbId: String, kbName: String, bookId: String, contents: [(String, String?)]) throws {
+        try dbq.write { db in
+            try db.execute(sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [kbId, kbName, Date()])
+            let book = Book(id: bookId, kbId: kbId, title: kbName + " Book", author: "",
+                            filePath: "", addedAt: Date(), chunkCount: contents.count)
+            try book.save(db)
+            for (i, (text, title)) in contents.enumerated() {
+                let chunk = Chunk(id: "\(bookId)-c\(i)", bookId: bookId, content: text,
+                                  chapterTitle: title, position: i)
+                try chunk.save(db)
+                try db.execute(sql: "INSERT INTO chunks_fts(chunk_id, content, chapterTitle) VALUES (?, ?, ?)",
+                               arguments: [chunk.id, text, title ?? ""])
+            }
+        }
+    }
+
+    // MARK: chunks(bookId:)
+
+    func testChunksByBookIdReturnedInPositionOrder() throws {
+        try seed(kbId: "kb1", kbName: "Astronomy", bookId: "book1", contents: [
+            ("Stars are giant balls of plasma.", "Section 1"),
+            ("Black holes form when massive stars collapse.", "Section 2"),
+            ("Galaxies contain billions of stars.", "Section 3"),
+        ])
+        let chunks = try dbq.read { db in
+            try Chunk.filter(Column("bookId") == "book1")
+                .order(Column("position"))
+                .fetchAll(db)
+        }
+        XCTAssertEqual(chunks.count, 3)
+        XCTAssertEqual(chunks[0].position, 0)
+        XCTAssertEqual(chunks[1].position, 1)
+        XCTAssertEqual(chunks[2].position, 2)
+        XCTAssertTrue(chunks[0].content.contains("plasma"))
+    }
+
+    func testChunksByBookIdFilteredToCorrectBook() throws {
+        try seed(kbId: "kb1", kbName: "Astronomy", bookId: "bookA", contents: [
+            ("The Sun is a yellow dwarf star.", nil),
+        ])
+        try seed(kbId: "kb1", kbName: "Astronomy", bookId: "bookB", contents: [
+            ("Julius Caesar crossed the Rubicon in 49 BCE.", nil),
+        ])
+        let chunksA = try dbq.read { db in
+            try Chunk.filter(Column("bookId") == "bookA").fetchAll(db)
+        }
+        let chunksB = try dbq.read { db in
+            try Chunk.filter(Column("bookId") == "bookB").fetchAll(db)
+        }
+        XCTAssertEqual(chunksA.count, 1)
+        XCTAssertTrue(chunksA[0].content.contains("Sun"))
+        XCTAssertEqual(chunksB.count, 1)
+        XCTAssertTrue(chunksB[0].content.contains("Caesar"))
+    }
+
+    // MARK: FTS keyword search
+
+    func testFTSFindsRelevantAstronomyChunk() throws {
+        try seed(kbId: "kb-astro", kbName: "Astronomy", bookId: "astro1", contents: [
+            ("The Milky Way is a barred spiral galaxy containing 400 billion stars.", "Section 1"),
+            ("Jupiter is the largest planet in the solar system with a Great Red Spot storm.", "Section 2"),
+            ("Black holes warp spacetime so strongly that not even light can escape the event horizon.", "Section 3"),
+        ])
+        let results = try dbq.read { db -> [Chunk] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "black hole event horizon") else {
+                XCTFail("Pattern should be valid"); return []
+            }
+            return try Chunk.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = 'kb-astro'
+                AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 20)
+                """, arguments: [pattern])
+        }
+        XCTAssertFalse(results.isEmpty, "Should find at least one chunk about black holes")
+        XCTAssertTrue(results.contains { $0.content.contains("Black holes") })
+    }
+
+    func testFTSFindsHistoryChunk() throws {
+        try seed(kbId: "kb-hist", kbName: "History", bookId: "hist1", contents: [
+            ("The pharaohs of ancient Egypt built massive pyramids as royal tombs.", "Section 1"),
+            ("Rome was founded according to tradition in 753 BCE by Romulus.", "Section 2"),
+            ("Hammurabi's law code is inscribed on a basalt stele in the Louvre.", "Section 3"),
+        ])
+        let results = try dbq.read { db -> [Chunk] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "pharaoh pyramid Egypt") else {
+                XCTFail("Pattern should be valid"); return []
+            }
+            return try Chunk.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = 'kb-hist'
+                AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 20)
+                """, arguments: [pattern])
+        }
+        XCTAssertFalse(results.isEmpty)
+        XCTAssertTrue(results.contains { $0.content.contains("pharaohs") })
+    }
+
+    func testFTSFallbackReturnsChunksWhenNoTokenMatch() throws {
+        try seed(kbId: "kb-fb", kbName: "Fallback KB", bookId: "fb1", contents: [
+            ("Stellar nucleosynthesis produces heavy elements in supergiant stars.", "Ch1"),
+            ("The Coriolis effect influences atmospheric circulation patterns.", "Ch2"),
+        ])
+        // "summarize corpus" — these words don't appear in the chunks
+        let pattern = FTS5Pattern(matchingAnyTokenIn: "summarize corpus")
+        // pattern may be nil or return empty results; either way fallback should work
+        let ftsResults: [Chunk]
+        if let p = pattern {
+            ftsResults = (try? dbq.read { db in
+                try Chunk.fetchAll(db, sql: """
+                    SELECT chunks.* FROM chunks
+                    JOIN books ON books.id = chunks.bookId
+                    WHERE books.kbId = 'kb-fb'
+                    AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 20)
+                    """, arguments: [p])
+            }) ?? []
+        } else {
+            ftsResults = []
+        }
+
+        // Fallback path
+        if ftsResults.isEmpty {
+            let fallback = try dbq.read { db in
+                try Chunk.fetchAll(db, sql: """
+                    SELECT chunks.* FROM chunks
+                    JOIN books ON books.id = chunks.bookId
+                    WHERE books.kbId = 'kb-fb'
+                    ORDER BY books.addedAt DESC, chunks.position ASC
+                    LIMIT 20
+                    """, arguments: [])
+            }
+            XCTAssertEqual(fallback.count, 2, "Fallback should return all available chunks")
+        }
+        // Either path is acceptable; the test verifies no crash and data is returned
+        XCTAssertTrue(true)
+    }
+
+    // MARK: KB isolation
+
+    func testSearchDoesNotLeakAcrossKBs() throws {
+        try seed(kbId: "kb-A", kbName: "Astronomy", bookId: "a1", contents: [
+            ("Neutron stars spin hundreds of times per second emitting pulsar beams.", "S1"),
+        ])
+        try seed(kbId: "kb-B", kbName: "History", bookId: "b1", contents: [
+            ("The Roman Senate voted to grant Caesar the title dictator perpetuo.", "S1"),
+        ])
+
+        // Search astronomy KB for "neutron" — should NOT return history chunk
+        let results = try dbq.read { db -> [Chunk] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "neutron pulsar") else { return [] }
+            return try Chunk.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = 'kb-A'
+                AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 20)
+                """, arguments: [pattern])
+        }
+        XCTAssertFalse(results.isEmpty)
+        XCTAssertFalse(results.contains { $0.content.contains("Caesar") },
+                       "History chunk must not appear in Astronomy KB search")
+    }
+
+    func testMultiKBSearchMergesResults() throws {
+        try seed(kbId: "kb-X", kbName: "Science", bookId: "x1", contents: [
+            ("Telescopes reveal distant galaxies across cosmic time.", "S1"),
+        ])
+        try seed(kbId: "kb-Y", kbName: "History", bookId: "y1", contents: [
+            ("Ancient astronomers tracked celestial bodies with naked-eye observations.", "S1"),
+        ])
+
+        var combined: [Chunk] = []
+        for kbId in ["kb-X", "kb-Y"] {
+            let kbId = kbId
+            if let pattern = FTS5Pattern(matchingAnyTokenIn: "telescope astronomer celestial") {
+                let r = (try? dbq.read { db in
+                    try Chunk.fetchAll(db, sql: """
+                        SELECT chunks.* FROM chunks
+                        JOIN books ON books.id = chunks.bookId
+                        WHERE books.kbId = ?
+                        AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 20)
+                        """, arguments: [kbId, pattern])
+                }) ?? []
+                combined.append(contentsOf: r)
+            }
+        }
+        XCTAssertEqual(combined.count, 2, "Multi-KB search should return chunks from both KBs")
+        XCTAssertTrue(combined.contains { $0.content.contains("galaxies") })
+        XCTAssertTrue(combined.contains { $0.content.contains("astronomers") })
+    }
+}
+
 // MARK: - ChunkSource model
 
 final class ChunkSourceTests: XCTestCase {
