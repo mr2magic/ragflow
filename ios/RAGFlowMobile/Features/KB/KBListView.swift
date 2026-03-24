@@ -33,13 +33,13 @@ struct KBListView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {
-                Button { showSettings = true } label: {
-                    Image(systemName: "gearshape")
-                }
-            }
-            ToolbarItem(placement: .secondaryAction) {
-                Button { showWorkflows = true } label: {
-                    Label("Workflows", systemImage: "gearshape.2")
+                HStack {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    Button { showWorkflows = true } label: {
+                        Image(systemName: "gearshape.2")
+                    }
                 }
             }
             #if DEBUG
