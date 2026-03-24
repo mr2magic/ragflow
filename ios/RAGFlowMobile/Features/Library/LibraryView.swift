@@ -17,6 +17,7 @@ struct LibraryView: View {
     @StateObject private var vm: LibraryViewModel
     @ObservedObject private var ragService = RAGService.shared
     @State private var showImportOptions = false
+    @State private var selectedBook: Book?
 
     init(kb: KnowledgeBase) {
         self.kb = kb
@@ -60,6 +61,9 @@ struct LibraryView: View {
             Text("Paste a direct link to a PDF, ePub, or text file.")
         }
         .overlay { ingestOverlay }
+        .sheet(item: $selectedBook) { book in
+            DocumentDetailView(book: book)
+        }
         .alert("Import Error", isPresented: $vm.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -93,16 +97,19 @@ struct LibraryView: View {
     private var bookList: some View {
         List {
             ForEach(vm.filteredBooks) { book in
-                BookRow(book: book)
-                    .contextMenu {
-                        Button("Rename") {
-                            vm.renameText = book.title
-                            vm.bookToRename = book
-                        }
-                        Button("Delete", role: .destructive) {
-                            vm.requestDelete(book: book)
-                        }
+                Button(action: { selectedBook = book }) {
+                    BookRow(book: book)
+                }
+                .buttonStyle(.plain)
+                .contextMenu {
+                    Button("Rename") {
+                        vm.renameText = book.title
+                        vm.bookToRename = book
                     }
+                    Button("Delete", role: .destructive) {
+                        vm.requestDelete(book: book)
+                    }
+                }
             }
             .onDelete { vm.requestDelete(at: $0) }
         }
@@ -264,4 +271,96 @@ private struct WorkflowStep: View {
 extension Book: Hashable {
     public static func == (lhs: Book, rhs: Book) -> Bool { lhs.id == rhs.id }
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+}
+
+// MARK: - Document Detail (Chunk Viewer)
+
+struct DocumentDetailView: View {
+    let book: Book
+    @State private var chunks: [Chunk] = []
+    @State private var searchText = ""
+    @Environment(\.dismiss) private var dismiss
+    private let db = DatabaseService.shared
+
+    private var filteredChunks: [Chunk] {
+        guard !searchText.isEmpty else { return chunks }
+        return chunks.filter { $0.content.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    if !book.author.isEmpty {
+                        LabeledContent("Author", value: book.author)
+                    }
+                    LabeledContent("Added", value: book.addedAt.formatted(date: .abbreviated, time: .omitted))
+                    LabeledContent("Chunks", value: "\(chunks.count)")
+                } header: {
+                    Text(book.title).font(.headline).textCase(nil).foregroundStyle(.primary)
+                }
+
+                Section("Indexed Chunks") {
+                    if filteredChunks.isEmpty {
+                        Text(searchText.isEmpty ? "No chunks — try re-importing this document." : "No chunks match your search.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(filteredChunks) { chunk in
+                            ChunkRowView(chunk: chunk)
+                        }
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .searchable(text: $searchText, prompt: "Search chunks")
+            .navigationTitle("Chunk Viewer")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+            .onAppear {
+                chunks = (try? db.chunks(bookId: book.id)) ?? []
+            }
+        }
+    }
+}
+
+private struct ChunkRowView: View {
+    let chunk: Chunk
+    @State private var expanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text("[\(chunk.position + 1)]")
+                    .font(.caption.bold().monospacedDigit())
+                    .foregroundStyle(.secondary)
+                if let title = chunk.chapterTitle, !title.isEmpty {
+                    Text(title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text("\(chunk.content.count) chars")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+            Text(chunk.content)
+                .font(.caption)
+                .lineLimit(expanded ? nil : 4)
+                .foregroundStyle(.primary)
+            if chunk.content.count > 200 {
+                Button(expanded ? "Show less" : "Show more") {
+                    withAnimation { expanded.toggle() }
+                }
+                .font(.caption)
+                .foregroundStyle(.tint)
+            }
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+    }
 }

@@ -291,6 +291,14 @@ final class DatabaseService {
         }
     }
 
+    func chunks(bookId: String) throws -> [Chunk] {
+        try dbQueue.read { db in
+            try Chunk.filter(Column("bookId") == bookId)
+                .order(Column("position"))
+                .fetchAll(db)
+        }
+    }
+
     func allChunksWithEmbeddings(kbId: String) throws -> [(Chunk, Data)] {
         try dbQueue.read { db in
             let rows = try Row.fetchAll(db, sql: """

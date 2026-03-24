@@ -1,0 +1,19 @@
+Stars: Birth, Life, and Death
+
+Stars are the fundamental building blocks of galaxies, serving as cosmic engines that forge heavy elements and scatter them across the universe. Understanding their life cycles reveals the origins of nearly every atom in our bodies.
+
+Stars form inside giant molecular clouds — cold, dense regions of gas and dust. When a portion of such a cloud becomes dense enough, gravity overcomes the outward pressure and collapse begins. As the cloud contracts, it heats up, and if the central temperature reaches about 10 million Kelvin, nuclear fusion ignites. The object is now a star.
+
+Stars spend most of their lives on the main sequence, fusing hydrogen into helium in their cores. The Sun has been on the main sequence for about 4.6 billion years and has roughly 5 billion more to go. The length of a star's main-sequence life depends almost entirely on its mass: more massive stars burn brighter and faster, while smaller stars burn dimmer and slower. A star ten times the mass of the Sun lives only about 20 million years; a star with one-tenth the Sun's mass may live for trillions of years.
+
+Astronomers classify stars by their spectral type, which reflects surface temperature. The sequence from hottest to coolest is O, B, A, F, G, K, M — remembered with the mnemonic "Oh Be A Fine Girl/Guy, Kiss Me." The Sun is a G-type star with a surface temperature of about 5,500°C. The hottest O-type stars can exceed 50,000°C and shine with millions of times the Sun's luminosity.
+
+When a star like the Sun exhausts its core hydrogen, the core contracts while the outer layers expand dramatically, transforming the star into a red giant. The Sun will engulf Mercury and Venus in this phase. Eventually the outer layers are shed as a planetary nebula — a glowing shell of ionized gas — leaving behind a white dwarf. White dwarfs are Earth-sized remnants that slowly cool over billions of years.
+
+More massive stars meet more dramatic ends. Stars with more than about eight solar masses fuse increasingly heavier elements in their cores — hydrogen, helium, carbon, oxygen, neon, silicon — until an iron core forms. Iron cannot release energy through fusion; instead it absorbs energy. When the iron core reaches about 1.4 solar masses, it collapses in less than a second, triggering a supernova explosion that briefly outshines an entire galaxy. The outer layers are blasted into space, enriching the interstellar medium with heavy elements.
+
+The collapsed core becomes a neutron star — an object roughly 20 km across but more massive than the Sun, so dense that a teaspoon would weigh a billion tons. Neutron stars can spin hundreds of times per second, emitting beams of radiation detectable from Earth as pulsars. If the remnant core exceeds about three solar masses, even neutron pressure cannot halt the collapse, and a black hole forms.
+
+Neutron stars in binary systems can accrete matter from a companion star, sometimes triggering thermonuclear explosions on their surfaces — X-ray bursts visible from Earth. In rarer cases, two merging neutron stars produce a kilonova, an event so energetic that it forges gold, platinum, and other heavy elements beyond iron. Gravitational wave detectors have confirmed such mergers.
+
+The interplay between star formation and stellar death drives the chemical evolution of galaxies. Each generation of stars enriches the interstellar medium with heavier elements, enabling subsequent generations to form rocky planets and eventually life. We are, in a very real sense, made of star stuff — atoms forged in stellar cores and scattered across the cosmos by their explosive deaths.

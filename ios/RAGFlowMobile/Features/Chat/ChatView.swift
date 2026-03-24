@@ -6,6 +6,7 @@ struct ChatView: View {
     @FocusState private var inputFocused: Bool
     @ObservedObject private var settings = SettingsStore.shared
     @State private var showSettings = false
+    @State private var showClearConfirm = false
 
     init(kb: KnowledgeBase) {
         self.kb = kb
@@ -27,10 +28,25 @@ struct ChatView: View {
         .navigationTitle("Chat")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbarContent }
+        .confirmationDialog("Clear conversation?", isPresented: $showClearConfirm, titleVisibility: .visible) {
+            Button("Clear", role: .destructive) { vm.clearConversation() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("All messages will be deleted. This cannot be undone.")
+        }
         .alert("Error", isPresented: $vm.showError) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(vm.errorMessage)
+        }
+    }
+
+    private var activeModelLabel: String {
+        switch settings.config.provider {
+        case .claude: return "Claude"
+        case .ollama:
+            let m = settings.config.ollamaModel
+            return m.isEmpty ? "Ollama" : "\(m) · Ollama"
         }
     }
 
@@ -44,6 +60,10 @@ struct ChatView: View {
                     .foregroundStyle(.secondary)
 
                 Spacer()
+
+                Text(activeModelLabel)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
 
                 if !vm.availableKBsToAdd.isEmpty {
                     Menu {
@@ -231,12 +251,8 @@ struct ChatView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
-            Menu {
-                Button(role: .destructive, action: vm.clearConversation) {
-                    Label("Clear Conversation", systemImage: "trash")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle")
+            Button(action: { showClearConfirm = true }) {
+                Image(systemName: "eraser.line.dashed")
             }
             .disabled(vm.messages.isEmpty)
         }
