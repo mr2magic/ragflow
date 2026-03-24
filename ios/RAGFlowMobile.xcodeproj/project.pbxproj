@@ -11,6 +11,7 @@
 		08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */; };
 		09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0C19C6F20A9821E0BA0BCF /* GRDB */; };
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
+		BB11CC22DD33EE44FF550001 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = BB11CC22DD33EE44FF550003 /* Zip */; };
 		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
@@ -37,6 +38,15 @@
 		CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */; };
 		D11228F73D903065292642F2 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3565928B2FB15DD81AAF0 /* Book.swift */; };
 		D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD98A707C4F55AF2534157A /* PDFParser.swift */; };
+		CC11DD22EE33FF4400550003 /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC11DD22EE33FF4400550001 /* OfficeParser.swift */; };
+		CC11DD22EE33FF4400550004 /* EMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC11DD22EE33FF4400550002 /* EMLParser.swift */; };
+		DD11EE22FF33004400550011 /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550001 /* Workflow.swift */; };
+		DD11EE22FF33004400550012 /* WorkflowStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550002 /* WorkflowStep.swift */; };
+		DD11EE22FF33004400550013 /* WorkflowTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550003 /* WorkflowTemplate.swift */; };
+		DD11EE22FF33004400550014 /* WorkflowRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550004 /* WorkflowRunner.swift */; };
+		DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550005 /* WorkflowListView.swift */; };
+		DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */; };
+		DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550007 /* WorkflowDetailView.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
@@ -58,6 +68,15 @@
 		01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeBase.swift; sourceTree = "<group>"; };
 		0AF3565928B2FB15DD81AAF0 /* Book.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Book.swift; sourceTree = "<group>"; };
 		0CD98A707C4F55AF2534157A /* PDFParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFParser.swift; sourceTree = "<group>"; };
+		CC11DD22EE33FF4400550001 /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
+		CC11DD22EE33FF4400550002 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550001 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550002 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550003 /* WorkflowTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowTemplate.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550004 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550005 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550007 /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
 		0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBListView.swift; sourceTree = "<group>"; };
 		0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBListViewModel.swift; sourceTree = "<group>"; };
@@ -67,7 +86,7 @@
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
-		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
@@ -102,6 +121,7 @@
 				09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */,
 				AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */,
 				5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */,
+				BB11CC22DD33EE44FF550001 /* Zip in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +143,8 @@
 			children = (
 				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
 				AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */,
+				CC11DD22EE33FF4400550002 /* EMLParser.swift */,
+				CC11DD22EE33FF4400550001 /* OfficeParser.swift */,
 				0CD98A707C4F55AF2534157A /* PDFParser.swift */,
 				C8CED5934D63CB02BDF103DA /* RAGService.swift */,
 			);
@@ -197,6 +219,7 @@
 				4F4C99203F3F22E475F4DDB9 /* Library */,
 				E1F2A3B4C5D6E7F8A9B0C1D2 /* Onboarding */,
 				C4EFEC20BE53B2EF79FE9A3C /* Settings */,
+				DD11EE22FF33004400550022 /* Workflows */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -229,6 +252,7 @@
 				01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */,
 				263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */,
 				4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */,
+				DD11EE22FF33004400550001 /* Workflow.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -276,9 +300,30 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		DD11EE22FF33004400550021 /* Agent */ = {
+			isa = PBXGroup;
+			children = (
+				DD11EE22FF33004400550002 /* WorkflowStep.swift */,
+				DD11EE22FF33004400550003 /* WorkflowTemplate.swift */,
+				DD11EE22FF33004400550004 /* WorkflowRunner.swift */,
+			);
+			path = Agent;
+			sourceTree = "<group>";
+		};
+		DD11EE22FF33004400550022 /* Workflows */ = {
+			isa = PBXGroup;
+			children = (
+				DD11EE22FF33004400550005 /* WorkflowListView.swift */,
+				DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */,
+				DD11EE22FF33004400550007 /* WorkflowDetailView.swift */,
+			);
+			path = Workflows;
+			sourceTree = "<group>";
+		};
 		F95BA93CBD769006D0A43843 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DD11EE22FF33004400550021 /* Agent */,
 				C7A241C531FB4C21F1691873 /* LLM */,
 				23ABCE1D0A3FA9E6FC7C9F38 /* RAG */,
 				D3EBF1A3274E654C8B60ABBC /* Storage */,
@@ -323,6 +368,7 @@
 			packageProductDependencies = (
 				F3134F9E7523B881974419D8 /* EPUBKit */,
 				2C0C19C6F20A9821E0BA0BCF /* GRDB */,
+				BB11CC22DD33EE44FF550003 /* Zip */,
 			);
 			productName = RAGFlowMobile;
 			productReference = 8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */;
@@ -335,7 +381,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2630;
 			};
 			buildConfigurationList = C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */;
 			developmentRegion = en;
@@ -349,6 +395,7 @@
 			packageReferences = (
 				F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */,
 				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */,
+				BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 44D8A205BEA0E8EA70D43C86 /* Products */;
@@ -387,6 +434,15 @@
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
 				4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */,
+				CC11DD22EE33FF4400550004 /* EMLParser.swift in Sources */,
+				CC11DD22EE33FF4400550003 /* OfficeParser.swift in Sources */,
+				DD11EE22FF33004400550011 /* Workflow.swift in Sources */,
+				DD11EE22FF33004400550012 /* WorkflowStep.swift in Sources */,
+				DD11EE22FF33004400550013 /* WorkflowTemplate.swift in Sources */,
+				DD11EE22FF33004400550014 /* WorkflowRunner.swift in Sources */,
+				DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */,
+				DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */,
+				DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */,
 				CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */,
 				08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */,
 				C3D4E5F6A7B8C9D0E1F2A3B4 /* KBDetailView.swift in Sources */,
@@ -433,7 +489,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -453,7 +508,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -473,7 +527,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -492,6 +545,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -523,8 +577,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -545,6 +601,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -555,6 +612,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -586,8 +644,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -601,6 +661,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -612,7 +673,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -660,6 +720,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Zip";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
 		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
@@ -679,6 +747,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BB11CC22DD33EE44FF550003 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
 		2C0C19C6F20A9821E0BA0BCF /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */;

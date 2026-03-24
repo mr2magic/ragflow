@@ -28,13 +28,19 @@ struct ContentView: View {
     // MARK: - iPhone / Compact
 
     /// Tab 1: KB list → drill into KB → Library + Chat tabs
-    /// Tab 2: Settings
+    /// Tab 2: Workflows
+    /// Tab 3: Settings
     private var phoneLayout: some View {
         TabView {
             NavigationStack {
                 PhoneKBListView()
             }
             .tabItem { Label("Knowledge Bases", systemImage: "square.stack.3d.up") }
+
+            NavigationStack {
+                WorkflowListView()
+            }
+            .tabItem { Label("Workflows", systemImage: "gearshape.2") }
 
             NavigationStack {
                 SettingsView()

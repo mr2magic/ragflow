@@ -1,11 +1,11 @@
 {
   "schema": "vbrief/1.0",
-  "saved_at": "2026-03-23",
+  "saved_at": "2026-03-24",
   "project": {
     "name": "RAGFlow",
     "type": "Full-stack Web App + iOS App",
     "languages": ["Python", "TypeScript", "Swift"],
-    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit, PDFKit, Accelerate",
+    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit, PDFKit, Accelerate, marmelroy/Zip",
     "repo": "https://github.com/mr2magic/ragflow"
   },
   "deft": {
@@ -17,39 +17,37 @@
   },
   "session_summary": {
     "completed": [
-      "Phase 1 complete: P1.1 Brave Search, P1.2 Additional Tools, P1.3 sys.query fix, P1.4 Docker stability, P1.5 Document processing, P1.6 Test coverage",
-      "Phase 2 fully scaffolded and building: NavigationSplitView, search, streaming, citations",
-      "P2 high-value features implemented and tested end-to-end",
-      "Multi-KB support (commit 9625ac951)",
-      "P2.5 Brave Search wiring complete (commit bb4f98f97)",
-      "Universal layout: iPhone TabView + iPad NavigationSplitView (commit 0d71a81ef)",
-      "UX fixes batch (commit 01880afdd)",
-      "Multi-KB chat + expanded file types (commit 202010ce4)",
-      "Delete confirmations (commit d9f664880)",
-      "iOS live testing prep — all 4 phases complete:",
-      "  Phase 1 DONE: ATS plist keys, AppIcon asset catalog (1024x1024 generated), PBXResourcesBuildPhase wired",
-      "  Phase 2 DONE: API key guard (Claude + Ollama), provider banner in ChatView, Settings always accessible iPad, debug reset helpers",
-      "  Phase 3 DONE: DB migration v4 (messages + message_sources), ChatViewModel load/save/delete persistence, multi-KB scoped by primary kbId",
-      "  Phase 4 DONE (commit 06f8afa1c):",
-      "    P4.1 — ingestPDF + ingestEPUB run parse+chunk in Task.detached(priority:.utility); nonisolated stripHTMLStatic",
-      "    P4.2 — LibraryViewModel.hasScannedDocumentsFolder static flag; scanDocumentsFolder runs once per app session",
-      "    P4.3 — RAGService.ingestPhase @Published string surfaces step labels in LibraryView overlay",
-      "Simulator smoke test PASSED: onboarding, KB list, app icon on home screen all verified"
+      "Phase 1–4: All previously complete (P1.1–P1.6, P2, P2.5, iOS live testing phases 1–4)",
+      "Phase 5 DONE — DOCX/XLSX/PPTX/EML format expansion:",
+      "  - marmelroy/Zip wired into project.pbxproj (XCRemoteSwiftPackageReference, product dep, frameworks phase)",
+      "  - OfficeParser.swift: DOCX (w:p/w:t extraction), XLSX (sharedStrings + sheet1 → TSV), PPTX (per-slide XML strip)",
+      "  - EMLParser.swift: pure Swift RFC 2822, multipart/alternative, quoted-printable + base64",
+      "  - RAGService: ingestDOCX/XLSX/PPTX/EML methods, updated switch + error message",
+      "  - LibraryViewModel.scanDocumentsFolder: picks up docx/xlsx/pptx/eml",
+      "Phase 6 (Agent/Workflow system) DONE:",
+      "  - Models/Workflow.swift: Workflow + WorkflowRun GRDB records",
+      "  - DatabaseService v5 migration: workflows + workflow_runs tables, full CRUD",
+      "  - Services/Agent/WorkflowStep.swift: StepType enum, WorkflowStep model, StepContext + render()",
+      "  - Services/Agent/WorkflowTemplate.swift: 5 templates — RAG Q&A, Deep Summarizer, Keyword Expander, Multi-Hop Researcher, Balanced Analysis",
+      "  - Services/Agent/WorkflowRunner.swift: @MainActor execution engine, streaming output, step log",
+      "  - Features/Workflows/WorkflowListView.swift + WorkflowListViewModel.swift",
+      "  - Features/Workflows/WorkflowDetailView.swift: pipeline card, run button, streaming output, run history",
+      "  - ContentView: Workflows tab on iPhone (3rd tab); KBListView: Workflows sheet button for iPad",
+      "  - All new files registered in project.pbxproj (fileRefs, buildFiles, Agent + Workflows groups, Sources phase)"
     ],
     "in_progress": [],
     "next_steps": [
-      "Phase 5 (Format Expansion) — optional pre-release:",
-      "  P5.1 — DOCX via ZipFoundation (unzip → word/document.xml → strip XML)",
-      "  P5.2 — XLSX via ZipFoundation (xl/sharedStrings.xml + sheet1.xml → TSV)",
-      "  P5.3 — PPTX via ZipFoundation (ppt/slides/*.xml → strip XML)",
-      "  P5.4 — EML basic MIME parsing (no library needed)",
-      "Phase 6 (Pre-Release Hardening):",
-      "  P6.1 — Fresh install wipe test end-to-end on real device",
-      "  P6.2 — Replace silent try? with proper error propagation; fix try! migrate() crash risk",
-      "  P6.3 — Version bump to 1.0.0 / build 1",
-      "  P6.4 — PrivacyInfo.xcprivacy + TestFlight export compliance",
+      "Phase 7 (Pre-Release Hardening) — required:",
+      "  P7.1 — Fresh install wipe test end-to-end on real device",
+      "  P7.2 — Replace silent try? with proper error propagation; fix try! migrate() crash risk",
+      "  P7.3 — Version bump to 1.0.0 / build 1",
+      "  P7.4 — PrivacyInfo.xcprivacy + TestFlight export compliance",
       "Manual (user action required):",
-      "  P1.3 — Set DEVELOPMENT_TEAM in Xcode Signing & Capabilities for real-device deployment"
+      "  — Set DEVELOPMENT_TEAM in Xcode Signing & Capabilities for real-device deployment",
+      "Optional enhancements:",
+      "  — Add Categorize node type to WorkflowRunner for branching workflows",
+      "  — Add workflow edit UI (change KB, rename)",
+      "  — Add workflow tests to RAGFlowMobileTests"
     ]
   },
   "phase_status": {
@@ -60,13 +58,14 @@
     "iOS_live_testing_phase2": "COMPLETE — API guards, provider banner, Settings accessible, debug helpers",
     "iOS_live_testing_phase3": "COMPLETE — chat history persisted to SQLite (messages + message_sources)",
     "iOS_live_testing_phase4": "COMPLETE — ingest off main thread, scan-once guard, phase progress labels",
-    "iOS_live_testing_phase5": "PENDING — DOCX/XLSX/PPTX/EML (requires ZipFoundation)",
-    "iOS_live_testing_phase6": "PENDING — hardening, version bump, TestFlight prep"
+    "iOS_live_testing_phase5_formats": "COMPLETE — DOCX/XLSX/PPTX via Zip, EML pure Swift",
+    "iOS_live_testing_phase6_agents": "COMPLETE — WorkflowRunner + 5 templates + full UI",
+    "iOS_live_testing_phase7_hardening": "PENDING"
   },
   "known_gaps": {
     "code_signing": "DEVELOPMENT_TEAM not set — user must configure in Xcode for real device",
-    "docx_xlsx_pptx": "Not supported without ZipFoundation library",
-    "try_bang_migrate": "DatabaseService.init uses try! migrate() — crashes on migration failure"
+    "try_bang_migrate": "DatabaseService.init uses try! migrate() — crashes on migration failure",
+    "workflow_edit": "No UI to edit an existing workflow's name or KB after creation — delete and recreate"
   },
   "environment": {
     "docker_compose_file": "docker/docker-compose-macos.yml",

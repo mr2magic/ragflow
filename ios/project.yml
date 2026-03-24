@@ -23,6 +23,7 @@ targets:
     dependencies:
       - package: EPUBKit
       - package: GRDB
+      - package: Zip
       - sdk: PDFKit.framework
       - sdk: Accelerate.framework
 
@@ -42,3 +43,6 @@ packages:
   GRDB:
     url: https://github.com/groue/GRDB.swift
     from: "6.27.0"
+  Zip:
+    url: https://github.com/marmelroy/Zip
+    from: "2.1.0"

@@ -355,7 +355,6 @@ private struct BubbleShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         let r: CGFloat = 18
-        let tailR: CGFloat = 4
         var path = Path()
         path.addRoundedRect(in: rect, cornerSize: CGSize(width: r, height: r))
         return path

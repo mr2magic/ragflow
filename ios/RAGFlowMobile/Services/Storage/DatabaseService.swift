@@ -87,6 +87,26 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v5") { db in
+            try db.create(table: "workflows", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("templateId", .text).notNull()
+                t.column("kbId", .text).notNull()
+                t.column("stepsJSON", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.create(table: "workflow_runs", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("workflowId", .text).notNull().references("workflows", onDelete: .cascade)
+                t.column("input", .text).notNull()
+                t.column("output", .text).notNull()
+                t.column("status", .text).notNull()
+                t.column("stepLogJSON", .text).notNull().defaults(to: "[]")
+                t.column("createdAt", .datetime).notNull()
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -290,6 +310,44 @@ final class DatabaseService {
             try db.execute(sql: "DELETE FROM messages WHERE kbId = ?", arguments: [kbId])
         }
     }
+
+    // MARK: - Workflows
+
+    func allWorkflows() throws -> [Workflow] {
+        try dbQueue.read { db in
+            try Workflow.order(Column("createdAt").desc).fetchAll(db)
+        }
+    }
+
+    func saveWorkflow(_ workflow: Workflow) throws {
+        try dbQueue.write { db in try workflow.save(db) }
+    }
+
+    func deleteWorkflow(_ id: String) throws {
+        try dbQueue.write { db in try Workflow.deleteOne(db, key: id) }
+    }
+
+    func runsForWorkflow(_ workflowId: String, limit: Int = 20) throws -> [WorkflowRun] {
+        try dbQueue.read { db in
+            try WorkflowRun
+                .filter(Column("workflowId") == workflowId)
+                .order(Column("createdAt").desc)
+                .limit(limit)
+                .fetchAll(db)
+        }
+    }
+
+    func saveWorkflowRun(_ run: WorkflowRun) throws {
+        try dbQueue.write { db in try run.save(db) }
+    }
+
+    func deleteRunsForWorkflow(_ workflowId: String) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM workflow_runs WHERE workflowId = ?", arguments: [workflowId])
+        }
+    }
+
+    // MARK: - Chunks (by book)
 
     func chunks(bookId: String) throws -> [Chunk] {
         try dbQueue.read { db in

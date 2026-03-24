@@ -4,6 +4,7 @@ struct KBListView: View {
     @Binding var selectedKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
     @State private var showSettings = false
+    @State private var showWorkflows = false
 
     var body: some View {
         List(selection: $selectedKB) {
@@ -36,6 +37,11 @@ struct KBListView: View {
                     Image(systemName: "gearshape")
                 }
             }
+            ToolbarItem(placement: .secondaryAction) {
+                Button { showWorkflows = true } label: {
+                    Label("Workflows", systemImage: "gearshape.2")
+                }
+            }
             #if DEBUG
             ToolbarItem(placement: .secondaryAction) {
                 Button("Seed Test Data") { vm.seedDummy() }
@@ -44,6 +50,16 @@ struct KBListView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showWorkflows) {
+            NavigationStack {
+                WorkflowListView()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { showWorkflows = false }
+                        }
+                    }
+            }
         }
         .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)

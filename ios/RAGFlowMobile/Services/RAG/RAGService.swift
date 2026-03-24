@@ -1,6 +1,7 @@
 import Foundation
 import EPUBKit
 import PDFKit
+import Zip
 
 @MainActor
 final class RAGService: ObservableObject {
@@ -12,6 +13,8 @@ final class RAGService: ObservableObject {
     private let db = DatabaseService.shared
     private let chunker = Chunker()
     private let pdfParser = PDFParser()
+    private let officeParser = OfficeParser()
+    private let emlParser = EMLParser()
 
     // MARK: - Ingest
 
@@ -31,6 +34,14 @@ final class RAGService: ObservableObject {
             return try await ingestHTML(url: url, kbId: kbId)
         case "rtf":
             return try await ingestRTF(url: url, kbId: kbId)
+        case "docx":
+            return try await ingestDOCX(url: url, kbId: kbId)
+        case "xlsx":
+            return try await ingestXLSX(url: url, kbId: kbId)
+        case "pptx":
+            return try await ingestPPTX(url: url, kbId: kbId)
+        case "eml":
+            return try await ingestEML(url: url, kbId: kbId)
         default:
             throw IngestError.unsupportedFormat
         }
@@ -138,9 +149,103 @@ final class RAGService: ObservableObject {
         return try await ingestPlain(text: text, url: url, kbId: kbId)
     }
 
-    private func ingestPlain(text: String, url: URL, kbId: String) async throws -> Book {
+    private func ingestDOCX(url: URL, kbId: String) async throws -> Book {
+        ingestPhase = "Parsing DOCX…"
+        let op = officeParser
+        let c = chunker
+        let (book, allChunks): (Book, [Chunk]) = try await Task.detached(priority: .utility) {
+            let sections = try op.parseDOCX(url: url)
+            let bookId = UUID().uuidString
+            var chunks: [Chunk] = []
+            for section in sections {
+                chunks.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
+            }
+            guard !chunks.isEmpty else { throw IngestError.parseFailure }
+            let book = Book(id: bookId, kbId: kbId,
+                            title: url.deletingPathExtension().lastPathComponent, author: "",
+                            filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
+            return (book, chunks)
+        }.value
+        ingestPhase = "Saving chunks…"
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        ingestPhase = "Embedding…"
+        await embedChunks(allChunks)
+        ingestPhase = ""
+        return book
+    }
+
+    private func ingestXLSX(url: URL, kbId: String) async throws -> Book {
+        ingestPhase = "Parsing XLSX…"
+        let op = officeParser
+        let c = chunker
+        let (book, allChunks): (Book, [Chunk]) = try await Task.detached(priority: .utility) {
+            let sections = try op.parseXLSX(url: url)
+            let bookId = UUID().uuidString
+            var chunks: [Chunk] = []
+            for section in sections {
+                chunks.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
+            }
+            guard !chunks.isEmpty else { throw IngestError.parseFailure }
+            let book = Book(id: bookId, kbId: kbId,
+                            title: url.deletingPathExtension().lastPathComponent, author: "",
+                            filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
+            return (book, chunks)
+        }.value
+        ingestPhase = "Saving chunks…"
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        ingestPhase = "Embedding…"
+        await embedChunks(allChunks)
+        ingestPhase = ""
+        return book
+    }
+
+    private func ingestPPTX(url: URL, kbId: String) async throws -> Book {
+        ingestPhase = "Parsing PPTX…"
+        let op = officeParser
+        let c = chunker
+        let (book, allChunks): (Book, [Chunk]) = try await Task.detached(priority: .utility) {
+            let sections = try op.parsePPTX(url: url)
+            let bookId = UUID().uuidString
+            var chunks: [Chunk] = []
+            for section in sections {
+                chunks.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
+            }
+            guard !chunks.isEmpty else { throw IngestError.parseFailure }
+            let book = Book(id: bookId, kbId: kbId,
+                            title: url.deletingPathExtension().lastPathComponent, author: "",
+                            filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
+            return (book, chunks)
+        }.value
+        ingestPhase = "Saving chunks…"
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        ingestPhase = "Embedding…"
+        await embedChunks(allChunks)
+        ingestPhase = ""
+        return book
+    }
+
+    private func ingestEML(url: URL, kbId: String) async throws -> Book {
+        ingestPhase = "Parsing EML…"
+        let ep = emlParser
+        let content = try await Task.detached(priority: .utility) {
+            try ep.parse(url: url)
+        }.value
+        let text = [content.subject, content.body]
+            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            .joined(separator: "\n\n")
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw IngestError.parseFailure
+        }
+        let title = content.subject.isEmpty ? url.deletingPathExtension().lastPathComponent : content.subject
+        return try await ingestPlain(text: text, url: url, kbId: kbId, title: title)
+    }
+
+    private func ingestPlain(text: String, url: URL, kbId: String, title: String? = nil) async throws -> Book {
         let bookId = UUID().uuidString
-        let title = url.deletingPathExtension().lastPathComponent
+        let title = title ?? url.deletingPathExtension().lastPathComponent
         let allChunks = chunker.chunk(text: text, bookId: bookId, chapterTitle: nil)
         let book = Book(
             id: bookId, kbId: kbId, title: title, author: "",
@@ -228,7 +333,7 @@ final class RAGService: ObservableObject {
 
         var errorDescription: String? {
             switch self {
-            case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, TXT, MD, HTML, RTF, CSV, JSON, and common code files."
+            case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, and common code files."
             case .parseFailure: return "Could not parse the document."
             }
         }
