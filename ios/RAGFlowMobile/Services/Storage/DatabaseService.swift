@@ -171,9 +171,6 @@ final class DatabaseService {
 
     #if DEBUG
     func seedDummyData() throws {
-        let existing = (try? allKBs()) ?? []
-        guard existing.count <= 1 else { return } // only seed once
-
         let scifi = KnowledgeBase(id: UUID().uuidString, name: "Sci-Fi Classics", createdAt: Date().addingTimeInterval(-86400 * 14))
         let philosophy = KnowledgeBase(id: UUID().uuidString, name: "Philosophy", createdAt: Date().addingTimeInterval(-86400 * 7))
         try saveKB(scifi)

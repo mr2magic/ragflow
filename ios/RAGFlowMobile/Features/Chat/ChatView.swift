@@ -37,26 +37,13 @@ struct ChatView: View {
     // MARK: - KB Scope Bar
 
     private var kbScopeBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(vm.activeKBs) { activeKB in
-                    HStack(spacing: 4) {
-                        Image(systemName: "square.stack.3d.up.fill")
-                            .font(.caption2)
-                        Text(activeKB.name)
-                            .font(.caption.weight(.medium))
-                        if vm.activeKBs.count > 1 {
-                            Button(action: { vm.removeKB(activeKB) }) {
-                                Image(systemName: "xmark")
-                                    .font(.caption2.weight(.bold))
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(.tint.opacity(0.12), in: Capsule())
-                    .foregroundStyle(.tint)
-                }
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 6) {
+                Text("Searching in:")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
 
                 if !vm.availableKBsToAdd.isEmpty {
                     Menu {
@@ -66,17 +53,41 @@ struct ChatView: View {
                             }
                         }
                     } label: {
-                        Image(systemName: "plus.circle")
-                            .font(.caption.weight(.medium))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(Color.secondary.opacity(0.1), in: Capsule())
-                            .foregroundStyle(.secondary)
+                        Label("Add KB", systemImage: "plus.circle")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tint)
                     }
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(.top, 8)
+            .padding(.bottom, 6)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(vm.activeKBs) { activeKB in
+                        HStack(spacing: 5) {
+                            Image(systemName: "square.stack.3d.up.fill")
+                                .font(.caption2.weight(.semibold))
+                            Text(activeKB.name)
+                                .font(.caption.weight(.semibold))
+                            if vm.activeKBs.count > 1 {
+                                Button(action: { vm.removeKB(activeKB) }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.tint.opacity(0.6))
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(.tint.opacity(0.12), in: Capsule())
+                        .foregroundStyle(.tint)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+            .padding(.bottom, 8)
         }
         .background(.bar)
     }

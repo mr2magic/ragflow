@@ -53,6 +53,7 @@ struct ContentView: View {
         } detail: {
             if let kb = selectedKB {
                 KBDetailView(kb: kb)
+                    .id(kb.id) // force fresh ChatViewModel when KB changes
             } else {
                 ContentUnavailableView(
                     "Select a Knowledge Base",
