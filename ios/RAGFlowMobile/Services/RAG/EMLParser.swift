@@ -132,7 +132,7 @@ struct EMLParser {
 
     private func decodeQuotedPrintable(_ input: String) -> String {
         // Join soft line breaks (=\r\n or =\n)
-        var result = input
+        let result = input
             .replacingOccurrences(of: "=\r\n", with: "")
             .replacingOccurrences(of: "=\n", with: "")
 
@@ -169,7 +169,7 @@ struct EMLParser {
             let trimmed = part.trimmingCharacters(in: .whitespaces)
             if trimmed.lowercased().hasPrefix("boundary") {
                 if let eq = trimmed.firstIndex(of: "=") {
-                    var boundary = String(trimmed[trimmed.index(after: eq)...])
+                    let boundary = String(trimmed[trimmed.index(after: eq)...])
                         .trimmingCharacters(in: .whitespaces)
                         .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
                     return boundary

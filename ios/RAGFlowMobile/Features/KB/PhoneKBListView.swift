@@ -17,10 +17,8 @@ struct PhoneKBListView: View {
                         vm.renameText = kb.name
                         vm.kbToRename = kb
                     }
-                    if kb.id != KnowledgeBase.defaultID {
-                        Button("Delete", role: .destructive) {
-                            vm.requestDelete(kb: kb)
-                        }
+                    Button("Delete", role: .destructive) {
+                        vm.requestDelete(kb: kb)
                     }
                 }
             }

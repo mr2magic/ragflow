@@ -143,7 +143,6 @@ final class DatabaseService {
     }
 
     func deleteKB(_ id: String) throws {
-        guard id != KnowledgeBase.defaultID else { return } // protect default KB
         try dbQueue.write { db in
             // Books in this KB will cascade-delete their chunks via FK
             try db.execute(sql: "DELETE FROM books WHERE kbId = ?", arguments: [id])
@@ -325,7 +324,7 @@ final class DatabaseService {
     }
 
     func deleteWorkflow(_ id: String) throws {
-        try dbQueue.write { db in try Workflow.deleteOne(db, key: id) }
+        _ = try dbQueue.write { db in try Workflow.deleteOne(db, key: id) }
     }
 
     func runsForWorkflow(_ workflowId: String, limit: Int = 20) throws -> [WorkflowRun] {

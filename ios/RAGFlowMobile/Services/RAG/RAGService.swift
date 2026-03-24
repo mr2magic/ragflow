@@ -287,10 +287,12 @@ final class RAGService: ObservableObject {
 
                 processed += batch.count
                 let progress = Double(processed) / Double(total)
-                await MainActor.run { self?.embedProgress = progress }
+                let s = self
+                await MainActor.run { s?.embedProgress = progress }
                 i += batchSize
             }
-            await MainActor.run { self?.embedProgress = 1.0 }
+            let s = self
+            await MainActor.run { s?.embedProgress = 1.0 }
         }.value
     }
 

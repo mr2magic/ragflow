@@ -4,6 +4,14 @@ final class OllamaService: LLMService {
     private let host: String
     private let model: String
 
+    /// Long-lived session: 10 min request timeout, unlimited resource timeout for streaming.
+    private static let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 600   // wait up to 10 min for first byte
+        config.timeoutIntervalForResource = 0    // no cap on total transfer time
+        return URLSession(configuration: config)
+    }()
+
     init(host: String, model: String) {
         self.host = host
         self.model = model
@@ -18,8 +26,8 @@ final class OllamaService: LLMService {
             throw LLMError.missingApiKey
         }
         let system = buildSystemPrompt(context: context)
-        var allMessages = [LLMMessage(role: .system, content: system)] + messages
-        var request = URLRequest(url: url, timeoutInterval: 120)
+        let allMessages = [LLMMessage(role: .system, content: system)] + messages
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: [
@@ -28,7 +36,7 @@ final class OllamaService: LLMService {
             "messages": allMessages.map { ["role": $0.role.rawValue, "content": $0.content] }
         ])
 
-        let (bytes, response) = try await URLSession.shared.bytes(for: request)
+        let (bytes, response) = try await OllamaService.session.bytes(for: request)
 
         guard let http = response as? HTTPURLResponse else { throw LLMError.badResponse }
         if http.statusCode != 200 {
