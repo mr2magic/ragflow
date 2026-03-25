@@ -7,15 +7,23 @@ final class DatabaseService {
     private let dbQueue: DatabaseQueue
 
     private init() {
-        let dir = try! FileManager.default.url(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        )
-        let url = dir.appendingPathComponent("ragflow.sqlite")
-        dbQueue = try! DatabaseQueue(path: url.path)
-        try! migrate()
+        do {
+            let dir = try FileManager.default.url(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            )
+            let url = dir.appendingPathComponent("ragflow.sqlite")
+            dbQueue = try DatabaseQueue(path: url.path)
+        } catch {
+            fatalError("RAGFlow: cannot open database — \(error)")
+        }
+        do {
+            try migrate()
+        } catch {
+            fatalError("RAGFlow: database migration failed — \(error)")
+        }
     }
 
     private func migrate() throws {
