@@ -8,6 +8,7 @@ final class ChatViewModel: ObservableObject {
     @Published var isTyping = false
     @Published var showError = false
     @Published var errorMessage = ""
+    @Published var suggestedPrompts: [String] = []
 
     let kb: KnowledgeBase
     @Published var activeKBs: [KnowledgeBase]
@@ -22,6 +23,45 @@ final class ChatViewModel: ObservableObject {
         self.kb = kb
         self.activeKBs = [kb]
         self.messages = (try? db.loadMessages(kbId: kb.id)) ?? []
+        buildSuggestedPrompts()
+    }
+
+    private func buildSuggestedPrompts() {
+        let books = (try? db.allBooks(kbId: kb.id)) ?? []
+        guard !books.isEmpty else {
+            suggestedPrompts = [
+                "Summarize the key points in this corpus.",
+                "What are the most important findings or conclusions?",
+                "What topics are covered across these documents?"
+            ]
+            return
+        }
+
+        let titles = books.prefix(3).map(\.title)
+        var prompts: [String] = []
+
+        switch titles.count {
+        case 1:
+            prompts = [
+                "Summarize the key points in \"\(titles[0])\".",
+                "What are the main themes or conclusions in \"\(titles[0])\"?",
+                "What are the most important facts from \"\(titles[0])\"?"
+            ]
+        case 2:
+            prompts = [
+                "Summarize the key points in \"\(titles[0])\".",
+                "What does \"\(titles[1])\" cover?",
+                "Compare the main ideas in \"\(titles[0])\" and \"\(titles[1])\"."
+            ]
+        default:
+            prompts = [
+                "Summarize the key points in \"\(titles[0])\".",
+                "What topics are covered across \(books.count) documents in \(kb.name)?",
+                "Compare the main ideas in \"\(titles[0])\" and \"\(titles[1])\"."
+            ]
+        }
+
+        suggestedPrompts = prompts
     }
 
     var availableKBsToAdd: [KnowledgeBase] {

@@ -193,7 +193,7 @@ struct ChatView: View {
                 .foregroundStyle(.secondary)
 
             VStack(spacing: 8) {
-                ForEach(suggestedPrompts, id: \.self) { prompt in
+                ForEach(vm.suggestedPrompts, id: \.self) { prompt in
                     Button(action: {
                         vm.input = prompt
                         inputFocused = true
@@ -212,13 +212,6 @@ struct ChatView: View {
         .padding(.vertical, 40)
     }
 
-    private var suggestedPrompts: [String] {
-        [
-            "Summarize the key points in this corpus.",
-            "What are the most important findings or conclusions?",
-            "What topics are covered across these documents?"
-        ]
-    }
 
     // MARK: - Input Bar
 
