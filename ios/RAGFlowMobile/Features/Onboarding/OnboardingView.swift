@@ -39,10 +39,10 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "doc.badge.plus",
         tint: .green,
         title: "Import Documents",
-        subtitle: "PDF, ePub, TXT — from Files or a URL",
+        subtitle: "PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, and more",
         bullets: [
-            ("plus",                               "Tap + in the Documents tab to import files"),
-            ("doc.richtext",                       "Supports PDF, ePub, and plain-text formats"),
+            ("plus",                               "Tap + in the Documents tab to import files from Files or iCloud"),
+            ("doc.richtext",                       "Supports PDF, ePub, Office documents (DOCX/XLSX/PPTX), email (EML), HTML, CSV, JSON, code, and plain text"),
             ("link",                               "Or paste a web URL to import directly from the internet"),
         ]
     ),
@@ -55,6 +55,17 @@ private let onboardingPages: [OnboardingPage] = [
             ("text.magnifyingglass",               "Relevant passages are retrieved for every question"),
             ("doc.text.magnifyingglass",           "Tap 'N passages used' under any reply to see the exact text passages"),
             ("stop.circle",                        "Hit the stop button to cancel a response mid-stream"),
+        ]
+    ),
+    .init(
+        systemImage: "cpu",
+        tint: .purple,
+        title: "Agent Workflows",
+        subtitle: "Build multi-step AI pipelines",
+        bullets: [
+            ("cpu",                                "Tap the Workflows button (cpu icon) to create pipelines"),
+            ("wand.and.stars",                     "Choose from templates: RAG Q&A, Deep Summarizer, Keyword Expander, and more"),
+            ("pencil.and.outline",                 "Or select Custom to write your own LLM prompt from scratch"),
         ]
     ),
     .init(

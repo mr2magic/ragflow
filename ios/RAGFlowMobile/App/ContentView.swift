@@ -40,7 +40,7 @@ struct ContentView: View {
             NavigationStack {
                 WorkflowListView()
             }
-            .tabItem { Label("Workflows", systemImage: "gearshape.2") }
+            .tabItem { Label("Workflows", systemImage: "cpu") }
 
             NavigationStack {
                 SettingsView()

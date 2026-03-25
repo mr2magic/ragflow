@@ -44,7 +44,7 @@ struct WorkflowListView: View {
     private func workflowRow(_ workflow: Workflow) -> some View {
         let template = WorkflowTemplates.template(id: workflow.templateId)
         return HStack(spacing: 12) {
-            Image(systemName: template?.icon ?? "gearshape.2")
+            Image(systemName: template?.icon ?? "cpu")
                 .font(.title2)
                 .foregroundStyle(.tint)
                 .frame(width: 36)
@@ -62,8 +62,8 @@ struct WorkflowListView: View {
     private var emptyState: some View {
         ContentUnavailableView(
             "No Workflows",
-            systemImage: "gearshape.2",
-            description: Text("Tap + to create an agent workflow from a template.")
+            systemImage: "cpu",
+            description: Text("Tap + to create an agent workflow from a template or build a custom pipeline.")
         )
     }
 }
@@ -96,6 +96,19 @@ private struct NewWorkflowSheet: View {
                         }
                         .pickerStyle(.menu)
                     }
+
+                    if vm.selectedTemplate?.id == "custom" {
+                        Section {
+                            TextEditor(text: $vm.customPrompt)
+                                .frame(minHeight: 160)
+                                .font(.body)
+                        } header: {
+                            Text("System Prompt")
+                        } footer: {
+                            Text("Use {input} for the user's query and {context} for retrieved passages. Example: \"Answer {input} using only: {context}\"")
+                                .font(.footnote)
+                        }
+                    }
                 }
             }
             .navigationTitle("New Workflow")
@@ -106,7 +119,14 @@ private struct NewWorkflowSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") { vm.createWorkflow() }
-                        .disabled(vm.selectedTemplate == nil || vm.newWorkflowName.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .disabled({
+                            guard let t = vm.selectedTemplate,
+                                  !vm.newWorkflowName.trimmingCharacters(in: .whitespaces).isEmpty else { return true }
+                            if t.id == "custom" {
+                                return vm.customPrompt.trimmingCharacters(in: .whitespaces).isEmpty
+                            }
+                            return false
+                        }())
                 }
             }
         }

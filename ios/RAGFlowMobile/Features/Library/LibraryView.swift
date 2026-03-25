@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import UIKit
 
 // Pulled out so Swift's type checker doesn't time out inside body.
 private let supportedImportTypes: [UTType] = {
@@ -12,11 +13,83 @@ private let supportedImportTypes: [UTType] = {
     return types
 }()
 
+// MARK: - UIKit document picker wrapper
+// Uses the key window's root view controller so presentation always succeeds,
+// regardless of where this representable sits in the SwiftUI view tree.
+// A small async delay lets any SwiftUI action-sheet animation finish before
+// the system file picker presents over it.
+private struct DocumentPickerPresenter: UIViewControllerRepresentable {
+    @Binding var isPresented: Bool
+    let onPick: ([URL]) -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator(isPresented: $isPresented, onPick: onPick) }
+
+    func makeUIViewController(context: Context) -> UIViewController { UIViewController() }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        guard isPresented else { return }
+
+        // Wait long enough for any in-flight confirmation-dialog dismissal animation
+        // to fully complete before we push the file picker on top.  One run-loop tick
+        // is not enough when the user taps "Browse Files" from inside an action sheet —
+        // the sheet is still mid-dismissal and presentedViewController is non-nil.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            guard context.coordinator.isPresented else { return }
+
+            // Find the topmost non-dismissing view controller in the key window.
+            guard let window = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive })?
+                    .windows.first(where: { $0.isKeyWindow }),
+                  let root = window.rootViewController else { return }
+
+            var presenter = root
+            while let next = presenter.presentedViewController, !next.isBeingDismissed {
+                presenter = next
+            }
+            // Allow presenting when there is no presentedVC, or the existing one is
+            // already in the process of being dismissed (safe to present over it).
+            let existingVC = presenter.presentedViewController
+            guard existingVC == nil || existingVC?.isBeingDismissed == true else { return }
+
+            let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedImportTypes)
+            picker.allowsMultipleSelection = true
+            picker.shouldShowFileExtensions = true
+            picker.delegate = context.coordinator
+            presenter.present(picker, animated: true)
+        }
+    }
+
+    final class Coordinator: NSObject, UIDocumentPickerDelegate {
+        @Binding var isPresented: Bool
+        let onPick: ([URL]) -> Void
+
+        init(isPresented: Binding<Bool>, onPick: @escaping ([URL]) -> Void) {
+            _isPresented = isPresented
+            self.onPick = onPick
+        }
+
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            let scoped = urls.filter { $0.startAccessingSecurityScopedResource() }
+            onPick(urls)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                scoped.forEach { $0.stopAccessingSecurityScopedResource() }
+            }
+            isPresented = false
+        }
+
+        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            isPresented = false
+        }
+    }
+}
+
 struct LibraryView: View {
     let kb: KnowledgeBase
     @StateObject private var vm: LibraryViewModel
     @ObservedObject private var ragService = RAGService.shared
     @State private var showImportOptions = false
+    @State private var showImporter = false
     @State private var selectedBook: Book?
 
     init(kb: KnowledgeBase) {
@@ -36,15 +109,14 @@ struct LibraryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search documents")
         .toolbar { toolbarContent }
-        .fileImporter(
-            isPresented: $vm.showImporter,
-            allowedContentTypes: supportedImportTypes,
-            allowsMultipleSelection: true
-        ) { result in
-            Task { await vm.importFiles(result: result) }
-        }
+        .background(
+            DocumentPickerPresenter(isPresented: $showImporter) { urls in
+                Task { await vm.ingestURLs(urls) }
+            }
+            .frame(width: 0, height: 0)
+        )
         .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
-            Button("Browse Files (iPhone & iCloud)") { vm.showImporter = true }
+            Button("Browse Files (iPhone & iCloud)") { showImporter = true }
             Button("Import from URL") { vm.showURLEntry = true }
             Button("Cancel", role: .cancel) {}
         } message: {
@@ -132,7 +204,7 @@ struct LibraryView: View {
                 .font(.title2.bold())
                 .padding(.bottom, 6)
 
-            Text("Add PDFs, ePubs, or text files to \(kb.name) — then ask questions about them.")
+            Text("Add PDFs, ePubs, Office docs, emails, or text files to \(kb.name) — then ask questions about them.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -142,7 +214,7 @@ struct LibraryView: View {
             // 3-step workflow
             VStack(alignment: .leading, spacing: 14) {
                 IngestStepRow(number: "1", icon: "arrow.down.doc.fill", color: .blue,
-                             title: "Import", detail: "PDF, ePub, TXT, HTML, CSV, RTF, JSON, code — from Files or a URL")
+                             title: "Import", detail: "PDF, ePub, DOCX, XLSX, PPTX, EML, HTML, CSV, RTF, JSON, code — from Files or a URL")
                 IngestStepRow(number: "2", icon: "bolt.fill", color: .orange,
                              title: "Index", detail: "AI chunks and embeds automatically")
                 IngestStepRow(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,

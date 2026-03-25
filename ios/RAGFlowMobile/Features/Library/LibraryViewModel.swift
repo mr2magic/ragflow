@@ -6,7 +6,6 @@ final class LibraryViewModel: ObservableObject {
     @Published var books: [Book] = []
     @Published var searchText = ""
     @Published var sortOrder: SortOrder = .dateAdded
-    @Published var showImporter = false
     @Published var showURLEntry = false
     @Published var urlInput = ""
     @Published var isIngesting = false
@@ -70,6 +69,10 @@ final class LibraryViewModel: ObservableObject {
         }
         guard !supported.isEmpty else { return }
         await ingest(urls: supported)
+    }
+
+    func ingestURLs(_ urls: [URL]) async {
+        await ingest(urls: urls)
     }
 
     func importFiles(result: Result<[URL], Error>) async {

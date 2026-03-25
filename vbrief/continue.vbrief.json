@@ -1,6 +1,6 @@
 {
   "schema": "vbrief/1.0",
-  "saved_at": "2026-03-24",
+  "saved_at": "2026-03-25",
   "project": {
     "name": "RAGFlow",
     "type": "Full-stack Web App + iOS App",
@@ -18,22 +18,36 @@
   "session_summary": {
     "completed": [
       "Phase 1–4: All previously complete (P1.1–P1.6, P2, P2.5, iOS live testing phases 1–4)",
-      "Phase 5 DONE — DOCX/XLSX/PPTX/EML format expansion:",
-      "  - marmelroy/Zip wired into project.pbxproj (XCRemoteSwiftPackageReference, product dep, frameworks phase)",
-      "  - OfficeParser.swift: DOCX (w:p/w:t extraction), XLSX (sharedStrings + sheet1 → TSV), PPTX (per-slide XML strip)",
-      "  - EMLParser.swift: pure Swift RFC 2822, multipart/alternative, quoted-printable + base64",
-      "  - RAGService: ingestDOCX/XLSX/PPTX/EML methods, updated switch + error message",
-      "  - LibraryViewModel.scanDocumentsFolder: picks up docx/xlsx/pptx/eml",
-      "Phase 6 (Agent/Workflow system) DONE:",
-      "  - Models/Workflow.swift: Workflow + WorkflowRun GRDB records",
-      "  - DatabaseService v5 migration: workflows + workflow_runs tables, full CRUD",
-      "  - Services/Agent/WorkflowStep.swift: StepType enum, WorkflowStep model, StepContext + render()",
-      "  - Services/Agent/WorkflowTemplate.swift: 5 templates — RAG Q&A, Deep Summarizer, Keyword Expander, Multi-Hop Researcher, Balanced Analysis",
-      "  - Services/Agent/WorkflowRunner.swift: @MainActor execution engine, streaming output, step log",
-      "  - Features/Workflows/WorkflowListView.swift + WorkflowListViewModel.swift",
-      "  - Features/Workflows/WorkflowDetailView.swift: pipeline card, run button, streaming output, run history",
-      "  - ContentView: Workflows tab on iPhone (3rd tab); KBListView: Workflows sheet button for iPad",
-      "  - All new files registered in project.pbxproj (fileRefs, buildFiles, Agent + Workflows groups, Sources phase)"
+      "Phase 5 DONE — DOCX/XLSX/PPTX/EML format expansion",
+      "Phase 6 DONE — WorkflowRunner + 5 templates + full UI",
+      "Session 2026-03-25: Bug fixes and feature additions from user testing feedback:",
+      "  Fix 1 — DocumentPickerPresenter timing: asyncAfter(0.5s) + permissive guard for isBeingDismissed",
+      "    → Resolves 'can't add documents to a non-empty library' (critical)",
+      "  Fix 2 — Icon confusion: replaced gearshape.2 with cpu in KBListView, ContentView tab bar,",
+      "    WorkflowListView emptyState and workflowRow fallback icon",
+      "  Fix 3 — Debug reset functions: added @Environment(\\.dismiss) to SettingsView; both",
+      "    resetOnboarding() and resetAllData() now call dismiss() so the sheet closes before",
+      "    ContentView shows the onboarding fullScreenCover",
+      "  Fix 4 — Tutorial updated: OnboardingView page 3 (Import Docs) updated to list all formats",
+      "    (PDF, ePub, DOCX, XLSX, PPTX, EML, HTML, CSV, code…); new Workflows/Agents onboarding",
+      "    slide inserted between Chat and Agent Tools pages; LibraryView empty-state text and",
+      "    IngestStepRow detail also updated to include all formats",
+      "  Fix 5 — Workflow builder: added WorkflowTemplates.custom (id='custom', icon=pencil.and.outline);",
+      "    WorkflowListViewModel.customPrompt @Published field; createWorkflow() handles custom case",
+      "    (builds begin→retrieve→llm(user prompt)→answer pipeline); NewWorkflowSheet shows TextEditor",
+      "    with slot-name footer when Custom is selected; Create button disabled guard updated",
+      "Session 2026-03-25 (continued): Landscape simulator QA on iPad Pro 13-inch M5, iOS 26.4:",
+      "  — UDID: 5D4323F8-0573-4B33-807A-B93826882904 (Booted, iOS 26.4)",
+      "  — Simulator click calibration: scale_x=0.3526, scale_y=0.3565, chrome_x=54, chrome_y=91",
+      "    window at screen (944,49) size 976×805; simctl io screenshot → sips -r 90 for landscape",
+      "  — Verified: My Library selection in split-view sidebar ✓",
+      "  — Verified: Chat view landscape layout (search banner, suggested questions, text field) ✓",
+      "  — Verified: Documents empty state — 'No Documents Yet', updated format list in IngestStepRow ✓",
+      "  — Verified: Workflows sheet opens from cpu toolbar button (screen x=1050, y=177) ✓",
+      "  — Verified: WorkflowListView empty state shows cpu chip icon (not gearshape.2) ✓",
+      "  — Verified: New Workflow sheet — all 6 templates listed including Custom ✓",
+      "  — Verified: Selecting Custom shows System Prompt TextEditor with {input}/{context} footer ✓",
+      "  — Verified: KB picker wired to 'My Library' in New Workflow form ✓"
     ],
     "in_progress": [],
     "next_steps": [
@@ -44,10 +58,12 @@
       "  P7.4 — PrivacyInfo.xcprivacy + TestFlight export compliance",
       "Manual (user action required):",
       "  — Set DEVELOPMENT_TEAM in Xcode Signing & Capabilities for real-device deployment",
+      "  — Build and test the document-picker fix on device (critical path: add doc to non-empty library)",
       "Optional enhancements:",
       "  — Add Categorize node type to WorkflowRunner for branching workflows",
       "  — Add workflow edit UI (change KB, rename)",
-      "  — Add workflow tests to RAGFlowMobileTests"
+      "  — Add workflow tests to RAGFlowMobileTests",
+      "  — Investigate Deep Summarizer 'Failed' status shown in user screenshot (may be LLM error)"
     ]
   },
   "phase_status": {
@@ -60,12 +76,15 @@
     "iOS_live_testing_phase4": "COMPLETE — ingest off main thread, scan-once guard, phase progress labels",
     "iOS_live_testing_phase5_formats": "COMPLETE — DOCX/XLSX/PPTX via Zip, EML pure Swift",
     "iOS_live_testing_phase6_agents": "COMPLETE — WorkflowRunner + 5 templates + full UI",
-    "iOS_live_testing_phase7_hardening": "PENDING"
+    "iOS_live_testing_phase7_hardening": "PENDING",
+    "iOS_bug_fixes_2026-03-25": "COMPLETE — picker timing, icon confusion, debug reset, tutorial, workflow builder",
+    "iOS_landscape_QA_2026-03-25": "COMPLETE — all fixes verified on iPad Pro 13-inch M5 iOS 26.4 landscape"
   },
   "known_gaps": {
     "code_signing": "DEVELOPMENT_TEAM not set — user must configure in Xcode for real device",
     "try_bang_migrate": "DatabaseService.init uses try! migrate() — crashes on migration failure",
-    "workflow_edit": "No UI to edit an existing workflow's name or KB after creation — delete and recreate"
+    "workflow_edit": "No UI to edit an existing workflow's name or KB after creation — delete and recreate",
+    "workflow_failed": "Deep Summarizer shown as 'Failed' in user screenshot — root cause uninvestigated"
   },
   "environment": {
     "docker_compose_file": "docker/docker-compose-macos.yml",
@@ -74,7 +93,9 @@
     "canvas_name": "Trip Planner - Charleston, SC",
     "api_token_user": "dhorn (dan.horn@me.com)",
     "ios_project": "ios/RAGFlowMobile.xcodeproj",
-    "ios_simulator": "iPhone 16 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
+    "ios_simulator_iphone": "iPhone 16 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
+    "ios_simulator_ipad": "iPad Pro 13-inch M5 iOS 26.4 UDID: 5D4323F8-0573-4B33-807A-B93826882904",
+    "ios_simulator_click_calibration": "scale=0.3526x/0.3565y chrome=54x/91y window=(944,49) 976x805",
     "ios_bundle_id": "com.dhorn.ragflowmobile",
     "ios_min_deployment": "iOS 17.0",
     "ios_devices": "iPhone + iPad, portrait + landscape",

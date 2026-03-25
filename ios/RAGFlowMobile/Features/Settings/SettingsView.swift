@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var store = SettingsStore.shared
     @State private var ollamaModels: [String] = []
     @State private var isFetchingModels = false
@@ -163,11 +164,13 @@ struct SettingsView: View {
 
     private func resetOnboarding() {
         UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+        dismiss()
     }
 
     private func resetAllData() {
         UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
         try? DatabaseService.shared.wipeAllData()
+        dismiss()
     }
     #endif
 

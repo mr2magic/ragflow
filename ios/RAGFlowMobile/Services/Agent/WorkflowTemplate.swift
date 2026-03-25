@@ -11,7 +11,16 @@ struct WorkflowTemplate: Identifiable {
 // MARK: - Template Library
 
 enum WorkflowTemplates {
-    static let all: [WorkflowTemplate] = [ragQA, deepSummarizer, keywordExpander, multiHop, balancedAnalysis]
+    static let all: [WorkflowTemplate] = [ragQA, deepSummarizer, keywordExpander, multiHop, balancedAnalysis, custom]
+
+    /// Placeholder for user-built workflows — steps are constructed from a custom prompt at creation time.
+    static let custom = WorkflowTemplate(
+        id: "custom",
+        name: "Custom",
+        description: "Write your own system prompt. RAGFlow will retrieve relevant context and send it to your LLM with your instructions.",
+        icon: "pencil.and.outline",
+        steps: []   // populated dynamically from the user's prompt
+    )
 
     /// Retrieve relevant chunks then answer the question directly.
     static let ragQA = WorkflowTemplate(

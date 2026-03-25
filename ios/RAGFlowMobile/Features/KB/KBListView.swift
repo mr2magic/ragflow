@@ -36,7 +36,7 @@ struct KBListView: View {
                         Image(systemName: "gearshape")
                     }
                     Button { showWorkflows = true } label: {
-                        Image(systemName: "gearshape.2")
+                        Image(systemName: "cpu")
                     }
                 }
             }

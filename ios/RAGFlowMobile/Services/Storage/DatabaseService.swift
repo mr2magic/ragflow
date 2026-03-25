@@ -117,6 +117,8 @@ final class DatabaseService {
         try dbQueue.write { db in
             try db.execute(sql: "DELETE FROM message_sources")
             try db.execute(sql: "DELETE FROM messages")
+            try db.execute(sql: "DELETE FROM workflow_runs")
+            try db.execute(sql: "DELETE FROM workflows")
             try db.execute(sql: "DELETE FROM chunks_fts")
             try db.execute(sql: "DELETE FROM chunks")
             try db.execute(sql: "DELETE FROM books")
@@ -127,6 +129,7 @@ final class DatabaseService {
                 arguments: [KnowledgeBase.defaultID, "My Library", Date()]
             )
         }
+        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
     }
     #endif
 

@@ -9,6 +9,7 @@ final class WorkflowListViewModel: ObservableObject {
     @Published var newWorkflowKBId = KnowledgeBase.defaultID
     @Published var showError = false
     @Published var errorMessage = ""
+    @Published var customPrompt = ""
 
     var allKBs: [KnowledgeBase] { (try? DatabaseService.shared.allKBs()) ?? [] }
 
@@ -23,8 +24,22 @@ final class WorkflowListViewModel: ObservableObject {
         let name = newWorkflowName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return }
 
+        let steps: [WorkflowStep]
+        if template.id == "custom" {
+            let prompt = customPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !prompt.isEmpty else { return }
+            steps = [
+                WorkflowStep(type: .begin,    label: "Input",      outputSlot: "input"),
+                WorkflowStep(type: .retrieve, label: "Retrieve",   querySlot: "input", topK: 8, outputSlot: "context"),
+                WorkflowStep(type: .llm,      label: "Custom LLM", promptTemplate: prompt, outputSlot: "output"),
+                WorkflowStep(type: .answer,   label: "Result",     outputSlot: "output"),
+            ]
+        } else {
+            steps = template.steps
+        }
+
         let stepsJSON = (try? String(
-            data: JSONEncoder().encode(template.steps), encoding: .utf8
+            data: JSONEncoder().encode(steps), encoding: .utf8
         )) ?? "[]"
 
         let workflow = Workflow(
@@ -40,6 +55,7 @@ final class WorkflowListViewModel: ObservableObject {
             reload()
             showNewWorkflow = false
             newWorkflowName = ""
+            customPrompt = ""
             selectedTemplate = nil
         } catch {
             errorMessage = error.localizedDescription
