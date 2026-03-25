@@ -71,10 +71,21 @@ private struct DocumentPickerPresenter: UIViewControllerRepresentable {
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             let scoped = urls.filter { $0.startAccessingSecurityScopedResource() }
-            onPick(urls)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                scoped.forEach { $0.stopAccessingSecurityScopedResource() }
+            // Copy each file to the app's temp directory while the security scope is
+            // still active, then release the scope immediately. This avoids a race where
+            // PDFKit (or other parsers) lazily reads file data after the 1-second scope
+            // window has already closed, which silently produces empty results.
+            let localURLs: [URL] = urls.map { url in
+                let tmp = FileManager.default.temporaryDirectory
+                    .appendingPathComponent(UUID().uuidString)
+                    .appendingPathExtension(url.pathExtension)
+                if (try? FileManager.default.copyItem(at: url, to: tmp)) != nil {
+                    return tmp
+                }
+                return url  // copy failed — fall back to original
             }
+            scoped.forEach { $0.stopAccessingSecurityScopedResource() }
+            onPick(localURLs)
             isPresented = false
         }
 
