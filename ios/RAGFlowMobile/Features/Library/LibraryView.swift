@@ -184,6 +184,13 @@ struct LibraryView: View {
                 }
             }
             .onDelete { vm.requestDelete(at: $0) }
+
+            Section {
+                Button(action: { showImportOptions = true }) {
+                    Label("Import Documents", systemImage: "plus.circle.fill")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            }
         }
         .listStyle(.insetGrouped)
         .animation(.default, value: vm.filteredBooks.map(\.id))
