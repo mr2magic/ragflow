@@ -49,6 +49,7 @@
 		DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550005 /* WorkflowListView.swift */; };
 		DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */; };
 		DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550007 /* WorkflowDetailView.swift */; };
+		DD11EE22FF33004400550018 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550008 /* WorkflowEditorView.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
@@ -108,6 +109,7 @@
 		DD11EE22FF33004400550005 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
 		DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
 		DD11EE22FF33004400550007 /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
+		DD11EE22FF33004400550008 /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
 		F2A3B4C5D6E7F8A9B0C1D2E3 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				DD11EE22FF33004400550005 /* WorkflowListView.swift */,
 				DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */,
 				DD11EE22FF33004400550007 /* WorkflowDetailView.swift */,
+				DD11EE22FF33004400550008 /* WorkflowEditorView.swift */,
 			);
 			path = Workflows;
 			sourceTree = "<group>";
@@ -447,6 +450,7 @@
 				DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */,
 				DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */,
 				DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */,
+				DD11EE22FF33004400550018 /* WorkflowEditorView.swift in Sources */,
 				CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */,
 				08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */,
 				C3D4E5F6A7B8C9D0E1F2A3B4 /* KBDetailView.swift in Sources */,

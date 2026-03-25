@@ -5,8 +5,35 @@ import Foundation
 enum StepType: String, Codable, CaseIterable {
     case begin       // entry point — holds user input in context["input"]
     case retrieve    // keyword/vector search → writes chunks text to outputSlot
+    case rewrite     // LLM rewrites querySlot into a better search query → outputSlot
     case llm         // LLM call with promptTemplate → writes response to outputSlot
-    case answer      // terminal node — reads from inputSlot, produces final output
+    case message     // static text injection — renders promptTemplate into outputSlot
+    case webSearch   // Brave Search web lookup → writes results to outputSlot
+    case answer      // terminal node — reads from outputSlot, produces final output
+
+    var displayName: String {
+        switch self {
+        case .begin:     return "Begin"
+        case .retrieve:  return "Retrieve"
+        case .rewrite:   return "Rewrite"
+        case .llm:       return "LLM"
+        case .message:   return "Message"
+        case .webSearch: return "Web Search"
+        case .answer:    return "Answer"
+        }
+    }
+
+    var stepDescription: String {
+        switch self {
+        case .begin:     return "Entry point — captures the user's input"
+        case .retrieve:  return "Search the knowledge base for relevant passages"
+        case .rewrite:   return "Use AI to refine the query before retrieval"
+        case .llm:       return "Generate text using AI with a custom prompt"
+        case .message:   return "Inject a fixed message or text template"
+        case .webSearch: return "Search the web via Brave Search"
+        case .answer:    return "Produce the final output shown to the user"
+        }
+    }
 }
 
 // MARK: - Step Model

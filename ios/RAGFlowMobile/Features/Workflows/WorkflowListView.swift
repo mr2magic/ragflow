@@ -43,6 +43,7 @@ struct WorkflowListView: View {
 
     private func workflowRow(_ workflow: Workflow) -> some View {
         let template = WorkflowTemplates.template(id: workflow.templateId)
+        let stepCount = workflow.steps.count
         return HStack(spacing: 12) {
             Image(systemName: template?.icon ?? "cpu")
                 .font(.title2)
@@ -51,9 +52,14 @@ struct WorkflowListView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(workflow.name)
                     .font(.headline)
-                Text(template?.name ?? workflow.templateId)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    Text(template?.name ?? workflow.templateId)
+                    Text("·")
+                        .foregroundStyle(.tertiary)
+                    Text("\(stepCount) step\(stepCount == 1 ? "" : "s")")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 2)

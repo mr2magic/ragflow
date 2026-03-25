@@ -60,6 +60,34 @@ final class WorkflowRunner: ObservableObject {
                     ctx[step.outputSlot] = contextText
                     log(into: &entries, "  Retrieved \(chunks.count) chunks")
 
+                case .rewrite:
+                    let query = ctx[step.querySlot] ?? input
+                    let rewritePrompt: String
+                    if step.promptTemplate.isEmpty {
+                        rewritePrompt = "Rewrite the following question into a concise, search-friendly query. Return only the rewritten query, nothing else.\n\nOriginal: \(query)"
+                    } else {
+                        rewritePrompt = ctx.render(step.promptTemplate)
+                    }
+                    let rewriteLLM = makeLLMService(config: settings.config)
+                    let rewriteMsg = LLMMessage(role: .user, content: rewritePrompt)
+                    let rewriteStream = try await rewriteLLM.complete(messages: [rewriteMsg], context: [])
+                    var rewritten = ""
+                    for try await token in rewriteStream { rewritten += token }
+                    rewritten = rewritten.trimmingCharacters(in: .whitespacesAndNewlines)
+                    ctx[step.outputSlot] = rewritten
+                    log(into: &entries, "  Rewritten query: \(rewritten.prefix(80))")
+
+                case .message:
+                    ctx[step.outputSlot] = ctx.render(step.promptTemplate)
+                    log(into: &entries, "  Message injected into \(step.outputSlot)")
+
+                case .webSearch:
+                    let query = ctx[step.querySlot] ?? input
+                    let executor = ToolExecutor(braveApiKey: settings.config.braveSearchApiKey)
+                    let results = await executor.execute(name: "brave_search", input: ["query": query])
+                    ctx[step.outputSlot] = results
+                    log(into: &entries, "  Web results: \(results.prefix(80))…")
+
                 case .llm:
                     let prompt = ctx.render(step.promptTemplate)
                     let llm = makeLLMService(config: settings.config)

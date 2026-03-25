@@ -1,15 +1,19 @@
 import SwiftUI
 
 struct WorkflowDetailView: View {
-    let workflow: Workflow
-
+    @State private var workflow: Workflow
     @StateObject private var runner = WorkflowRunner()
     @State private var input = ""
     @State private var runs: [WorkflowRun] = []
     @State private var expandedRunId: String?
     @State private var copiedOutput = false
+    @State private var showEditor = false
 
     private let db = DatabaseService.shared
+
+    init(workflow: Workflow) {
+        _workflow = State(initialValue: workflow)
+    }
 
     var body: some View {
         ScrollView {
@@ -23,6 +27,17 @@ struct WorkflowDetailView: View {
         }
         .navigationTitle(workflow.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Edit") { showEditor = true }
+            }
+        }
+        .sheet(isPresented: $showEditor) {
+            WorkflowEditorView(workflow: workflow) { updated in
+                try? db.saveWorkflow(updated)
+                workflow = updated
+            }
+        }
         .onAppear { reloadRuns() }
     }
 
@@ -32,12 +47,12 @@ struct WorkflowDetailView: View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(Array(workflow.steps.enumerated()), id: \.element.id) { idx, step in
                 HStack(spacing: 10) {
-                    stepIcon(for: step.type)
+                    StepTypeIcon(type: step.type)
                         .frame(width: 28, height: 28)
                     Text(step.label)
                         .font(.subheadline)
                     Spacer()
-                    Text(step.type.rawValue)
+                    Text(step.type.displayName)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 6).padding(.vertical, 2)
@@ -196,20 +211,6 @@ struct WorkflowDetailView: View {
 
     private func reloadRuns() {
         runs = (try? db.runsForWorkflow(workflow.id)) ?? []
-    }
-
-    private func stepIcon(for type: StepType) -> some View {
-        let (name, color): (String, Color) = switch type {
-        case .begin:    ("flag.fill", .green)
-        case .retrieve: ("magnifyingglass", .blue)
-        case .llm:      ("brain", .purple)
-        case .answer:   ("checkmark.bubble.fill", .orange)
-        }
-        return Image(systemName: name)
-            .font(.caption)
-            .foregroundStyle(color)
-            .padding(6)
-            .background(color.opacity(0.12), in: Circle())
     }
 
     private func statusBadge(_ status: String) -> some View {
