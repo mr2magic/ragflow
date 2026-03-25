@@ -48,9 +48,13 @@ final class ChatViewModel: ObservableObject {
         isTyping = true
         haptics.impactOccurred()
 
-        messages.append(Message(role: .user, content: query))
+        let userMsg = Message(role: .user, content: query)
+        messages.append(userMsg)
         messages.append(Message(role: .assistant, content: ""))
         let assistantIndex = messages.count - 1
+
+        // Persist the user message immediately so it survives cancellation or navigation away.
+        try? db.saveMessages([userMsg], kbId: kb.id)
 
         streamTask = Task {
             do {
@@ -70,19 +74,24 @@ final class ChatViewModel: ObservableObject {
                     messages[assistantIndex].content += token
                 }
 
-                // Persist both messages once the stream completes normally
-                if !Task.isCancelled {
-                    let userMsg = messages[assistantIndex - 1]
-                    let assistantMsg = messages[assistantIndex]
-                    try? db.saveMessages([userMsg, assistantMsg], kbId: kb.id)
+                // Persist assistant message on normal completion (or partial if cancelled mid-stream).
+                let assistantMsg = messages[assistantIndex]
+                if !assistantMsg.content.isEmpty {
+                    try? db.saveMessages([assistantMsg], kbId: kb.id)
                 }
             } catch is CancellationError {
-                if messages[assistantIndex].content.isEmpty {
+                let assistantMsg = messages[assistantIndex]
+                if assistantMsg.content.isEmpty {
+                    // Nothing useful streamed — remove both from memory and undo the user save.
                     messages.removeLast(2)
+                    try? db.deleteMessage(id: userMsg.id.uuidString)
+                } else {
+                    try? db.saveMessages([assistantMsg], kbId: kb.id)
                 }
             } catch {
                 isTyping = false
                 messages[assistantIndex].content = "Error: \(error.localizedDescription)"
+                try? db.saveMessages([messages[assistantIndex]], kbId: kb.id)
                 errorMessage = error.localizedDescription
                 showError = true
             }

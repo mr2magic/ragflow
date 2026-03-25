@@ -321,6 +321,12 @@ final class DatabaseService {
         }
     }
 
+    func deleteMessage(id: String) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM messages WHERE id = ?", arguments: [id])
+        }
+    }
+
     // MARK: - Workflows
 
     func allWorkflows() throws -> [Workflow] {

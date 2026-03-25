@@ -27,7 +27,6 @@ struct ChatView: View {
         .sheet(isPresented: $showSettings) { SettingsView() }
         .navigationTitle("Chat")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { toolbarContent }
         .confirmationDialog("Clear conversation?", isPresented: $showClearConfirm, titleVisibility: .visible) {
             Button("Clear", role: .destructive) { vm.clearConversation() }
             Button("Cancel", role: .cancel) {}
@@ -64,6 +63,15 @@ struct ChatView: View {
                 Text(activeModelLabel)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
+
+                if !vm.messages.isEmpty {
+                    Button(action: { showClearConfirm = true }) {
+                        Label("Clear Chat", systemImage: "trash")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.red.opacity(0.8))
+                            .labelStyle(.titleAndIcon)
+                    }
+                }
 
                 if !vm.availableKBsToAdd.isEmpty {
                     Menu {
@@ -246,17 +254,6 @@ struct ChatView: View {
         .background(.bar)
     }
 
-    // MARK: - Toolbar
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .primaryAction) {
-            Button(action: { showClearConfirm = true }) {
-                Image(systemName: "eraser.line.dashed")
-            }
-            .disabled(vm.messages.isEmpty)
-        }
-    }
 }
 
 // MARK: - Message Bubble
