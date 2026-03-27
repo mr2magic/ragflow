@@ -20,6 +20,7 @@ targets:
         SWIFT_VERSION: "5.9"
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
         INFOPLIST_FILE: RAGFlowMobile/Resources/Info.plist
+        CODE_SIGN_STYLE: Automatic
     dependencies:
       - package: EPUBKit
       - package: GRDB
