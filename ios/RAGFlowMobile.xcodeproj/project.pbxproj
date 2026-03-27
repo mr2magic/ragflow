@@ -10,13 +10,23 @@
 		01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */; };
 		08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */; };
 		09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0C19C6F20A9821E0BA0BCF /* GRDB */; };
+		25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */; };
+		266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */; };
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
+		31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */; };
 		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
+		3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23157B24B0E2E44B3978039A /* OfficeParser.swift */; };
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
+		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
 		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
+		4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AA166907EB447DD28FB0C6 /* Workflow.swift */; };
+		58285D7E4CB3772FE727B015 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 0AC8249A1B33591889FEDC98 /* Zip */; };
+		59C9F169117898565EE6A2FB /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */; };
 		5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */; };
+		5ECDA6B86E3323BA65006FE9 /* EMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128C8C2964AF5134AA52824 /* EMLParser.swift */; };
+		5FD4846C607EE5C03326953F /* WorkflowRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */; };
 		60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8061DB27675BF03BF9AE6A /* OllamaService.swift */; };
 		65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */; };
 		69AA751EA0AA6A888F51D90F /* KnowledgeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */; };
@@ -24,32 +34,25 @@
 		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
 		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
 		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
+		80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */; };
+		891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5320AF4F645CAD74CA8203C8 /* WorkflowTemplate.swift */; };
 		8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */; };
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* PhoneKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* PhoneKBListView.swift */; };
-		A3B4C5D6E7F8A9B0C1D2E3F4 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A3B4C5D6E7F8A9B0C1D2E3 /* OnboardingView.swift */; };
-		AA11BB22CC33DD44EE55FF66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */; };
-		PRIV0011223344556677AA88 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PRIV0011223344556677AA77 /* PrivacyInfo.xcprivacy */; };
+		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
+		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
-		BB11CC22DD33EE44FF550001 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = BB11CC22DD33EE44FF550003 /* Zip */; };
-		C3D4E5F6A7B8C9D0E1F2A3B4 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F2A3B4C5 /* KBDetailView.swift */; };
+		C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */; };
 		CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */; };
-		CC11DD22EE33FF4400550003 /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC11DD22EE33FF4400550001 /* OfficeParser.swift */; };
-		CC11DD22EE33FF4400550004 /* EMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC11DD22EE33FF4400550002 /* EMLParser.swift */; };
+		CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8585645296370F3070DDE58 /* WorkflowStep.swift */; };
 		CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */; };
 		CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */; };
 		D11228F73D903065292642F2 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3565928B2FB15DD81AAF0 /* Book.swift */; };
+		D463F6B5908714F9DE6582F2 /* WorkflowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2155FC378724F13FD87256 /* WorkflowListView.swift */; };
 		D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD98A707C4F55AF2534157A /* PDFParser.swift */; };
+		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
-		DD11EE22FF33004400550011 /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550001 /* Workflow.swift */; };
-		DD11EE22FF33004400550012 /* WorkflowStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550002 /* WorkflowStep.swift */; };
-		DD11EE22FF33004400550013 /* WorkflowTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550003 /* WorkflowTemplate.swift */; };
-		DD11EE22FF33004400550014 /* WorkflowRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550004 /* WorkflowRunner.swift */; };
-		DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550005 /* WorkflowListView.swift */; };
-		DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */; };
-		DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550007 /* WorkflowDetailView.swift */; };
-		DD11EE22FF33004400550018 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD11EE22FF33004400550008 /* WorkflowEditorView.swift */; };
+		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
@@ -74,44 +77,47 @@
 		0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBListViewModel.swift; sourceTree = "<group>"; };
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
+		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
+		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
-		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
 		4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		5157791CE99C2D55ABEB8A40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		5320AF4F645CAD74CA8203C8 /* WorkflowTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowTemplate.swift; sourceTree = "<group>"; };
 		591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		6397731B96AE41220DF4ADE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		PRIV0011223344556677AA77 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xcprivacy; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		69C03803E49D972603BC3295 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		6B2155FC378724F13FD87256 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
+		6C439D2675FE12994A8429DF /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
 		77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
 		8308457EC93E4AE662E21429 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
+		8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneKBListView.swift; sourceTree = "<group>"; };
 		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9128C8C2964AF5134AA52824 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
-		B2C3D4E5F6A7B8C9D0E1F2A3 /* PhoneKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneKBListView.swift; sourceTree = "<group>"; };
+		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
 		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
-		CC11DD22EE33FF4400550001 /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
-		CC11DD22EE33FF4400550002 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
+		CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
+		CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
-		D4E5F6A7B8C9D0E1F2A3B4C5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550001 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550002 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550003 /* WorkflowTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowTemplate.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550004 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550005 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550007 /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
-		DD11EE22FF33004400550008 /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
+		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
-		F2A3B4C5D6E7F8A9B0C1D2E3 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,9 +129,9 @@
 			files = (
 				28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */,
 				09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */,
+				58285D7E4CB3772FE727B015 /* Zip in Frameworks */,
 				AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */,
 				5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */,
-				BB11CC22DD33EE44FF550001 /* Zip in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,12 +153,23 @@
 			children = (
 				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
 				AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */,
-				CC11DD22EE33FF4400550002 /* EMLParser.swift */,
-				CC11DD22EE33FF4400550001 /* OfficeParser.swift */,
+				9128C8C2964AF5134AA52824 /* EMLParser.swift */,
+				23157B24B0E2E44B3978039A /* OfficeParser.swift */,
 				0CD98A707C4F55AF2534157A /* PDFParser.swift */,
 				C8CED5934D63CB02BDF103DA /* RAGService.swift */,
 			);
 			path = RAG;
+			sourceTree = "<group>";
+		};
+		37A4DB79F7B676E037C923F5 /* Workflows */ = {
+			isa = PBXGroup;
+			children = (
+				CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */,
+				9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */,
+				6B2155FC378724F13FD87256 /* WorkflowListView.swift */,
+				CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */,
+			);
+			path = Workflows;
 			sourceTree = "<group>";
 		};
 		3980C7FFB7D0F975FB69F4CF /* Chat */ = {
@@ -160,17 +177,28 @@
 			children = (
 				69C03803E49D972603BC3295 /* ChatView.swift */,
 				128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */,
+				2403241BC27588A9D3E14398 /* ConversationsListView.swift */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		3B19236A7AA25378849B5D61 /* Agent */ = {
+			isa = PBXGroup;
+			children = (
+				4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */,
+				B8585645296370F3070DDE58 /* WorkflowStep.swift */,
+				5320AF4F645CAD74CA8203C8 /* WorkflowTemplate.swift */,
+			);
+			path = Agent;
 			sourceTree = "<group>";
 		};
 		41EEB10A6AB5188C60573CCE /* KB */ = {
 			isa = PBXGroup;
 			children = (
-				D4E5F6A7B8C9D0E1F2A3B4C5 /* KBDetailView.swift */,
+				DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */,
 				0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */,
 				10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */,
-				B2C3D4E5F6A7B8C9D0E1F2A3 /* PhoneKBListView.swift */,
+				8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */,
 			);
 			path = KB;
 			sourceTree = "<group>";
@@ -203,6 +231,14 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		7DC31A6088C99A517115B162 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		90FC790467F4D05481B78B80 /* RAGFlowMobile */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,9 +257,9 @@
 				3980C7FFB7D0F975FB69F4CF /* Chat */,
 				41EEB10A6AB5188C60573CCE /* KB */,
 				4F4C99203F3F22E475F4DDB9 /* Library */,
-				E1F2A3B4C5D6E7F8A9B0C1D2 /* Onboarding */,
+				7DC31A6088C99A517115B162 /* Onboarding */,
 				C4EFEC20BE53B2EF79FE9A3C /* Settings */,
-				DD11EE22FF33004400550022 /* Workflows */,
+				37A4DB79F7B676E037C923F5 /* Workflows */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -243,6 +279,7 @@
 				517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */,
 				F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */,
 				DD8061DB27675BF03BF9AE6A /* OllamaService.swift */,
+				161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */,
 				ADCD7F43E645413DA3A8D513 /* ToolService.swift */,
 			);
 			path = LLM;
@@ -252,11 +289,12 @@
 			isa = PBXGroup;
 			children = (
 				0AF3565928B2FB15DD81AAF0 /* Book.swift */,
+				6C439D2675FE12994A8429DF /* ChatSession.swift */,
 				8308457EC93E4AE662E21429 /* Chunk.swift */,
 				01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */,
 				263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */,
 				4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */,
-				DD11EE22FF33004400550001 /* Workflow.swift */,
+				30AA166907EB447DD28FB0C6 /* Workflow.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -287,49 +325,20 @@
 			path = Storage;
 			sourceTree = "<group>";
 		};
-		DD11EE22FF33004400550021 /* Agent */ = {
-			isa = PBXGroup;
-			children = (
-				DD11EE22FF33004400550002 /* WorkflowStep.swift */,
-				DD11EE22FF33004400550003 /* WorkflowTemplate.swift */,
-				DD11EE22FF33004400550004 /* WorkflowRunner.swift */,
-			);
-			path = Agent;
-			sourceTree = "<group>";
-		};
-		DD11EE22FF33004400550022 /* Workflows */ = {
-			isa = PBXGroup;
-			children = (
-				DD11EE22FF33004400550005 /* WorkflowListView.swift */,
-				DD11EE22FF33004400550006 /* WorkflowListViewModel.swift */,
-				DD11EE22FF33004400550007 /* WorkflowDetailView.swift */,
-				DD11EE22FF33004400550008 /* WorkflowEditorView.swift */,
-			);
-			path = Workflows;
-			sourceTree = "<group>";
-		};
 		E0A29533DCA640BB60C1B658 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				AA11BB22CC33DD44EE55FF77 /* Assets.xcassets */,
+				5157791CE99C2D55ABEB8A40 /* Assets.xcassets */,
 				6397731B96AE41220DF4ADE9 /* Info.plist */,
-				PRIV0011223344556677AA77 /* PrivacyInfo.xcprivacy */,
+				8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		E1F2A3B4C5D6E7F8A9B0C1D2 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				F2A3B4C5D6E7F8A9B0C1D2E3 /* OnboardingView.swift */,
-			);
-			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		F95BA93CBD769006D0A43843 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				DD11EE22FF33004400550021 /* Agent */,
+				3B19236A7AA25378849B5D61 /* Agent */,
 				C7A241C531FB4C21F1691873 /* LLM */,
 				23ABCE1D0A3FA9E6FC7C9F38 /* RAG */,
 				D3EBF1A3274E654C8B60ABBC /* Storage */,
@@ -362,8 +371,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 48375E911B8F46B7CEAEE239 /* Build configuration list for PBXNativeTarget "RAGFlowMobile" */;
 			buildPhases = (
-				AA11BB22CC33DD44EE55FF88 /* Resources */,
 				0D2229D2E600C81D1C2745AA /* Sources */,
+				BB1DACC97E7DF34BEA54F903 /* Resources */,
 				1B2C0EEA6ED9D126942376C1 /* Frameworks */,
 			);
 			buildRules = (
@@ -374,7 +383,7 @@
 			packageProductDependencies = (
 				F3134F9E7523B881974419D8 /* EPUBKit */,
 				2C0C19C6F20A9821E0BA0BCF /* GRDB */,
-				BB11CC22DD33EE44FF550003 /* Zip */,
+				0AC8249A1B33591889FEDC98 /* Zip */,
 			);
 			productName = RAGFlowMobile;
 			productReference = 8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */;
@@ -387,7 +396,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */;
 			developmentRegion = en;
@@ -400,8 +411,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */,
-				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */,
-				BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */,
+				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				2D427263B7DD77A57C5D4338 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 44D8A205BEA0E8EA70D43C86 /* Products */;
@@ -415,12 +426,12 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AA11BB22CC33DD44EE55FF88 /* Resources */ = {
+		BB1DACC97E7DF34BEA54F903 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA11BB22CC33DD44EE55FF66 /* Assets.xcassets in Resources */,
-				PRIV0011223344556677AA88 /* PrivacyInfo.xcprivacy in Resources */,
+				E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */,
+				31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -433,43 +444,46 @@
 			files = (
 				CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */,
 				D11228F73D903065292642F2 /* Book.swift in Sources */,
+				D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */,
 				7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */,
 				3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */,
 				47544318EE96330B0C7905E9 /* Chunk.swift in Sources */,
 				CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */,
 				01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */,
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
+				3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
+				5ECDA6B86E3323BA65006FE9 /* EMLParser.swift in Sources */,
 				4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */,
-				CC11DD22EE33FF4400550004 /* EMLParser.swift in Sources */,
-				CC11DD22EE33FF4400550003 /* OfficeParser.swift in Sources */,
-				DD11EE22FF33004400550011 /* Workflow.swift in Sources */,
-				DD11EE22FF33004400550012 /* WorkflowStep.swift in Sources */,
-				DD11EE22FF33004400550013 /* WorkflowTemplate.swift in Sources */,
-				DD11EE22FF33004400550014 /* WorkflowRunner.swift in Sources */,
-				DD11EE22FF33004400550015 /* WorkflowListView.swift in Sources */,
-				DD11EE22FF33004400550016 /* WorkflowListViewModel.swift in Sources */,
-				DD11EE22FF33004400550017 /* WorkflowDetailView.swift in Sources */,
-				DD11EE22FF33004400550018 /* WorkflowEditorView.swift in Sources */,
+				9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */,
 				CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */,
 				08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */,
-				C3D4E5F6A7B8C9D0E1F2A3B4 /* KBDetailView.swift in Sources */,
 				69AA751EA0AA6A888F51D90F /* KnowledgeBase.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* PhoneKBListView.swift in Sources */,
 				8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */,
 				F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */,
 				FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */,
 				F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */,
 				DC995B82EC08C313D958A065 /* Message.swift in Sources */,
-				A3B4C5D6E7F8A9B0C1D2E3F4 /* OnboardingView.swift in Sources */,
+				3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */,
 				B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */,
 				60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */,
+				A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */,
+				59C9F169117898565EE6A2FB /* OpenAIService.swift in Sources */,
 				D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */,
+				C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */,
 				40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */,
 				98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */,
 				F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */,
 				65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */,
 				6E7131165A087613B0E74BCF /* ToolService.swift in Sources */,
+				4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */,
+				266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */,
+				80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */,
+				D463F6B5908714F9DE6582F2 /* WorkflowListView.swift in Sources */,
+				25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */,
+				5FD4846C607EE5C03326953F /* WorkflowRunner.swift in Sources */,
+				CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */,
+				891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,7 +510,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -516,10 +529,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
-				MARKETING_VERSION = 1.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -537,7 +547,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -556,7 +565,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -588,10 +596,8 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -612,7 +618,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -623,7 +628,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -655,10 +659,8 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -672,7 +674,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -684,10 +685,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
-				MARKETING_VERSION = 1.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,20 +732,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.27.0;
-			};
-		};
-		BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */ = {
+		2D427263B7DD77A57C5D4338 /* XCRemoteSwiftPackageReference "Zip" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marmelroy/Zip";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.1.0;
+			};
+		};
+		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.27.0;
 			};
 		};
 		F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */ = {
@@ -761,15 +759,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0AC8249A1B33591889FEDC98 /* Zip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D427263B7DD77A57C5D4338 /* XCRemoteSwiftPackageReference "Zip" */;
+			productName = Zip;
+		};
 		2C0C19C6F20A9821E0BA0BCF /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */;
+			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */;
 			productName = GRDB;
-		};
-		BB11CC22DD33EE44FF550003 /* Zip */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BB11CC22DD33EE44FF550002 /* XCRemoteSwiftPackageReference "Zip" */;
-			productName = Zip;
 		};
 		F3134F9E7523B881974419D8 /* EPUBKit */ = {
 			isa = XCSwiftPackageProductDependency;

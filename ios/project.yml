@@ -33,6 +33,9 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - RAGFlowMobileTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: RAGFlowMobile
 

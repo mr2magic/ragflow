@@ -1,6 +1,6 @@
 import Foundation
 
-struct ChatSession: Identifiable {
+struct ChatSession: Identifiable, Hashable {
     var id: String
     var kbId: String
     var name: String

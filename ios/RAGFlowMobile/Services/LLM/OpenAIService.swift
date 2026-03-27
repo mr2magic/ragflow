@@ -54,7 +54,7 @@ final class OpenAIService: LLMService {
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            if let http = response as? HTTPURLResponse,
+            if let _ = response as? HTTPURLResponse,
                let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let errorObj = errorJson["error"] as? [String: Any],
                let message = errorObj["message"] as? String {
