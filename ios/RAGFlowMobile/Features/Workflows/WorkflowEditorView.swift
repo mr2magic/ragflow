@@ -13,6 +13,7 @@ struct WorkflowEditorView: View {
     @State private var steps: [WorkflowStep]
     @State private var showStepPicker = false
     @State private var editingStep: WorkflowStep?
+    @State private var showHelp = false
 
     private let workflow: Workflow
     private let allKBs: [KnowledgeBase]
@@ -77,12 +78,18 @@ struct WorkflowEditorView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
+                        Button { showHelp = true } label: {
+                            Image(systemName: "questionmark.circle")
+                        }
                         EditButton()
                         Button("Save") { commitSave() }
                             .fontWeight(.semibold)
                             .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || steps.isEmpty)
                     }
                 }
+            }
+            .sheet(isPresented: $showHelp) {
+                WorkflowHelpSheet()
             }
             .sheet(isPresented: $showStepPicker) {
                 StepTypePicker { type in
@@ -407,6 +414,146 @@ struct StepConfigSheet: View {
             return "The variable name to read the final answer from, e.g. \"output\"."
         default:
             return "Where this step writes its result, e.g. \"context\" or \"output\". Reference it in later steps with {variable}."
+        }
+    }
+}
+
+// MARK: - Workflow Help Sheet
+
+struct WorkflowHelpSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    Text("A workflow is a pipeline of steps that run in sequence. Each step reads from named **slots** (variables) and writes its result to an **output slot** for downstream steps to use.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.vertical, 4)
+                } header: {
+                    Text("How Workflows Work")
+                }
+
+                Section {
+                    Text("Use **{variableName}** in any prompt template or message to substitute the value stored in that slot. For example, **{input}** is the user's original query, and **{context}** is text retrieved from your knowledge base.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .padding(.vertical, 4)
+                } header: {
+                    Text("Variable Substitution")
+                }
+
+                Section("Step Types") {
+                    ForEach(StepType.allCases, id: \.self) { type in
+                        HelpStepRow(type: type)
+                    }
+                }
+
+                Section("Example Pipeline") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        exampleStep(icon: "flag.fill", color: .green, title: "Begin", detail: "Captures user query → slot: input")
+                        Image(systemName: "arrow.down").foregroundStyle(.tertiary).frame(maxWidth: .infinity, alignment: .center)
+                        exampleStep(icon: "arrow.triangle.2.circlepath", color: .cyan, title: "Rewrite", detail: "Refines query for better search → slot: query")
+                        Image(systemName: "arrow.down").foregroundStyle(.tertiary).frame(maxWidth: .infinity, alignment: .center)
+                        exampleStep(icon: "magnifyingglass", color: .blue, title: "Retrieve", detail: "Searches KB with {query}, top 6 → slot: context")
+                        Image(systemName: "arrow.down").foregroundStyle(.tertiary).frame(maxWidth: .infinity, alignment: .center)
+                        exampleStep(icon: "brain", color: .purple, title: "LLM", detail: "Prompt: \"Answer {input} using {context}\" → slot: output")
+                        Image(systemName: "arrow.down").foregroundStyle(.tertiary).frame(maxWidth: .infinity, alignment: .center)
+                        exampleStep(icon: "checkmark.bubble.fill", color: .orange, title: "Answer", detail: "Reads slot: output — shows final result")
+                    }
+                    .padding(.vertical, 6)
+                }
+
+                Section("Tips") {
+                    tipRow(icon: "arrow.up.arrow.down", text: "Tap **Edit** to reorder steps by dragging.")
+                    tipRow(icon: "trash", text: "Swipe left on a step to delete it.")
+                    tipRow(icon: "square.stack.3d.up", text: "A Retrieve step can target a different KB than the workflow default.")
+                    tipRow(icon: "globe.americas.fill", text: "Web Search requires a Brave Search API key in Settings.")
+                    tipRow(icon: "exclamationmark.triangle", text: "Every workflow needs exactly one **Begin** step and one **Answer** step.")
+                }
+            }
+            .listStyle(.insetGrouped)
+            .navigationTitle("Workflow Help")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+
+    private func exampleStep(icon: String, color: Color, title: String, detail: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(color)
+                .padding(6)
+                .background(color.opacity(0.12), in: Circle())
+                .frame(width: 28, height: 28)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func tipRow(icon: String, text: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: icon)
+                .font(.subheadline)
+                .foregroundStyle(.tint)
+                .frame(width: 22)
+            Text(text)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Help Step Row
+
+private struct HelpStepRow: View {
+    let type: StepType
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            StepTypeIcon(type: type)
+                .frame(width: 36, height: 36)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(type.displayName)
+                    .font(.headline)
+                Text(type.stepDescription)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(helpDetail(for: type))
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func helpDetail(for type: StepType) -> String {
+        switch type {
+        case .begin:
+            return "Always the first step. Puts the user's question into the \"input\" slot so later steps can reference it as {input}."
+        case .retrieve:
+            return "Searches your knowledge base using a slot variable as the query. topK controls how many passages are returned. Results are written to the output slot (usually \"context\")."
+        case .rewrite:
+            return "Uses the LLM to rephrase a query for better search recall. Leave the prompt blank to use the default rewrite instruction, or write a custom one."
+        case .llm:
+            return "Calls the LLM with your prompt template. Use {input} for the original query, {context} for retrieved passages, or any {slot} from earlier steps. The response is written to the output slot."
+        case .message:
+            return "Injects a fixed block of text into the pipeline. Supports {slot} substitution. Useful for adding instructions or separators between steps."
+        case .webSearch:
+            return "Searches the web using Brave Search and stores the results in the output slot. Requires a Brave Search API key in Settings."
+        case .answer:
+            return "Always the last step. Reads from the specified slot and presents it as the final answer to the user. No output slot — it terminates the pipeline."
         }
     }
 }

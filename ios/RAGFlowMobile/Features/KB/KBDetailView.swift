@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Detail view for a selected Knowledge Base: Chat and Documents as bottom tabs.
+/// Detail view for a selected Knowledge Base: Chat history and Documents as bottom tabs.
 struct KBDetailView: View {
     let kb: KnowledgeBase
     var initialTab: Int = 0
@@ -15,9 +15,11 @@ struct KBDetailView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            ChatView(kb: kb)
-                .tabItem { Label("Chat", systemImage: "bubble.left.and.text.bubble.right") }
-                .tag(0)
+            NavigationStack {
+                ConversationsListView(kb: kb)
+            }
+            .tabItem { Label("Chat", systemImage: "bubble.left.and.text.bubble.right") }
+            .tag(0)
 
             LibraryView(kb: kb)
                 .tabItem { Label("Documents", systemImage: "folder") }

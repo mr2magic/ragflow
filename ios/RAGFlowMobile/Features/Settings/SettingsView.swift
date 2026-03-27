@@ -16,6 +16,7 @@ struct SettingsView: View {
             Form {
                 providerSection
                 if store.config.provider == .claude { claudeSection }
+                if store.config.provider == .openAI { openAISection }
                 if store.config.provider == .ollama { ollamaSection }
                 agentToolsSection
                 aboutSection
@@ -26,6 +27,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .onChange(of: store.config.provider) { _, _ in store.save() }
             .onChange(of: store.config.claudeApiKey) { _, _ in store.save() }
+            .onChange(of: store.config.openAIApiKey) { _, _ in store.save() }
             .onChange(of: store.config.braveSearchApiKey) { _, _ in store.save() }
             .onChange(of: store.config.ollamaHost) { _, _ in store.save() }
             .onChange(of: store.config.ollamaModel) { _, _ in store.save() }
@@ -58,6 +60,22 @@ struct SettingsView: View {
             Text("Claude")
         } footer: {
             Text("Your key is stored in the iOS Keychain and never transmitted except to api.anthropic.com.")
+                .font(.footnote)
+        }
+    }
+
+    // MARK: - OpenAI / ChatGPT
+
+    private var openAISection: some View {
+        Section {
+            SecureField("API Key", text: $store.config.openAIApiKey)
+                .textContentType(.password)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+        } header: {
+            Text("ChatGPT (OpenAI)")
+        } footer: {
+            Text("Your key is stored in the iOS Keychain and never transmitted except to api.openai.com.")
                 .font(.footnote)
         }
     }

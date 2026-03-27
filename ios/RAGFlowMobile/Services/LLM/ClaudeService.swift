@@ -148,7 +148,7 @@ enum LLMError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .badResponse:     return "LLM returned an unexpected response."
-        case .missingApiKey:   return "No AI provider configured. Open Settings and add your Claude API key or Ollama host."
+        case .missingApiKey:   return "No AI provider configured. Open Settings and add your Claude API key, ChatGPT API key, or Ollama host."
         case .serverError(let msg): return msg
         }
     }

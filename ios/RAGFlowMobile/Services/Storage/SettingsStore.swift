@@ -16,6 +16,7 @@ final class SettingsStore: ObservableObject {
     var isConfigured: Bool {
         switch config.provider {
         case .claude:  return !config.claudeApiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        case .openAI:  return !config.openAIApiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         case .ollama:  return !config.ollamaHost.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                            && !config.ollamaModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
@@ -26,6 +27,7 @@ final class SettingsStore: ObservableObject {
         defaults.set(config.ollamaHost, forKey: "ollama_host")
         defaults.set(config.ollamaModel, forKey: "ollama_model")
         saveToKeychain(key: "claude_api_key", value: config.claudeApiKey)
+        saveToKeychain(key: "openai_api_key", value: config.openAIApiKey)
         saveToKeychain(key: "brave_search_api_key", value: config.braveSearchApiKey)
     }
 
@@ -34,11 +36,13 @@ final class SettingsStore: ObservableObject {
         let ollamaHost = defaults.string(forKey: "ollama_host") ?? "http://localhost:11434"
         let ollamaModel = defaults.string(forKey: "ollama_model") ?? ""
         let claudeKey = loadFromKeychain(key: "claude_api_key") ?? ""
+        let openAIKey = loadFromKeychain(key: "openai_api_key") ?? ""
         let braveKey = loadFromKeychain(key: "brave_search_api_key") ?? ""
 
         config = LLMConfig(
             provider: provider,
             claudeApiKey: claudeKey,
+            openAIApiKey: openAIKey,
             braveSearchApiKey: braveKey,
             ollamaHost: ollamaHost,
             ollamaModel: ollamaModel

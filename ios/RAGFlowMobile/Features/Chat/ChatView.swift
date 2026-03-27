@@ -2,15 +2,17 @@ import SwiftUI
 
 struct ChatView: View {
     let kb: KnowledgeBase
+    let session: ChatSession
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
     @ObservedObject private var settings = SettingsStore.shared
     @State private var showSettings = false
     @State private var showClearConfirm = false
 
-    init(kb: KnowledgeBase) {
+    init(kb: KnowledgeBase, session: ChatSession) {
         self.kb = kb
-        _vm = StateObject(wrappedValue: ChatViewModel(kb: kb))
+        self.session = session
+        _vm = StateObject(wrappedValue: ChatViewModel(kb: kb, session: session))
     }
 
     var body: some View {
@@ -25,7 +27,7 @@ struct ChatView: View {
             inputBar
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
-        .navigationTitle("Chat")
+        .navigationTitle(session.name)
         .navigationBarTitleDisplayMode(.inline)
         .confirmationDialog("Clear conversation?", isPresented: $showClearConfirm, titleVisibility: .visible) {
             Button("Clear", role: .destructive) { vm.clearConversation() }
@@ -42,7 +44,8 @@ struct ChatView: View {
 
     private var activeModelLabel: String {
         switch settings.config.provider {
-        case .claude: return "Claude"
+        case .claude:  return "Claude"
+        case .openAI:  return "ChatGPT"
         case .ollama:
             let m = settings.config.ollamaModel
             return m.isEmpty ? "Ollama" : "\(m) · Ollama"

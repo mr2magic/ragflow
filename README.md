@@ -61,6 +61,7 @@
 - 📌 [Latest Updates](#-latest-updates)
 - 🌟 [Key Features](#-key-features)
 - 🔎 [System Architecture](#-system-architecture)
+- 📱 [iOS App](#-ios-app)
 - 🎬 [Get Started](#-get-started)
 - 🔧 [Configurations](#-configurations)
 - 🔧 [Build a Docker image](#-build-a-docker-image)
@@ -141,6 +142,39 @@ releases! 🌟
 <div align="center" style="margin-top:20px;margin-bottom:20px;">
 <img src="https://github.com/user-attachments/assets/31b0dd6f-ca4f-445a-9457-70cb44a381b2" width="1000"/>
 </div>
+
+## 📱 iOS App
+
+RAGFlow includes a standalone **SwiftUI iOS app** (iPhone + iPad) that runs a full RAG pipeline entirely on-device — no server required.
+
+### Features
+
+- **Local RAG pipeline** — Import PDFs, EPUB, DOCX, and 15+ other formats; chunk, index, and query on-device
+- **Multiple LLM providers** — Claude (Anthropic), ChatGPT (OpenAI), or Ollama (local)
+- **Multi-conversation chat** — Named chat sessions per knowledge base with full history (create, list, delete)
+- **Knowledge bases** — Manage multiple independent document collections
+- **Agent workflows** — Visual step-based pipelines with 7 step types (Retrieve, LLM, Rewrite, Web Search, and more)
+- **Universal layout** — Adaptive UI for iPhone (tab navigation) and iPad (split view)
+
+### Setup
+
+1. Open `ios/RAGFlowMobile.xcodeproj` in Xcode 15+
+2. Set your development team under **Signing & Capabilities**
+3. Build and run on a simulator or device (iOS 17+)
+4. On first launch, add your API key in **Settings** (Claude, ChatGPT, or point to an Ollama instance)
+
+### LLM Provider Setup
+
+| Provider | Where to get a key | Settings label |
+|----------|--------------------|----------------|
+| Claude | console.anthropic.com | Claude |
+| ChatGPT | platform.openai.com | ChatGPT |
+| Brave Search *(optional)* | brave.com/search/api | Agent Tools |
+| Ollama *(local)* | ollama.ai | Ollama |
+
+See [docs/ios-app.md](docs/ios-app.md) for full documentation.
+
+---
 
 ## 🎬 Get Started
 
@@ -388,6 +422,7 @@ docker build --platform linux/amd64 \
 
 ## 📚 Documentation
 
+### Official Docs (ragflow.io)
 - [Quickstart](https://ragflow.io/docs/dev/)
 - [Configuration](https://ragflow.io/docs/dev/configurations)
 - [Release notes](https://ragflow.io/docs/dev/release_notes)
@@ -395,6 +430,12 @@ docker build --platform linux/amd64 \
 - [Developer guides](https://ragflow.io/docs/dev/category/developers)
 - [References](https://ragflow.io/docs/dev/category/references)
 - [FAQs](https://ragflow.io/docs/dev/faq)
+
+### In-Repo Developer Docs (`docs/`)
+- [Architecture](docs/architecture.md) — System design, component map, data flow
+- [iOS App](docs/ios-app.md) — Mobile app features, setup, and internals
+- [Web Frontend](docs/frontend.md) — React/TypeScript codebase and chat system
+- [Backend API](docs/api.md) — REST endpoints and SDK usage
 
 ## 📜 Roadmap
 

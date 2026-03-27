@@ -11,6 +11,7 @@ final class ChatViewModel: ObservableObject {
     @Published var suggestedPrompts: [String] = []
 
     let kb: KnowledgeBase
+    let session: ChatSession
     @Published var activeKBs: [KnowledgeBase]
 
     private let rag = RAGService.shared
@@ -19,10 +20,11 @@ final class ChatViewModel: ObservableObject {
     private var streamTask: Task<Void, Never>?
     private let haptics = UIImpactFeedbackGenerator(style: .light)
 
-    init(kb: KnowledgeBase) {
+    init(kb: KnowledgeBase, session: ChatSession) {
         self.kb = kb
+        self.session = session
         self.activeKBs = [kb]
-        self.messages = (try? db.loadMessages(kbId: kb.id)) ?? []
+        self.messages = (try? db.loadMessages(sessionId: session.id)) ?? []
         buildSuggestedPrompts()
     }
 
@@ -94,7 +96,7 @@ final class ChatViewModel: ObservableObject {
         let assistantIndex = messages.count - 1
 
         // Persist the user message immediately so it survives cancellation or navigation away.
-        try? db.saveMessages([userMsg], kbId: kb.id)
+        try? db.saveMessages([userMsg], sessionId: session.id, kbId: kb.id)
 
         streamTask = Task {
             do {
@@ -117,7 +119,7 @@ final class ChatViewModel: ObservableObject {
                 // Persist assistant message on normal completion (or partial if cancelled mid-stream).
                 let assistantMsg = messages[assistantIndex]
                 if !assistantMsg.content.isEmpty {
-                    try? db.saveMessages([assistantMsg], kbId: kb.id)
+                    try? db.saveMessages([assistantMsg], sessionId: session.id, kbId: kb.id)
                 }
             } catch is CancellationError {
                 let assistantMsg = messages[assistantIndex]
@@ -126,12 +128,12 @@ final class ChatViewModel: ObservableObject {
                     messages.removeLast(2)
                     try? db.deleteMessage(id: userMsg.id.uuidString)
                 } else {
-                    try? db.saveMessages([assistantMsg], kbId: kb.id)
+                    try? db.saveMessages([assistantMsg], sessionId: session.id, kbId: kb.id)
                 }
             } catch {
                 isTyping = false
                 messages[assistantIndex].content = "Error: \(error.localizedDescription)"
-                try? db.saveMessages([messages[assistantIndex]], kbId: kb.id)
+                try? db.saveMessages([messages[assistantIndex]], sessionId: session.id, kbId: kb.id)
                 errorMessage = error.localizedDescription
                 showError = true
             }
@@ -172,7 +174,7 @@ final class ChatViewModel: ObservableObject {
     func clearConversation() {
         stop()
         messages.removeAll()
-        try? db.deleteMessages(kbId: kb.id)
+        try? db.deleteSession(session.id)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 }

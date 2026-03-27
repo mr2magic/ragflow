@@ -115,6 +115,32 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v6") { db in
+            try db.create(table: "chat_sessions", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            let msgCols = try db.columns(in: "messages").map { $0.name }
+            if !msgCols.contains("sessionId") {
+                try db.alter(table: "messages") { t in
+                    t.add(column: "sessionId", .text)
+                }
+            }
+            // Migrate existing messages: create one default session per KB
+            let kbIds = try String.fetchAll(db, sql: "SELECT DISTINCT kbId FROM messages")
+            for kbId in kbIds {
+                let sessionId = UUID().uuidString
+                try db.execute(sql: """
+                    INSERT INTO chat_sessions (id, kbId, name, createdAt)
+                    VALUES (?, ?, ?, ?)
+                    """, arguments: [sessionId, kbId, "Chat", Date()])
+                try db.execute(sql: "UPDATE messages SET sessionId = ? WHERE kbId = ?",
+                               arguments: [sessionId, kbId])
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -125,6 +151,7 @@ final class DatabaseService {
         try dbQueue.write { db in
             try db.execute(sql: "DELETE FROM message_sources")
             try db.execute(sql: "DELETE FROM messages")
+            try db.execute(sql: "DELETE FROM chat_sessions")
             try db.execute(sql: "DELETE FROM workflow_runs")
             try db.execute(sql: "DELETE FROM workflows")
             try db.execute(sql: "DELETE FROM chunks_fts")
@@ -268,16 +295,51 @@ final class DatabaseService {
         }
     }
 
+    // MARK: - Chat Sessions
+
+    func allSessions(kbId: String) throws -> [ChatSession] {
+        try dbQueue.read { db in
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT * FROM chat_sessions WHERE kbId = ? ORDER BY createdAt DESC
+                """, arguments: [kbId])
+            return rows.map { row in
+                ChatSession(id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"])
+            }
+        }
+    }
+
+    func saveSession(_ session: ChatSession) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: """
+                INSERT OR REPLACE INTO chat_sessions (id, kbId, name, createdAt)
+                VALUES (?, ?, ?, ?)
+                """, arguments: [session.id, session.kbId, session.name, session.createdAt])
+        }
+    }
+
+    func deleteSession(_ id: String) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "DELETE FROM messages WHERE sessionId = ?", arguments: [id])
+            try db.execute(sql: "DELETE FROM chat_sessions WHERE id = ?", arguments: [id])
+        }
+    }
+
+    func renameSession(id: String, name: String) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: "UPDATE chat_sessions SET name = ? WHERE id = ?", arguments: [name, id])
+        }
+    }
+
     // MARK: - Messages
 
-    func saveMessages(_ messages: [Message], kbId: String) throws {
+    func saveMessages(_ messages: [Message], sessionId: String, kbId: String) throws {
         try dbQueue.write { db in
             for msg in messages {
                 let roleStr = msg.role == .user ? "user" : "assistant"
                 try db.execute(sql: """
-                    INSERT OR REPLACE INTO messages (id, kbId, role, content, timestamp)
-                    VALUES (?, ?, ?, ?, ?)
-                    """, arguments: [msg.id.uuidString, kbId, roleStr, msg.content, msg.timestamp])
+                    INSERT OR REPLACE INTO messages (id, kbId, sessionId, role, content, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """, arguments: [msg.id.uuidString, kbId, sessionId, roleStr, msg.content, msg.timestamp])
                 try db.execute(sql: "DELETE FROM message_sources WHERE messageId = ?",
                                arguments: [msg.id.uuidString])
                 for src in msg.sources {
@@ -290,11 +352,11 @@ final class DatabaseService {
         }
     }
 
-    func loadMessages(kbId: String) throws -> [Message] {
+    func loadMessages(sessionId: String) throws -> [Message] {
         try dbQueue.read { db in
             let rows = try Row.fetchAll(db, sql: """
-                SELECT * FROM messages WHERE kbId = ? ORDER BY timestamp ASC
-                """, arguments: [kbId])
+                SELECT * FROM messages WHERE sessionId = ? ORDER BY timestamp ASC
+                """, arguments: [sessionId])
             return try rows.map { row -> Message in
                 let msgId: String = row["id"]
                 let srcRows = try Row.fetchAll(db, sql: """

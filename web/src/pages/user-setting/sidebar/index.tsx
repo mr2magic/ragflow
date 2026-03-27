@@ -100,8 +100,11 @@ export function SideBar() {
 
       <div className="p-6 mt-auto ">
         <div className="flex items-center gap-2 mb-6 justify-between">
-          <div className="mr-2 px-2 text-accent-primary rounded-md">
-            {version}
+          <div className="flex items-center gap-2">
+            <div className="px-2 text-accent-primary rounded-md">{version}</div>
+            <div className="px-2 text-xs text-text-secondary rounded-md">
+              v01
+            </div>
           </div>
           <ThemeSwitch />
         </div>
