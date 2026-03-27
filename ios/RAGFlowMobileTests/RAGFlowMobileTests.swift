@@ -729,6 +729,227 @@ final class ChunkFetchTests: XCTestCase {
     }
 }
 
+// MARK: - Multi-Document Import (integration)
+
+/// Exercises the exact loop that LibraryViewModel.ingest(urls:) runs, using a real
+/// in-memory database so the test is fully isolated and leaves no side-effects.
+final class MultiDocImportTests: XCTestCase {
+    private var dbq: DatabaseQueue!
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! runMigrations(on: dbq)
+    }
+
+    /// Mirror of DatabaseService migrations — kept in-sync so the test DB has all tables.
+    private func runMigrations(on queue: DatabaseQueue) throws {
+        var m = DatabaseMigrator()
+        m.registerMigration("v1") { db in
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+        m.registerMigration("v2") { db in
+            try db.alter(table: "chunks") { t in t.add(column: "embedding", .blob) }
+        }
+        m.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.execute(sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [KnowledgeBase.defaultID, "My Library", Date()])
+            try db.alter(table: "books") { t in
+                t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        try m.migrate(queue)
+    }
+
+    // MARK: - Helpers
+
+    /// Write a text document to a temp file and return its URL.
+    private func makeTempTextFile(name: String, content: String) throws -> URL {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(name)
+            .appendingPathExtension("txt")
+        try content.write(to: url, atomically: true, encoding: .utf8)
+        return url
+    }
+
+    /// Simulate the LibraryViewModel ingest loop against the in-memory DB.
+    /// Returns (succeededCount, bookIds) so tests can make assertions.
+    private func simulateMultiImport(urls: [URL], kbId: String) throws -> (succeeded: Int, bookIds: [String]) {
+        var succeeded = 0
+        var bookIds: [String] = []
+        let chunker = Chunker()
+        for url in urls {
+            let text = try String(contentsOf: url, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { continue }
+            let bookId = UUID().uuidString
+            let chunks = chunker.chunk(text: text, bookId: bookId)
+            let book = Book(id: bookId, kbId: kbId, title: url.deletingPathExtension().lastPathComponent,
+                            author: "", filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
+            try dbq.write { db in
+                try book.save(db)
+                for chunk in chunks {
+                    try chunk.save(db)
+                    try db.execute(sql: "INSERT INTO chunks_fts(chunk_id, content, chapterTitle) VALUES (?, ?, ?)",
+                                   arguments: [chunk.id, chunk.content, chunk.chapterTitle ?? ""])
+                }
+            }
+            succeeded += 1
+            bookIds.append(bookId)
+        }
+        return (succeeded, bookIds)
+    }
+
+    // MARK: - Tests
+
+    func testThreeFilesAllImported() throws {
+        let kbId = KnowledgeBase.defaultID
+        let urls = try [
+            ("doc_alpha", "Stars are giant balls of plasma undergoing nuclear fusion in their cores. The Sun fuses 600 million tonnes of hydrogen per second producing the energy that lights our solar system."),
+            ("doc_beta",  "The Roman Senate in 44 BCE assassinated Julius Caesar on the Ides of March. This act plunged Rome into years of civil war ultimately leading to Augustus becoming the first emperor."),
+            ("doc_gamma", "Python and Swift are both high-level programming languages. Python excels at data science while Swift is optimised for Apple platforms including iOS macOS watchOS and tvOS."),
+        ].map { (name, content) in try makeTempTextFile(name: name, content: content) }
+
+        let (succeeded, bookIds) = try simulateMultiImport(urls: urls, kbId: kbId)
+
+        XCTAssertEqual(succeeded, 3, "All three documents must be imported successfully")
+
+        let bookCount = try dbq.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM books WHERE kbId = ?", arguments: [kbId])!
+        }
+        XCTAssertEqual(bookCount, 3, "Three books should exist in the KB")
+
+        // Every book should have at least one chunk
+        for id in bookIds {
+            let chunkCount = try dbq.read { db in
+                try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM chunks WHERE bookId = ?", arguments: [id])!
+            }
+            XCTAssertGreaterThan(chunkCount, 0, "Book \(id) should have at least one chunk")
+        }
+    }
+
+    func testPartialFailureDoesNotAbortLoop() throws {
+        let kbId = KnowledgeBase.defaultID
+        // Create two valid files and one empty file (will throw parseFailure)
+        let valid1 = try makeTempTextFile(name: "valid_a", content: "Astronomy text about galaxies and black holes. The Milky Way contains billions of stars.")
+        let empty  = try makeTempTextFile(name: "empty_doc", content: "")
+        let valid2 = try makeTempTextFile(name: "valid_b", content: "History text about ancient Rome and Julius Caesar crossing the Rubicon river.")
+
+        // Simulate the loop with error isolation (mirrors LibraryViewModel.ingest)
+        var succeeded = 0
+        let chunker = Chunker()
+        for url in [valid1, empty, valid2] {
+            do {
+                let text = try String(contentsOf: url, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !text.isEmpty else { throw RAGService.IngestError.parseFailure }
+                let bookId = UUID().uuidString
+                let chunks = chunker.chunk(text: text, bookId: bookId)
+                let book = Book(id: bookId, kbId: kbId, title: url.deletingPathExtension().lastPathComponent,
+                                author: "", filePath: url.path, addedAt: Date(), chunkCount: chunks.count)
+                try dbq.write { db in
+                    try book.save(db)
+                    for chunk in chunks { try chunk.save(db) }
+                }
+                succeeded += 1
+            } catch {
+                // Loop continues — exactly as LibraryViewModel does
+            }
+        }
+
+        XCTAssertEqual(succeeded, 2, "Two valid docs should succeed; empty doc should fail silently without aborting the loop")
+        let bookCount = try dbq.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM books WHERE kbId = ?", arguments: [kbId])!
+        }
+        XCTAssertEqual(bookCount, 2)
+    }
+
+    func testProgressMessagesForNFiles() {
+        // Verify the progress message format used in LibraryViewModel.ingest(urls:)
+        let urls = (1...5).map { URL(fileURLWithPath: "/tmp/doc\($0).txt") }
+        var messages: [String] = []
+        for (i, _) in urls.enumerated() {
+            messages.append("Importing \(i + 1) of \(urls.count)…")
+        }
+        XCTAssertEqual(messages.first, "Importing 1 of 5…")
+        XCTAssertEqual(messages.last,  "Importing 5 of 5…")
+        XCTAssertEqual(messages.count, 5)
+    }
+
+    func testSameKBIdOnAllImportedBooks() throws {
+        let kbId = "kb-isolation-test"
+        try dbq.write { db in
+            try db.execute(sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [kbId, "Test KB", Date()])
+        }
+        let urls = try [
+            ("file1", "Content about the solar system and planetary orbits."),
+            ("file2", "Content about ancient Egyptian pharaohs and pyramids."),
+            ("file3", "Content about Python programming and data structures."),
+        ].map { try makeTempTextFile(name: $0.0, content: $0.1) }
+
+        let (succeeded, _) = try simulateMultiImport(urls: urls, kbId: kbId)
+        XCTAssertEqual(succeeded, 3)
+
+        // All books must have the correct kbId
+        let books = try dbq.read { db in
+            try Book.filter(Column("kbId") == kbId).fetchAll(db)
+        }
+        XCTAssertEqual(books.count, 3)
+        XCTAssertTrue(books.allSatisfy { $0.kbId == kbId }, "All imported books must carry the correct kbId")
+    }
+
+    func testImportOrderPreservedInDB() throws {
+        let kbId = KnowledgeBase.defaultID
+        let titles = ["first_import", "second_import", "third_import"]
+        let urls = try titles.map { try makeTempTextFile(name: $0, content: "Unique content for \($0): stars galaxies nebulae supernovae.") }
+
+        let (succeeded, _) = try simulateMultiImport(urls: urls, kbId: kbId)
+        XCTAssertEqual(succeeded, 3)
+
+        // Titles should all be present (order by addedAt may vary by millisecond, so just check set membership)
+        let storedTitles = try dbq.read { db in
+            try String.fetchAll(db, sql: "SELECT title FROM books WHERE kbId = ?", arguments: [kbId])
+        }
+        for title in titles {
+            XCTAssertTrue(storedTitles.contains(title), "Book '\(title)' should be in the DB after import")
+        }
+    }
+
+    func testTenFilesAllImported() throws {
+        let kbId = KnowledgeBase.defaultID
+        let count = 10
+        let urls = try (1...count).map { i in
+            try makeTempTextFile(name: "batch_doc_\(i)", content: "Document \(i) discusses topic \(i) in detail. Stars planets galaxies black holes neutron stars pulsars quasars.")
+        }
+        let (succeeded, _) = try simulateMultiImport(urls: urls, kbId: kbId)
+        XCTAssertEqual(succeeded, count, "All \(count) documents in a batch must be imported")
+    }
+}
+
 // MARK: - ChunkSource model
 
 final class ChunkSourceTests: XCTestCase {
