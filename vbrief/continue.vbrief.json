@@ -1,6 +1,6 @@
 {
   "schema": "vbrief/1.0",
-  "saved_at": "2026-03-25",
+  "saved_at": "2026-03-27",
   "project": {
     "name": "RAGFlow",
     "type": "Full-stack Web App + iOS App",
@@ -20,48 +20,35 @@
       "Phase 1–4: All previously complete (P1.1–P1.6, P2, P2.5, iOS live testing phases 1–4)",
       "Phase 5 DONE — DOCX/XLSX/PPTX/EML format expansion",
       "Phase 6 DONE — WorkflowRunner + 5 templates + full UI",
-      "Session 2026-03-25: Bug fixes and feature additions from user testing feedback:",
-      "  Fix 1 — PDF import security scope race: copy-to-temp before releasing scope (eliminates race)",
-      "  Fix 2 — Chat history persistence: save user msg immediately on send; save assistant on all",
-      "    exit paths; targeted rollback via deleteMessage(id:) on empty cancellation",
-      "  Fix 3 — Clear Chat button: moved from toolbar (unreliable through TabView) into kbScopeBar,",
-      "    shown only when messages.isEmpty == false",
-      "  Fix 4 — Suggested chat prompts: now document-aware (generated from KB book titles via",
-      "    buildSuggestedPrompts()); 3 cases: 0 books (generic), 1 book, 2 books, 3+ books",
-      "  Fix 5 — Import Documents button added to non-empty library (Section footer in bookList)",
-      "Phase 7 Hardening:",
-      "  P7.2 — Replaced 3 try! calls in DatabaseService.init with do/catch { fatalError(...) }",
-      "  P7.3 — Added MARKETING_VERSION=1.0 + CURRENT_PROJECT_VERSION=1 to both build configs",
-      "  P7.4 — Added PrivacyInfo.xcprivacy (NSPrivacyTracking=false, UserDefaults CA92.1)",
-      "Session 2026-03-25 (landscape QA): All 5 simulator fixes verified on iPad Pro 13-inch M5 iOS 26.4",
-      "  — UDID: 5D4323F8-0573-4B33-807A-B93826882904 (Booted, iOS 26.4)",
-      "  — Simulator click calibration: scale_x=0.3526, scale_y=0.3565, chrome_x=54, chrome_y=91",
-      "Workflow editor overhaul (commit 54bfaf3, 2026-03-25):",
-      "  — 3 new StepTypes: rewrite (LLM query rewriting), message (static text injection),",
-      "    webSearch (Brave Search API via existing ToolExecutor)",
-      "  — WorkflowEditorView: iOS Shortcuts-style vertical step list with tap-to-configure",
-      "    (StepConfigSheet), swipe-to-delete, drag-to-reorder (EditButton), Add Step picker",
-      "  — StepTypePicker: sheet listing all 7 step types with icon, displayName, stepDescription",
-      "  — StepConfigSheet: per-type Form fields (prompt editor, query variable, top-K stepper,",
-      "    KB override picker, output slot)",
-      "  — WorkflowDetailView: Edit toolbar button → WorkflowEditorView sheet; saves to DB and",
-      "    refreshes in place; uses shared StepTypeIcon view for all 7 types",
-      "  — WorkflowListView row: now shows step count (e.g. 'RAG Q&A · 4 steps')",
-      "  — StepType.displayName and .stepDescription computed properties added"
+      "Session 2026-03-25: Bug fixes and feature additions from user testing feedback (commits up to 54bfaf3)",
+      "Session 2026-03-27: Background processing implementation",
+      "  — MultiDocImportTests (commit eb731a7): 6 new XCTests covering batch import loop,",
+      "    partial-failure isolation, progress messages, KB scoping, 10-file batches",
+      "  — Background processing (commit 99cb1ca, tag AfterBackgroundProcessing):",
+      "    BackgroundTaskCoordinator singleton: BGContinuedProcessingTask for import+workflow,",
+      "    UIApplication.beginBackgroundTask fence for chat streaming",
+      "    RAGFlowMobileApp.init(): registers BGTaskScheduler handlers before first scene connects",
+      "    LibraryViewModel.ingest(urls:): begin/advance/finish import coordinator calls",
+      "    ChatViewModel.send(): 30-second background fence wrapping entire stream Task",
+      "    WorkflowRunner.run(): begin/advance/finish workflow coordinator calls",
+      "    Info.plist: BGTaskSchedulerPermittedIdentifiers declared for both task IDs",
+      "    BACKGROUND_PROCESSING.md: spec doc with design rationale and scenario table",
+      "  — Tags: BeforeBackgroundProcessing (eb731a7), AfterBackgroundProcessing (99cb1ca)"
     ],
     "in_progress": [],
     "next_steps": [
       "Manual (user action required):",
       "  — P7.1: Fresh install wipe test end-to-end on real device",
       "  — Set DEVELOPMENT_TEAM in Xcode Signing & Capabilities for real-device deployment",
-      "  — Test PDF import fix on real device (copy-to-temp before scope release)",
+      "  — Test BGContinuedProcessingTask on real iOS 26 device (not simulatable)",
       "  — TestFlight: Archive → Distribute → App Store Connect",
       "Optional enhancements:",
-      "  — Add Categorize step type (branching — breaks linear model, needs design work)",
-      "  — Add WorkflowTemplates using new rewrite/webSearch step types",
-      "  — Add workflow tests to RAGFlowMobileTests",
+      "  — Background GPU entitlement for on-device embedding (iOS 26, sparse hardware support)",
+      "  — Add Categorize step type (branching — requires design beyond linear model)",
+      "  — Add WorkflowTemplates using rewrite/webSearch step types",
+      "  — Brave Search API key entry in SettingsView (currently keychain only, no UI field)",
       "  — Investigate Deep Summarizer 'Failed' status (root cause uninvestigated)",
-      "  — Brave Search API key entry in SettingsView (currently keychain only, no UI field)"
+      "  — Local notification when BGContinuedProcessingTask completes while app is backgrounded"
     ]
   },
   "phase_status": {
@@ -77,24 +64,47 @@
     "iOS_live_testing_phase7_hardening": "MOSTLY COMPLETE (P7.2/P7.3/P7.4 done; P7.1 real-device test pending)",
     "iOS_bug_fixes_2026-03-25": "COMPLETE — PDF import, chat persistence, clear chat, suggested prompts, import button",
     "iOS_landscape_QA_2026-03-25": "COMPLETE — all fixes verified on iPad Pro 13-inch M5 iOS 26.4 landscape",
-    "iOS_workflow_editor_2026-03-25": "COMPLETE — WorkflowEditorView + 3 new step types, commit 54bfaf3"
+    "iOS_workflow_editor_2026-03-25": "COMPLETE — WorkflowEditorView + 3 new step types, commit 54bfaf3",
+    "iOS_background_processing_2026-03-27": "COMPLETE — BGContinuedProcessingTask + UIKit fence, commit 99cb1ca, tag AfterBackgroundProcessing"
   },
   "known_gaps": {
     "code_signing": "DEVELOPMENT_TEAM not set — user must configure in Xcode for real device",
     "workflow_failed": "Deep Summarizer shown as 'Failed' in user screenshot — root cause uninvestigated",
     "brave_search_ui": "Brave Search API key has no Settings UI field — stored in keychain only",
-    "workflow_categorize": "Categorize/Switch step types not yet implemented — requires branching design beyond linear model"
+    "workflow_categorize": "Categorize/Switch step types not yet implemented — requires branching design beyond linear model",
+    "bg_task_simulator": "BGContinuedProcessingTask cannot be triggered in the iOS Simulator — real device required for end-to-end test",
+    "streaming_background": "LLM streaming (URLSession DataTask) cannot use background URLSession — 30s fence is best achievable; verified expected OS limitation"
   },
   "last_commit": {
-    "hash": "54bfaf3",
-    "message": "Feat(iOS): Workflow editor — Shortcuts-style step builder with 3 new step types",
+    "hash": "99cb1ca65",
+    "message": "Feat(iOS): background processing — BGContinuedProcessingTask (iOS 26) + UIKit fence",
+    "tags": ["AfterBackgroundProcessing"],
+    "prior_tag": "BeforeBackgroundProcessing at eb731a7ec",
     "files_changed": [
-      "ios/RAGFlowMobile.xcodeproj/project.pbxproj",
-      "ios/RAGFlowMobile/Features/Workflows/WorkflowEditorView.swift (NEW)",
-      "ios/RAGFlowMobile/Features/Workflows/WorkflowDetailView.swift",
-      "ios/RAGFlowMobile/Features/Workflows/WorkflowListView.swift",
+      "ios/BACKGROUND_PROCESSING.md (NEW)",
+      "ios/RAGFlowMobile/App/BackgroundTaskCoordinator.swift (NEW)",
+      "ios/RAGFlowMobile/App/RAGFlowMobileApp.swift",
+      "ios/RAGFlowMobile/Resources/Info.plist",
+      "ios/RAGFlowMobile/Features/Library/LibraryViewModel.swift",
+      "ios/RAGFlowMobile/Features/Chat/ChatViewModel.swift",
       "ios/RAGFlowMobile/Services/Agent/WorkflowRunner.swift",
-      "ios/RAGFlowMobile/Services/Agent/WorkflowStep.swift"
+      "ios/RAGFlowMobile.xcodeproj/project.pbxproj"
+    ]
+  },
+  "test_status": {
+    "total_tests": 44,
+    "all_passing": true,
+    "suites": [
+      "ChunkFetchTests (7)",
+      "ChunkSourceTests (2)",
+      "ChunkerTests (8)",
+      "DatabaseServiceTests (9)",
+      "EmbeddingServiceTests (6)",
+      "KnowledgeBaseTests (2)",
+      "LLMErrorTests (3)",
+      "MultiDocImportTests (6)",
+      "RAGServiceHTMLTests (1)",
+      "SettingsStoreConfiguredTests (5)"
     ]
   },
   "environment": {
@@ -104,13 +114,13 @@
     "canvas_name": "Trip Planner - Charleston, SC",
     "api_token_user": "dhorn (dan.horn@me.com)",
     "ios_project": "ios/RAGFlowMobile.xcodeproj",
-    "ios_simulator_iphone": "iPhone 16 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
+    "ios_simulator_iphone": "iPhone 16 OS 18.5 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "ios_simulator_ipad": "iPad Pro 13-inch M4 UDID: 69682D2A-65AD-43B6-B709-25B5DB2B03C8",
-    "ios_simulator_ipad_legacy": "iPad Pro 13-inch M5 iOS 26.4 UDID: 5D4323F8-0573-4B33-807A-B93826882904",
+    "ios_simulator_ipad_ios26": "iPad Pro 13-inch M5 iOS 26.4 UDID: 5D4323F8-0573-4B33-807A-B93826882904",
     "ios_simulator_click_calibration": "scale=0.3526x/0.3565y chrome=54x/91y window=(944,49) 976x805",
     "ios_bundle_id": "com.dhorn.ragflowmobile",
     "ios_min_deployment": "iOS 17.0",
     "ios_devices": "iPhone + iPad, portrait + landscape",
-    "ios_app_data": "~/Library/Developer/CoreSimulator/Devices/5EF314CD-.../Data/Application/7BD63214-..."
+    "ios_app_data_iphone16": "~/Library/Developer/CoreSimulator/Devices/5EF314CD-.../Data/Application/9AC71CC8-1D5B-4B60-8E15-6403012823E2"
   }
 }
