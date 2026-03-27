@@ -99,6 +99,11 @@ final class ChatViewModel: ObservableObject {
         try? db.saveMessages([userMsg], sessionId: session.id, kbId: kb.id)
 
         streamTask = Task {
+            // Keep the process alive for ~30 seconds after a Stage Manager window switch
+            // so typical LLM responses complete before the OS suspends the stream.
+            let bgToken = UIApplication.shared.beginBackgroundTask(withName: "RAGFlow: LLM stream") {}
+            defer { UIApplication.shared.endBackgroundTask(bgToken) }
+
             do {
                 let chunks = try await retrieveChunks(for: query)
                 messages[assistantIndex].sources = chunks.map { ChunkSource(from: $0) }

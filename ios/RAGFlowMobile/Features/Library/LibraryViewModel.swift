@@ -154,7 +154,12 @@ final class LibraryViewModel: ObservableObject {
 
     private func ingest(urls: [URL]) async {
         isIngesting = true
-        defer { isIngesting = false; ingestProgress = "" }
+        let coordinator = BackgroundTaskCoordinator.shared
+        coordinator.beginImport(fileCount: urls.count)
+        defer {
+            isIngesting = false
+            ingestProgress = ""
+        }
         var succeeded = 0
         for (i, url) in urls.enumerated() {
             ingestProgress = "Importing \(i + 1) of \(urls.count)…"
@@ -164,7 +169,9 @@ final class LibraryViewModel: ObservableObject {
             } catch {
                 show(error: "Failed to import \(url.lastPathComponent): \(error.localizedDescription)")
             }
+            coordinator.advanceImport()
         }
+        coordinator.finishImport(success: succeeded > 0)
         reload()
         if succeeded > 0 { haptics.notificationOccurred(.success) }
     }

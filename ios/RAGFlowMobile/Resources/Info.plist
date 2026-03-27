@@ -48,5 +48,10 @@
     <string>RAGFlow connects to Ollama on your local network to run AI models privately on-device.</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>com.dhorn.ragflowmobile.import</string>
+        <string>com.dhorn.ragflowmobile.workflow</string>
+    </array>
 </dict>
 </plist>

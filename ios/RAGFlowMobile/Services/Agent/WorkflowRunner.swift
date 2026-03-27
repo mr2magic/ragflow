@@ -15,14 +15,20 @@ final class WorkflowRunner: ObservableObject {
         isRunning = true
         stepLog = []
         streamingOutput = ""
-        defer { isRunning = false; currentStep = "" }
+
+        let coordinator = BackgroundTaskCoordinator.shared
+        let steps = workflow.steps
+        coordinator.beginWorkflow(name: workflow.name, stepCount: steps.count)
+
+        defer {
+            isRunning = false
+            currentStep = ""
+        }
 
         var ctx: StepContext = ["input": input]
         var finalOutput = ""
         var failed = false
         var entries: [String] = []
-
-        let steps = workflow.steps
 
         for step in steps {
             guard !Task.isCancelled else { failed = true; break }
@@ -113,7 +119,10 @@ final class WorkflowRunner: ObservableObject {
                 failed = true
                 break
             }
+            coordinator.advanceWorkflow()
         }
+
+        coordinator.finishWorkflow(success: !failed)
 
         if finalOutput.isEmpty { finalOutput = ctx["output"] ?? streamingOutput }
         stepLog = entries
