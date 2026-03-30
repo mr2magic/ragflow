@@ -1,6 +1,5 @@
 import SwiftUI
 import UniformTypeIdentifiers
-import UIKit
 
 // Pulled out so Swift's type checker doesn't time out inside body.
 private let supportedImportTypes: [UTType] = {
@@ -12,88 +11,6 @@ private let supportedImportTypes: [UTType] = {
     }
     return types
 }()
-
-// MARK: - UIKit document picker wrapper
-// Uses the key window's root view controller so presentation always succeeds,
-// regardless of where this representable sits in the SwiftUI view tree.
-// A small async delay lets any SwiftUI action-sheet animation finish before
-// the system file picker presents over it.
-private struct DocumentPickerPresenter: UIViewControllerRepresentable {
-    @Binding var isPresented: Bool
-    let onPick: ([URL]) -> Void
-
-    func makeCoordinator() -> Coordinator { Coordinator(isPresented: $isPresented, onPick: onPick) }
-
-    func makeUIViewController(context: Context) -> UIViewController { UIViewController() }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        guard isPresented else { return }
-
-        // Wait long enough for any in-flight confirmation-dialog dismissal animation
-        // to fully complete before we push the file picker on top.  One run-loop tick
-        // is not enough when the user taps "Browse Files" from inside an action sheet —
-        // the sheet is still mid-dismissal and presentedViewController is non-nil.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            guard context.coordinator.isPresented else { return }
-
-            // Find the topmost non-dismissing view controller in the key window.
-            guard let window = UIApplication.shared.connectedScenes
-                    .compactMap({ $0 as? UIWindowScene })
-                    .first(where: { $0.activationState == .foregroundActive })?
-                    .windows.first(where: { $0.isKeyWindow }),
-                  let root = window.rootViewController else { return }
-
-            var presenter = root
-            while let next = presenter.presentedViewController, !next.isBeingDismissed {
-                presenter = next
-            }
-            // Allow presenting when there is no presentedVC, or the existing one is
-            // already in the process of being dismissed (safe to present over it).
-            let existingVC = presenter.presentedViewController
-            guard existingVC == nil || existingVC?.isBeingDismissed == true else { return }
-
-            let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedImportTypes)
-            picker.allowsMultipleSelection = true
-            picker.shouldShowFileExtensions = true
-            picker.delegate = context.coordinator
-            presenter.present(picker, animated: true)
-        }
-    }
-
-    final class Coordinator: NSObject, UIDocumentPickerDelegate {
-        @Binding var isPresented: Bool
-        let onPick: ([URL]) -> Void
-
-        init(isPresented: Binding<Bool>, onPick: @escaping ([URL]) -> Void) {
-            _isPresented = isPresented
-            self.onPick = onPick
-        }
-
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            let scoped = urls.filter { $0.startAccessingSecurityScopedResource() }
-            // Copy each file to the app's temp directory while the security scope is
-            // still active, then release the scope immediately. This avoids a race where
-            // PDFKit (or other parsers) lazily reads file data after the 1-second scope
-            // window has already closed, which silently produces empty results.
-            let localURLs: [URL] = urls.map { url in
-                let tmp = FileManager.default.temporaryDirectory
-                    .appendingPathComponent(UUID().uuidString)
-                    .appendingPathExtension(url.pathExtension)
-                if (try? FileManager.default.copyItem(at: url, to: tmp)) != nil {
-                    return tmp
-                }
-                return url  // copy failed — fall back to original
-            }
-            scoped.forEach { $0.stopAccessingSecurityScopedResource() }
-            onPick(localURLs)
-            isPresented = false
-        }
-
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            isPresented = false
-        }
-    }
-}
 
 struct LibraryView: View {
     let kb: KnowledgeBase
@@ -123,12 +40,31 @@ struct LibraryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search documents")
         .toolbar { toolbarContent }
-        .background(
-            DocumentPickerPresenter(isPresented: $showImporter) { urls in
-                Task { await vm.ingestURLs(urls) }
+        // Apple-standard file importer — handles search, iCloud, presentation context natively.
+        .fileImporter(
+            isPresented: $showImporter,
+            allowedContentTypes: supportedImportTypes,
+            allowsMultipleSelection: true
+        ) { result in
+            switch result {
+            case .success(let urls):
+                // Copy each file to temp while the security scope is active, then release.
+                // This prevents lazy-reading parsers (PDFKit, EPUBKit) from hitting the scope
+                // after it has expired, which would silently produce empty results.
+                let localURLs: [URL] = urls.compactMap { url in
+                    guard url.startAccessingSecurityScopedResource() else { return nil }
+                    defer { url.stopAccessingSecurityScopedResource() }
+                    let tmp = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString)
+                        .appendingPathExtension(url.pathExtension)
+                    return (try? FileManager.default.copyItem(at: url, to: tmp)) != nil ? tmp : nil
+                }
+                Task { await vm.ingestURLs(localURLs) }
+            case .failure(let error):
+                vm.errorMessage = error.localizedDescription
+                vm.showError = true
             }
-            .frame(width: 0, height: 0)
-        )
+        }
         .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
             Button("Browse Files (iPhone & iCloud)") { showImporter = true }
             Button("Import from URL") { vm.showURLEntry = true }
