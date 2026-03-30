@@ -15,7 +15,6 @@
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
 		31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */; };
 		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
-		C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */; };
 		3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23157B24B0E2E44B3978039A /* OfficeParser.swift */; };
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
@@ -45,6 +44,7 @@
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
 		BB49EC71FD454D8B5C593400 /* BackgroundTaskCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */; };
+		C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */; };
 		C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */; };
 		CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */; };
 		CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8585645296370F3070DDE58 /* WorkflowStep.swift */; };
@@ -89,8 +89,6 @@
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileUITests.swift; sourceTree = "<group>"; };
-		C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
 		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
 		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
@@ -121,7 +119,10 @@
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
 		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileUITests.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
@@ -129,7 +130,6 @@
 		CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
 		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
-		B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
@@ -240,14 +240,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */,
-			);
-			path = RAGFlowMobileUITests;
-			sourceTree = "<group>";
-		};
 		4F4C99203F3F22E475F4DDB9 /* Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -288,6 +280,14 @@
 				37A4DB79F7B676E037C923F5 /* Workflows */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */,
+			);
+			path = RAGFlowMobileUITests;
 			sourceTree = "<group>";
 		};
 		C4EFEC20BE53B2EF79FE9A3C /* Settings */ = {
@@ -375,22 +375,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */;
-			buildPhases = (
-				C1D2E3F4A5B60005C2D3E4F5 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */,
-			);
-			name = RAGFlowMobileUITests;
-			productName = RAGFlowMobileUITests;
-			productReference = C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 503BC6CD7260E1D249CBD08C /* Build configuration list for PBXNativeTarget "RAGFlowMobileTests" */;
@@ -408,6 +392,22 @@
 			productName = RAGFlowMobileTests;
 			productReference = 45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */;
+			buildPhases = (
+				C1D2E3F4A5B60005C2D3E4F5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */,
+			);
+			name = RAGFlowMobileUITests;
+			productName = RAGFlowMobileUITests;
+			productReference = C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		EF1F4525075086C1DC62636B /* RAGFlowMobile */ = {
 			isa = PBXNativeTarget;
@@ -440,12 +440,12 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					EF1F4525075086C1DC62636B = {
-						ProvisioningStyle = Automatic;
-					};
 					C1D2E3F4A5B60006C2D3E4F5 = {
 						ProvisioningStyle = Automatic;
 						TestTargetID = EF1F4525075086C1DC62636B;
+					};
+					EF1F4525075086C1DC62636B = {
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -575,6 +575,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -614,6 +616,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -625,42 +629,6 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RAGFlowMobile.app/RAGFlowMobile";
-			};
-			name = Release;
-		};
-		C1D2E3F4A5B6000AC2D3E4F5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RAGFlowMobile;
-			};
-			name = Debug;
-		};
-		C1D2E3F4A5B6000BC2D3E4F5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RAGFlowMobile;
 			};
 			name = Release;
 		};
@@ -780,6 +748,46 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C1D2E3F4A5B6000AC2D3E4F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RAGFlowMobile;
+			};
+			name = Debug;
+		};
+		C1D2E3F4A5B6000BC2D3E4F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RAGFlowMobile;
 			};
 			name = Release;
 		};

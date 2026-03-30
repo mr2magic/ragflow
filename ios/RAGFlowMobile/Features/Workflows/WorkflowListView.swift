@@ -86,6 +86,7 @@ private struct NewWorkflowSheet: View {
                 Section("Template") {
                     ForEach(WorkflowTemplates.all) { template in
                         templateRow(template)
+                            .accessibilityIdentifier("template-\(template.id)")
                     }
                 }
 

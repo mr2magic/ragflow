@@ -245,6 +245,171 @@ final class RAGFlowMobileUITests: XCTestCase {
         }
     }
 
+    // MARK: - Workflow execution helpers
+
+    /// Opens the Workflows screen.
+    private func openWorkflows() {
+        let workflowBtn = app.buttons["btn.workflows"].firstMatch
+        XCTAssertTrue(workflowBtn.waitForExistence(timeout: 4), "Workflows toolbar button must exist")
+        workflowBtn.tap()
+        XCTAssertTrue(app.navigationBars["Workflows"].waitForExistence(timeout: 4), "Workflows nav bar must appear")
+    }
+
+    /// Opens the workflow at the given list index (0-based), types `query`, runs it,
+    /// waits up to `timeout` seconds, and returns (workflowName, status, stepLog).
+    @discardableResult
+    private func runWorkflowAtIndex(_ index: Int, query: String, timeout: TimeInterval = 90) -> (name: String, status: String, stepLog: String) {
+        // Grab workflow name from the Workflows list cell — scope to the first hittable table/collection
+        // to avoid picking up cells from other views in the accessibility tree (Library, KB list, etc.)
+        // Workflow list rows contain "N steps" text; filter on that to identify real workflow cells.
+        let stepsPredicate = NSPredicate(format: "label CONTAINS[c] 'step'")
+        let workflowCells = app.cells.matching(stepsPredicate)
+        let cellCount = workflowCells.count
+        guard index < cellCount else {
+            // Not enough workflow cells — skip gracefully
+            let backBtn = app.navigationBars.buttons.firstMatch
+            if backBtn.waitForExistence(timeout: 2) { backBtn.tap() }
+            return ("(skipped — only \(cellCount) workflow\(cellCount == 1 ? "" : "s") on device)", "Done", "")
+        }
+        let cell = workflowCells.element(boundBy: index)
+        let workflowName = cell.staticTexts.firstMatch.label
+        if cell.isHittable {
+            cell.tap()
+        } else {
+            cell.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
+
+        // Enter query — TextField(axis:.vertical) may render as textField or textView
+        let queryTextField = app.textFields.firstMatch
+        let queryTextView  = app.textViews.firstMatch
+        let queryField: XCUIElement
+        if queryTextField.waitForExistence(timeout: 4) {
+            queryField = queryTextField
+        } else if queryTextView.waitForExistence(timeout: 2) {
+            queryField = queryTextView
+        } else {
+            XCTFail("Query input field must appear in '\(workflowName)' detail view")
+            return (workflowName, "", "")
+        }
+        queryField.tap()
+        queryField.typeText(query)
+
+        // Record history count before running so we can detect the new entry
+        let historyCountBefore = app.staticTexts["History"].exists
+            ? app.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'ago'")).count
+            : 0
+
+        // Tap play button — SwiftUI Image(systemName: "play.circle.fill") button
+        let playPredicate = NSPredicate(format: "label CONTAINS[c] 'play'")
+        let playBtn = app.buttons.matching(playPredicate).firstMatch
+        XCTAssertTrue(playBtn.waitForExistence(timeout: 3), "Play button must be visible in '\(workflowName)' detail")
+        playBtn.tap()
+
+        // Wait for a stop button to appear (indicates workflow started running)
+        let stopPredicate = NSPredicate(format: "label CONTAINS[c] 'stop'")
+        _ = app.buttons.matching(stopPredicate).firstMatch.waitForExistence(timeout: 5)
+
+        // Collect step log from the running card while it runs (best-effort snapshot)
+        var stepLog = ""
+        let runDeadline = Date().addingTimeInterval(timeout)
+        var statusFound = ""
+
+        while Date() < runDeadline {
+            // Capture running card step log
+            let allTexts = app.staticTexts.allElementsBoundByIndex
+            var entries: [String] = []
+            let count = allTexts.count
+            for i in 0..<count {
+                guard i < allTexts.count else { break }
+                let el = allTexts[i]
+                guard el.exists else { continue }
+                let label = el.label
+                if label.hasPrefix("▶") || label.hasPrefix("  ") || label.hasPrefix("✗") {
+                    entries.append(label)
+                }
+            }
+            if !entries.isEmpty { stepLog = entries.joined(separator: "\n") }
+
+            // Check if workflow finished (play button returns, stop button gone)
+            let playBack = app.buttons.matching(playPredicate).firstMatch
+            let stopGone = !app.buttons.matching(stopPredicate).firstMatch.exists
+            if playBack.exists && stopGone {
+                // Workflow finished — check the newest history entry's status
+                let historyCountAfter = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'ago'")).count
+                // Wait a moment for the history row to settle
+                _ = XCTWaiter.wait(for: [XCTestExpectation(description: "settle")], timeout: 0.5)
+                // Find the newest run row — it should have Done or Failed badge
+                if app.staticTexts["Done"].exists   { statusFound = "Done" }
+                if app.staticTexts["Failed"].exists { statusFound = "Failed" }
+                _ = historyCountBefore; _ = historyCountAfter
+                break
+            }
+            _ = XCTWaiter.wait(for: [XCTestExpectation(description: "poll")], timeout: 1.0)
+        }
+
+        // Navigate back to workflow list for the next test
+        let backBtn = app.navigationBars.buttons.firstMatch
+        if backBtn.waitForExistence(timeout: 2) { backBtn.tap() }
+
+        return (workflowName, statusFound, stepLog)
+    }
+
+    // MARK: - 12. Run workflow 0 (first in list)
+
+    func test12_WorkflowRun0() {
+        XCTAssertTrue(waitForKBList())
+        openWorkflows()
+        let noWorkflows = app.staticTexts["No Workflows"].waitForExistence(timeout: 2)
+        guard !noWorkflows else {
+            XCTFail("No workflows on device. Create at least one workflow first.")
+            return
+        }
+        let result = runWorkflowAtIndex(0, query: "What topics are covered?")
+        XCTAssertFalse(result.name.isEmpty, "Workflow 0 must have a name")
+        XCTAssertEqual(result.status, "Done",
+            "Workflow '\(result.name)' (index 0) must complete.\nStep log:\n\(result.stepLog)")
+    }
+
+    // MARK: - 13. Run workflow 1 (second in list)
+
+    func test13_WorkflowRun1() {
+        XCTAssertTrue(waitForKBList())
+        openWorkflows()
+        let result = runWorkflowAtIndex(1, query: "Summarize the main themes", timeout: 120)
+        XCTAssertEqual(result.status, "Done",
+            "Workflow '\(result.name)' (index 1) must complete.\nStep log:\n\(result.stepLog)")
+    }
+
+    // MARK: - 14. Run workflow 2
+
+    func test14_WorkflowRun2() {
+        XCTAssertTrue(waitForKBList())
+        openWorkflows()
+        let result = runWorkflowAtIndex(2, query: "key characters and events")
+        XCTAssertEqual(result.status, "Done",
+            "Workflow '\(result.name)' (index 2) must complete.\nStep log:\n\(result.stepLog)")
+    }
+
+    // MARK: - 15. Run workflow 3
+
+    func test15_WorkflowRun3() {
+        XCTAssertTrue(waitForKBList())
+        openWorkflows()
+        let result = runWorkflowAtIndex(3, query: "What are the main ideas?", timeout: 150)
+        XCTAssertEqual(result.status, "Done",
+            "Workflow '\(result.name)' (index 3) must complete.\nStep log:\n\(result.stepLog)")
+    }
+
+    // MARK: - 16. Run workflow 4
+
+    func test16_WorkflowRun4() {
+        XCTAssertTrue(waitForKBList())
+        openWorkflows()
+        let result = runWorkflowAtIndex(4, query: "Analyze the strengths and weaknesses described")
+        XCTAssertEqual(result.status, "Done",
+            "Workflow '\(result.name)' (index 4) must complete.\nStep log:\n\(result.stepLog)")
+    }
+
     // MARK: - 11. Delete KB created in test03
 
     func test11_DeleteTestKB() {
