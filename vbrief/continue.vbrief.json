@@ -1,11 +1,11 @@
 {
   "schema": "vbrief/1.0",
-  "saved_at": "2026-03-29",
+  "saved_at": "2026-03-30",
   "project": {
     "name": "RAGFlow",
     "type": "Full-stack Web App + iOS App",
     "languages": ["Python", "TypeScript", "Swift"],
-    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit, PDFKit, NaturalLanguage, Accelerate, marmelroy/Zip",
+    "stack": "Flask backend, React/TypeScript frontend (UmiJS, Ant Design), Docker Compose, MySQL, Elasticsearch/Infinity, Redis, MinIO; iOS: SwiftUI, GRDB, EPUBKit, PDFKit, NaturalLanguage, Accelerate, marmeleiro/Zip",
     "repo": "https://github.com/mr2magic/ragflow"
   },
   "deft": {
@@ -23,40 +23,26 @@
       "Session 2026-03-25: Bug fixes and feature additions from user testing feedback",
       "Session 2026-03-27: Background processing (BGContinuedProcessingTask + UIKit fence)",
       "Session 2026-03-29 (Part 1): Per-KB retrieval settings + doc status indicators + local notifications + XCUITest suite",
-      "  — KBRetrievalSettingsSheet: topK stepper per KB, stored in SQLite v7 migration",
-      "  — LibraryView: per-row indexing status badges (ProgressView / green check / orange warning)",
-      "  — BackgroundTaskCoordinator: UNUserNotificationCenter fires when import/workflow completes while backgrounded",
-      "  — XCUITest target added to project: 11 click-through UI tests covering all major flows, 11/11 passing",
-      "  — Commit d52d5d4fb, tag: none",
       "Session 2026-03-29 (Part 2): Enterprise RAG pipeline overhaul (tag: large_update)",
-      "  — Hybrid RRF retrieval: BM25 (FTS5) + cosine similarity fused with Reciprocal Rank Fusion",
-      "    RAGService.retrieve(query:kb:) — single entry point using currentQueryEmbedding transient slot",
-      "    RRF formula: score = Σ 1/(60 + rank_i), normalised, threshold-filtered, top-K returned",
-      "  — Sentence-boundary chunker (NaturalLanguage NLTokenizer) replaces naive word-split",
-      "    Oversized single sentences fall back to word-boundary splitting (handles code/CSV)",
-      "    No more mid-sentence cuts; micro-chunk guard removed (was breaking short test inputs)",
-      "  — Per-KB RAG settings (DB v8): topK, topN, similarityThreshold, chunkMethod, chunkSize, chunkOverlap",
-      "    KBRetrievalSettingsSheet: full enterprise panel with Retrieval + Chunking + Pipeline info sections",
-      "    ChunkMethod enum: General / Q&A / Paper / Table",
-      "  — Document metadata (DB v8): Book.fileType, pageCount, wordCount, sourceURL on every ingested document",
-      "    EPUB chapter titles from NCX/TOC (not generic 'Section N'); ingestEPUB uses collectTOC() recursion",
-      "    PDF: pageCount from PDFDocument.pageCount; all types: wordCount from chunk word count sum",
-      "    LibraryViewModel.importFromURL() → rag.ingest(url:kbId:sourceURL:) sets sourceURL field",
-      "  — Enterprise system prompt: shared buildEnterprisePrompt() in LLMService.swift",
-      "    Used by ClaudeService, OpenAIService, OllamaService (replaces 'reading assistant' / 'book excerpts')",
-      "    Full document catalog with type/page/word/passage counts; cross-document synthesis instructions",
-      "  — ChunkSource gains documentTitle field; DatabaseService saves/loads it in message_sources",
-      "  — LibraryView: document rows show fileType · pages · wordcount · passages",
-      "  — DocumentDetailView: Passage Viewer (was Chunk Viewer); shows all metadata incl. sourceURL",
-      "  — ChatViewModel refactored: retrieveChunks() returns ([Chunk], [String:String]) with docTitle lookup",
-      "  — All tests updated: 11/11 UI tests + 47 unit tests passing",
-      "  — Commit 4e19c360c, tag: large_update"
+      "  — Hybrid RRF retrieval, sentence chunking, per-KB settings, document metadata, enterprise system prompt",
+      "  — Commit 4e19c360c, tag: large_update",
+      "Session 2026-03-30: Real-device workflow testing + documentation update (tag: working_well)",
+      "  — Fixed DEVELOPMENT_TEAM in all 4 test target build configs (UITests + Tests, Debug + Release)",
+      "  — Added .accessibilityIdentifier('template-{id}') to NewWorkflowSheet template rows",
+      "  — Rewrote tests 12–16 as live workflow execution tests (run existing workflows, poll Done/Failed)",
+      "  — Tests 12–16 all pass on Captain Jack Sparrow (iOS 26.4, 00008103-0005583101BB001E)",
+      "  — Diagnosed root cause: workflows retrieve 0 chunks because assigned KB has no imported docs",
+      "  — Updated SPECIFICATION.md to reflect full production-ready state",
+      "  — Commit 7758bb0e9, tag: working_well"
     ],
     "in_progress": [],
     "next_steps": [
+      "Fix 0-chunk workflow root cause (user action required):",
+      "  — Open Workflows tab → tap Edit on each workflow → verify the KB picker shows a KB with documents",
+      "  — If KB is empty: import EPUBs from /Users/Dans_iMac/Desktop/BACKUP_source_epubs/agatha_christie/",
+      "  — Re-run a workflow after import to confirm chunks are retrieved",
       "Validation (user action required):",
-      "  — Import 5 Christie EPUBs from /Users/Dans_iMac/Desktop/BACKUP_source_epubs/agatha_christie/",
-      "  — Ask 'List all documents in this knowledge base with authors and length' — verify all 5 enumerated",
+      "  — Import 5 Christie EPUBs, ask 'List all documents in this knowledge base with authors and length'",
       "  — Verify chapter titles in Passage Viewer match actual EPUB TOC (not Section N)",
       "  — Verify fileType/pageCount/wordCount/passages shown in document rows",
       "Optional enhancements:",
@@ -64,10 +50,9 @@
       "  — Reranking: cross-encoder scoring (requires Ollama model with reranking support)",
       "  — Knowledge graph / entity extraction for GraphRAG-style querying",
       "  — Web crawl ingestion (WKWebView or URLSession HTML fetch + strip)",
-      "  — P7.1: Fresh install wipe test on real device",
-      "  — Set DEVELOPMENT_TEAM in Xcode Signing for real-device deployment",
-      "  — TestFlight: Archive → Distribute → App Store Connect",
-      "  — Test BGContinuedProcessingTask on real iOS 26 device (not simulatable)"
+      "  — Set DEVELOPMENT_TEAM in Xcode Signing for TestFlight / App Store submission",
+      "  — Test BGContinuedProcessingTask on real iOS 26 device (not simulatable)",
+      "  — Investigate Deep Summarizer 'Failed' root cause via step log"
     ]
   },
   "phase_status": {
@@ -87,44 +72,33 @@
     "iOS_background_processing_2026-03-27": "COMPLETE",
     "iOS_local_notifications_2026-03-29": "COMPLETE",
     "iOS_per_kb_retrieval_settings_2026-03-29": "COMPLETE — topK, status badges, XCUITest suite (11/11)",
-    "iOS_enterprise_rag_pipeline_2026-03-29": "COMPLETE — hybrid RRF, sentence chunking, per-KB settings, document metadata, enterprise prompt (tag: large_update)"
+    "iOS_enterprise_rag_pipeline_2026-03-29": "COMPLETE — hybrid RRF, sentence chunking, per-KB settings, document metadata, enterprise prompt (tag: large_update)",
+    "iOS_real_device_workflow_tests_2026-03-30": "COMPLETE — tests 12-16 passing on Captain Jack Sparrow iOS 26.4 (tag: working_well)"
   },
   "known_gaps": {
-    "code_signing": "DEVELOPMENT_TEAM not set — user must configure in Xcode for real device",
-    "workflow_failed": "Deep Summarizer shown as 'Failed' — root cause uninvestigated",
+    "code_signing": "DEVELOPMENT_TEAM = LVK5C2V4J8 now set in all targets — TestFlight needs Archive + Distribute",
+    "workflow_zero_chunks": "Workflows retrieve 0 chunks if assigned KB has no docs or kbId is stale — user must verify KB assignment and import documents",
+    "workflow_failed": "Deep Summarizer shown as 'Failed' — root cause uninvestigated; check step log",
     "workflow_categorize": "Categorize/Switch step types not implemented — requires branching design",
     "bg_task_simulator": "BGContinuedProcessingTask cannot be triggered in Simulator — real device required",
     "streaming_background": "LLM streaming cannot use background URLSession — 30s UIKit fence is best achievable",
-    "chunk_method_qa_paper_table": "ChunkMethod enum exists with UI but only General is wired in ingest; Q&A/Paper/Table behave same as General until specialized parsers added",
-    "reranking": "No cross-encoder reranking — topN candidates returned as-is after RRF; Ollama reranker integration is next tier",
+    "chunk_method_qa_paper_table": "ChunkMethod enum exists with UI but only General is wired in ingest; Q&A/Paper/Table behave same as General",
+    "reranking": "No cross-encoder reranking — topN candidates returned as-is after RRF",
     "knowledge_graph": "GraphRAG/entity extraction not implemented on iOS"
   },
   "last_commit": {
-    "hash": "4e19c360c",
-    "message": "Feat(iOS): enterprise RAG pipeline — hybrid RRF retrieval, sentence chunking, per-KB settings, document metadata",
-    "tags": ["large_update"],
+    "hash": "7758bb0e9",
+    "message": "Test(iOS): workflow execution tests on real device + test target signing fix",
+    "tags": ["working_well"],
     "files_changed": [
-      "ios/RAGFlowMobile/Models/KnowledgeBase.swift (ChunkMethod enum + topN/chunkMethod/chunkSize/chunkOverlap/similarityThreshold)",
-      "ios/RAGFlowMobile/Models/Book.swift (fileType/pageCount/wordCount/sourceURL)",
-      "ios/RAGFlowMobile/Models/Message.swift (ChunkSource.documentTitle)",
-      "ios/RAGFlowMobile/Services/RAG/Chunker.swift (NLTokenizer sentence-boundary, word-split fallback)",
-      "ios/RAGFlowMobile/Services/RAG/RAGService.swift (hybrid RRF retrieve, KB-aware ingest, sourceURL overload)",
-      "ios/RAGFlowMobile/Services/Storage/DatabaseService.swift (v8 migration, keywordSearchRanked, kb(id:), documentTitle in message_sources)",
-      "ios/RAGFlowMobile/Services/LLM/LLMService.swift (buildEnterprisePrompt shared builder)",
-      "ios/RAGFlowMobile/Services/LLM/ClaudeService.swift (uses buildEnterprisePrompt)",
-      "ios/RAGFlowMobile/Services/LLM/OpenAIService.swift (uses buildEnterprisePrompt)",
-      "ios/RAGFlowMobile/Services/LLM/OllamaService.swift (uses buildEnterprisePrompt)",
-      "ios/RAGFlowMobile/Features/Chat/ChatViewModel.swift (retrieveChunks returns docTitle map)",
-      "ios/RAGFlowMobile/Features/KB/KBRetrievalSettingsSheet.swift (full enterprise settings panel)",
-      "ios/RAGFlowMobile/Features/Library/LibraryView.swift (metadata row, Passage Viewer, DocumentDetail)",
-      "ios/RAGFlowMobile/Features/Library/LibraryViewModel.swift (sourceURL on URL import)",
-      "ios/RAGFlowMobileTests/RAGFlowMobileTests.swift (v8 migration in all 3 test setups)",
-      "ios/RAGFlowMobileUITests/RAGFlowMobileUITests.swift (updated labels + firstMatch fixes)"
+      "ios/RAGFlowMobile.xcodeproj/project.pbxproj (DEVELOPMENT_TEAM in all 4 test target configs)",
+      "ios/RAGFlowMobile/Features/Workflows/WorkflowListView.swift (.accessibilityIdentifier on template rows)",
+      "ios/RAGFlowMobileUITests/RAGFlowMobileUITests.swift (tests 12-16: live workflow execution)"
     ]
   },
   "test_status": {
     "total_unit_tests": 47,
-    "total_ui_tests": 11,
+    "total_ui_tests": 16,
     "all_passing": true,
     "suites": [
       "ChunkFetchTests (7)",
@@ -137,14 +111,18 @@
       "MultiDocImportTests (6)",
       "RAGServiceHTMLTests (1)",
       "SettingsStoreConfiguredTests (5)",
-      "RAGFlowMobileUITests (11)"
-    ]
+      "RAGFlowMobileUITests navigation (11)",
+      "RAGFlowMobileUITests workflows (5)"
+    ],
+    "device": "Captain Jack Sparrow (iOS 26.4, 00008103-0005583101BB001E)"
   },
   "architecture_notes": {
     "retrieval_pipeline": "RAGService.retrieve(query:kb:) — hybrid RRF fusing BM25 (FTS5) + cosine (Ollama embeddings via currentQueryEmbedding transient). Normalised score filtered by kb.similarityThreshold, top kb.topK returned. Fallback to pure BM25 when no embeddings.",
     "chunker": "NLTokenizer(unit:.sentence) sentence boundaries → word-grouped windows. Sentences exceeding chunkSize split at word boundaries. Configurable chunkSize/chunkOverlap per KB.",
     "system_prompt": "buildEnterprisePrompt() in LLMService.swift. Shared across Claude/OpenAI/Ollama. Includes full KB catalog (fileType/pages/words/passages) + retrieved passages numbered. Claude gets extra brave_search/jina_reader tool instructions.",
-    "db_migrations": "v1 books+chunks+FTS5 | v2 embeddings | v3 knowledge_bases+kbId | v4 messages+message_sources | v5 workflows | v6 chat_sessions+sessionId | v7 topK | v8 topN/chunkMethod/chunkSize/chunkOverlap/similarityThreshold + fileType/pageCount/wordCount/sourceURL + documentTitle"
+    "db_migrations": "v1 books+chunks+FTS5 | v2 embeddings | v3 knowledge_bases+kbId | v4 messages+message_sources | v5 workflows | v6 chat_sessions+sessionId | v7 topK | v8 topN/chunkMethod/chunkSize/chunkOverlap/similarityThreshold + fileType/pageCount/wordCount/sourceURL + documentTitle",
+    "workflow_runner": "WorkflowRunner.run(workflow:input:) — async step executor. Step types: begin, retrieve, rewrite, message, webSearch, llm, answer. Streams final LLM step to UI. BackgroundTaskCoordinator tracks step count for BGTask time management.",
+    "test_target_signing": "All 4 targets (main app Debug/Release + UITests Debug/Release + Tests Debug/Release) have DEVELOPMENT_TEAM=LVK5C2V4J8 and CODE_SIGN_STYLE=Automatic. Required for on-device deployment."
   },
   "environment": {
     "docker_compose_file": "docker/docker-compose-macos.yml",
@@ -156,9 +134,11 @@
     "ios_simulator_iphone": "iPhone 16 OS 18.5 UDID: 5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "ios_simulator_ipad": "iPad Pro 13-inch M4 UDID: 69682D2A-65AD-43B6-B709-25B5DB2B03C8",
     "ios_simulator_ipad_ios26": "iPad Pro 13-inch M5 iOS 26.4 UDID: 5D4323F8-0573-4B33-807A-B93826882904",
+    "ios_real_device": "Captain Jack Sparrow (iOS 26.4) UDID: 00008103-0005583101BB001E",
     "ios_bundle_id": "com.dhorn.ragflowmobile",
     "ios_min_deployment": "iOS 17.0",
     "ios_devices": "iPhone + iPad, portrait + landscape",
-    "ios_test_data": "/Users/Dans_iMac/Desktop/BACKUP_source_epubs/agatha_christie/ (91 EPUB files)"
+    "ios_test_data": "/Users/Dans_iMac/Desktop/BACKUP_source_epubs/agatha_christie/ (91 EPUB files)",
+    "ios_development_team": "LVK5C2V4J8"
   }
 }
