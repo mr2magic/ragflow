@@ -195,7 +195,7 @@ struct LibraryView: View {
             // 3-step workflow
             VStack(alignment: .leading, spacing: 14) {
                 IngestStepRow(number: "1", icon: "arrow.down.doc.fill", color: .blue,
-                             title: "Import", detail: "PDF, ePub, DOCX, XLSX, PPTX, EML, HTML, CSV, RTF, JSON, code — from Files or a URL")
+                             title: "Import", detail: "PDF · ePub · Word · Excel · PowerPoint · LibreOffice · Email · HTML · Markdown · CSV · JSON · YAML · Swift · Python · JS · Go · SQL · shell — from Files or a URL")
                 IngestStepRow(number: "2", icon: "bolt.fill", color: .orange,
                              title: "Index", detail: "AI chunks and embeds automatically")
                 IngestStepRow(number: "3", icon: "bubble.left.and.text.bubble.right.fill", color: .green,

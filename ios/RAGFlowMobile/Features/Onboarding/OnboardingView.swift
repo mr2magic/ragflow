@@ -39,11 +39,11 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "doc.badge.plus",
         tint: .green,
         title: "Import Documents",
-        subtitle: "PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, and more",
+        subtitle: "20+ file types — if you can read it, RAGFlow can index it",
         bullets: [
-            ("plus",                               "Creating a new KB goes straight to Documents — the file picker opens automatically"),
-            ("doc.richtext",                       "Supports PDF, ePub, Office documents (DOCX/XLSX/PPTX), email (EML), HTML, CSV, JSON, code, and plain text"),
-            ("link",                               "Or paste a web URL to import directly from the internet"),
+            ("doc.on.doc",                         "Documents: PDF · ePub · Word (DOCX/DOC) · Excel (XLSX/XLS) · PowerPoint (PPTX/PPT) · LibreOffice (ODT/ODS/ODP)"),
+            ("text.alignleft",                     "Text & data: TXT · RTF · Markdown · HTML · XML · CSV · TSV · JSON · JSONL · YAML · Email (EML/EMLX)"),
+            ("chevron.left.forwardslash.chevron.right", "Code: Swift · Python · JavaScript · TypeScript · Java · C/C++ · Go · SQL · Shell — plus any web URL"),
         ]
     ),
     .init(
