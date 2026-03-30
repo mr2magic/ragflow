@@ -33,6 +33,7 @@ struct WorkflowListView: View {
         .onAppear { vm.reload() }
         .sheet(isPresented: $vm.showNewWorkflow, onDismiss: { vm.reload() }) {
             NewWorkflowSheet(vm: vm)
+                .onAppear { vm.prepareForNewWorkflow() }
         }
         .alert("Error", isPresented: $vm.showError) {
             Button("OK") {}
@@ -79,10 +80,52 @@ struct WorkflowListView: View {
 private struct NewWorkflowSheet: View {
     @ObservedObject var vm: WorkflowListViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showKBAlert = false
+
+    private var noKBSelected: Bool {
+        vm.newWorkflowKBId.trimmingCharacters(in: .whitespaces).isEmpty
+            || !vm.allKBs.contains(where: { $0.id == vm.newWorkflowKBId })
+    }
+
+    private var createDisabled: Bool {
+        guard let t = vm.selectedTemplate,
+              !vm.newWorkflowName.trimmingCharacters(in: .whitespaces).isEmpty else { return true }
+        if t.id == "custom" {
+            return vm.customPrompt.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+        return false
+    }
 
     var body: some View {
         NavigationStack {
             Form {
+                // 1. NAME — top, always visible
+                Section("Workflow Name") {
+                    TextField("e.g. Christie Q&A", text: $vm.newWorkflowName)
+                }
+
+                // 2. KNOWLEDGE BASE — always visible, required
+                Section {
+                    if vm.allKBs.isEmpty {
+                        Label("No knowledge bases yet — create one first.", systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(.orange)
+                            .font(.subheadline)
+                    } else {
+                        Picker("Knowledge Base", selection: $vm.newWorkflowKBId) {
+                            ForEach(vm.allKBs) { kb in
+                                Text(kb.name).tag(kb.id)
+                            }
+                        }
+                        .pickerStyle(.navigationLink)
+                    }
+                } header: {
+                    Text("Knowledge Base")
+                } footer: {
+                    Text("The workflow will retrieve passages only from the selected knowledge base.")
+                        .font(.footnote)
+                }
+
+                // 3. TEMPLATE
                 Section("Template") {
                     ForEach(WorkflowTemplates.all) { template in
                         templateRow(template)
@@ -90,31 +133,17 @@ private struct NewWorkflowSheet: View {
                     }
                 }
 
-                if vm.selectedTemplate != nil {
-                    Section("Name") {
-                        TextField("Workflow name", text: $vm.newWorkflowName)
-                    }
-
-                    Section("Knowledge Base") {
-                        Picker("KB", selection: $vm.newWorkflowKBId) {
-                            ForEach(vm.allKBs) { kb in
-                                Text(kb.name).tag(kb.id)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                    }
-
-                    if vm.selectedTemplate?.id == "custom" {
-                        Section {
-                            TextEditor(text: $vm.customPrompt)
-                                .frame(minHeight: 160)
-                                .font(.body)
-                        } header: {
-                            Text("System Prompt")
-                        } footer: {
-                            Text("Use {input} for the user's query and {context} for retrieved passages. Example: \"Answer {input} using only: {context}\"")
-                                .font(.footnote)
-                        }
+                // 4. CUSTOM PROMPT (only for custom template)
+                if vm.selectedTemplate?.id == "custom" {
+                    Section {
+                        TextEditor(text: $vm.customPrompt)
+                            .frame(minHeight: 160)
+                            .font(.body)
+                    } header: {
+                        Text("System Prompt")
+                    } footer: {
+                        Text("Use {input} for the user's query and {context} for retrieved passages.")
+                            .font(.footnote)
                     }
                 }
             }
@@ -125,16 +154,20 @@ private struct NewWorkflowSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Create") { vm.createWorkflow() }
-                        .disabled({
-                            guard let t = vm.selectedTemplate,
-                                  !vm.newWorkflowName.trimmingCharacters(in: .whitespaces).isEmpty else { return true }
-                            if t.id == "custom" {
-                                return vm.customPrompt.trimmingCharacters(in: .whitespaces).isEmpty
-                            }
-                            return false
-                        }())
+                    Button("Create") {
+                        if noKBSelected {
+                            showKBAlert = true
+                        } else {
+                            vm.createWorkflow()
+                        }
+                    }
+                    .disabled(createDisabled)
                 }
+            }
+            .alert("Select a Knowledge Base", isPresented: $showKBAlert) {
+                Button("OK") {}
+            } message: {
+                Text("You must choose a knowledge base before creating a workflow. The workflow retrieves passages from it to answer your queries.")
             }
         }
     }

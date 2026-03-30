@@ -13,6 +13,16 @@ final class WorkflowListViewModel: ObservableObject {
 
     var allKBs: [KnowledgeBase] { (try? DatabaseService.shared.allKBs()) ?? [] }
 
+    /// Call when the sheet opens to pre-select the first available KB.
+    func prepareForNewWorkflow() {
+        newWorkflowName = ""
+        customPrompt = ""
+        selectedTemplate = nil
+        if let first = allKBs.first {
+            newWorkflowKBId = first.id
+        }
+    }
+
     private let db = DatabaseService.shared
 
     func reload() {
