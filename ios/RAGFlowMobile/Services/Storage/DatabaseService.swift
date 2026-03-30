@@ -150,6 +150,40 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v8") { db in
+            // Per-KB RAG settings: retrieval + chunking
+            let kbCols = try db.columns(in: "knowledge_bases").map { $0.name }
+            if !kbCols.contains("topN") {
+                try db.alter(table: "knowledge_bases") { t in
+                    t.add(column: "topN", .integer).notNull().defaults(to: 50)
+                    t.add(column: "chunkMethod", .text).notNull().defaults(to: "General")
+                    t.add(column: "chunkSize", .integer).notNull().defaults(to: 512)
+                    t.add(column: "chunkOverlap", .integer).notNull().defaults(to: 64)
+                    t.add(column: "similarityThreshold", .double).notNull().defaults(to: 0.2)
+                }
+            }
+            // Document metadata
+            let bookCols = try db.columns(in: "books").map { $0.name }
+            if !bookCols.contains("fileType") {
+                try db.alter(table: "books") { t in
+                    t.add(column: "fileType", .text).notNull().defaults(to: "")
+                    t.add(column: "pageCount", .integer).notNull().defaults(to: 0)
+                    t.add(column: "wordCount", .integer).notNull().defaults(to: 0)
+                    t.add(column: "sourceURL", .text).notNull().defaults(to: "")
+                }
+            }
+            // Store source document title in message_sources for citations
+            let allTables = try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type='table'")
+            if allTables.contains("message_sources") {
+                let srcCols = try db.columns(in: "message_sources").map { $0.name }
+                if !srcCols.contains("documentTitle") {
+                    try db.alter(table: "message_sources") { t in
+                        t.add(column: "documentTitle", .text).notNull().defaults(to: "")
+                    }
+                }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -269,7 +303,39 @@ final class DatabaseService {
         }
     }
 
+    // MARK: - KB lookup
+
+    func kb(id: String) throws -> KnowledgeBase? {
+        try dbQueue.read { db in try KnowledgeBase.fetchOne(db, key: id) }
+    }
+
     // MARK: - Search (KB-scoped)
+
+    /// BM25 keyword search returning chunks with their ordinal BM25 rank (1 = most relevant).
+    /// Used by hybrid RRF retrieval alongside vector similarity ranking.
+    func keywordSearchRanked(query: String, kbId: String, limit: Int) throws -> [(Chunk, Int)] {
+        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        return try dbQueue.read { db in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: query) else { return [] }
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT chunks.*
+                FROM chunks
+                JOIN books   ON books.id = chunks.bookId
+                JOIN chunks_fts ON chunks_fts.chunk_id = chunks.id
+                WHERE books.kbId = ? AND chunks_fts MATCH ?
+                ORDER BY chunks_fts.rank
+                LIMIT ?
+                """, arguments: [kbId, pattern, limit])
+            return rows.enumerated().map { idx, row in
+                let chunk = Chunk(
+                    id: row["id"], bookId: row["bookId"],
+                    content: row["content"], chapterTitle: row["chapterTitle"],
+                    position: row["position"]
+                )
+                return (chunk, idx + 1)   // rank 1-based
+            }
+        }
+    }
 
     func keywordSearch(query: String, kbId: String, limit: Int = 20) throws -> [Chunk] {
         guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
@@ -353,9 +419,9 @@ final class DatabaseService {
                                arguments: [msg.id.uuidString])
                 for src in msg.sources {
                     try db.execute(sql: """
-                        INSERT INTO message_sources (id, messageId, chapterTitle, preview)
-                        VALUES (?, ?, ?, ?)
-                        """, arguments: [src.id, msg.id.uuidString, src.chapterTitle, src.preview])
+                        INSERT INTO message_sources (id, messageId, chapterTitle, documentTitle, preview)
+                        VALUES (?, ?, ?, ?, ?)
+                        """, arguments: [src.id, msg.id.uuidString, src.chapterTitle, src.documentTitle, src.preview])
                 }
             }
         }
@@ -372,7 +438,8 @@ final class DatabaseService {
                     SELECT * FROM message_sources WHERE messageId = ?
                     """, arguments: [msgId])
                 let sources = srcRows.map { r in
-                    ChunkSource(id: r["id"], chapterTitle: r["chapterTitle"], preview: r["preview"])
+                    ChunkSource(id: r["id"], chapterTitle: r["chapterTitle"],
+                                documentTitle: r["documentTitle"] ?? "", preview: r["preview"])
                 }
                 var msg = Message(
                     role: (row["role"] as String) == "user" ? .user : .assistant,

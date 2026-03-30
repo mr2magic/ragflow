@@ -105,8 +105,10 @@ final class ChatViewModel: ObservableObject {
             defer { UIApplication.shared.endBackgroundTask(bgToken) }
 
             do {
-                let chunks = try await retrieveChunks(for: query)
-                messages[assistantIndex].sources = chunks.map { ChunkSource(from: $0) }
+                let (chunks, docTitles) = try await retrieveChunks(for: query)
+                messages[assistantIndex].sources = chunks.map {
+                    ChunkSource(from: $0, documentTitle: docTitles[$0.bookId] ?? "")
+                }
 
                 let llm = makeLLMService(config: settings.config)
                 let history = messages.dropLast().map {
@@ -151,23 +153,27 @@ final class ChatViewModel: ObservableObject {
         await streamTask?.value
     }
 
-    private func retrieveChunks(for query: String) async throws -> [Chunk] {
-        var results: [Chunk] = []
+    /// Returns retrieved chunks and a bookId→title lookup for citation building.
+    private func retrieveChunks(for query: String) async throws -> ([Chunk], [String: String]) {
+        // Pre-compute query embedding for vector search (Ollama only)
         if settings.config.provider == .ollama {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
-            if let queryVec = try? await embService.embed(text: query) {
-                for activeKB in activeKBs {
-                    let chunks = try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: activeKB.id, topK: activeKB.topK)
-                    results.append(contentsOf: chunks)
-                }
-                return results
-            }
+            rag.currentQueryEmbedding = try? await embService.embed(text: query)
         }
+        defer { rag.currentQueryEmbedding = nil }
+
+        var results: [Chunk] = []
+        var docTitles: [String: String] = [:]
+
         for activeKB in activeKBs {
-            let chunks = try rag.retrieve(query: query, kbId: activeKB.id, topK: activeKB.topK)
+            // Build title lookup for all documents in this KB
+            let docs = (try? db.allBooks(kbId: activeKB.id)) ?? []
+            for doc in docs { docTitles[doc.id] = doc.title }
+
+            let chunks = try rag.retrieve(query: query, kb: activeKB)
             results.append(contentsOf: chunks)
         }
-        return results
+        return (results, docTitles)
     }
 
     func stop() {

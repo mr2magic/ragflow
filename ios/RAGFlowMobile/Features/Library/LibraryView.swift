@@ -327,7 +327,8 @@ private struct BookRow: View {
                         .foregroundStyle(.secondary)
                 }
                 HStack(spacing: 12) {
-                    Label("\(book.chunkCount) chunks", systemImage: "square.stack")
+                    Text(metaLabel)
+                    Spacer()
                     Label(book.addedAt.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
                 }
                 .font(.caption)
@@ -354,6 +355,15 @@ private struct BookRow: View {
                 .foregroundStyle(.orange)
                 .imageScale(.medium)
         }
+    }
+
+    private var metaLabel: String {
+        var parts: [String] = []
+        if !book.fileType.isEmpty { parts.append(book.fileType.uppercased()) }
+        if book.pageCount > 0 { parts.append("\(book.pageCount)p") }
+        if book.wordCount > 0 { parts.append("\(book.wordCount / 1000)k words") }
+        parts.append("\(book.chunkCount) passages")
+        return parts.joined(separator: " · ")
     }
 }
 
@@ -406,15 +416,27 @@ struct DocumentDetailView: View {
                     if !book.author.isEmpty {
                         LabeledContent("Author", value: book.author)
                     }
-                    LabeledContent("Added", value: book.addedAt.formatted(date: .abbreviated, time: .omitted))
-                    LabeledContent("Chunks", value: "\(chunks.count)")
+                    if !book.fileType.isEmpty {
+                        LabeledContent("Type", value: book.fileType.uppercased())
+                    }
+                    if book.pageCount > 0 {
+                        LabeledContent("Pages", value: "\(book.pageCount)")
+                    }
+                    if book.wordCount > 0 {
+                        LabeledContent("Words", value: "\(book.wordCount)")
+                    }
+                    LabeledContent("Passages", value: "\(chunks.count)")
+                    LabeledContent("Indexed", value: book.addedAt.formatted(date: .abbreviated, time: .omitted))
+                    if !book.sourceURL.isEmpty {
+                        LabeledContent("Source URL", value: book.sourceURL)
+                    }
                 } header: {
                     Text(book.title).font(.headline).textCase(nil).foregroundStyle(.primary)
                 }
 
-                Section("Indexed Chunks") {
+                Section("Indexed Passages") {
                     if filteredChunks.isEmpty {
-                        Text(searchText.isEmpty ? "No chunks — try re-importing this document." : "No chunks match your search.")
+                        Text(searchText.isEmpty ? "No passages — try re-importing this document." : "No passages match your search.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     } else {
@@ -426,7 +448,7 @@ struct DocumentDetailView: View {
             }
             .listStyle(.insetGrouped)
             .searchable(text: $searchText, prompt: "Search chunks")
-            .navigationTitle("Chunk Viewer")
+            .navigationTitle("Passage Viewer")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

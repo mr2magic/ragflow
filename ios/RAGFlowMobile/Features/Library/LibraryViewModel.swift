@@ -145,7 +145,7 @@ final class LibraryViewModel: ObservableObject {
                 .appendingPathExtension(ext)
             try FileManager.default.moveItem(at: tmpURL, to: destURL)
             ingestProgress = "Indexing…"
-            _ = try await rag.ingest(url: destURL, kbId: kb.id)
+            _ = try await rag.ingest(url: destURL, kbId: kb.id, sourceURL: urlString)
             reload()
             haptics.notificationOccurred(.success)
         } catch {

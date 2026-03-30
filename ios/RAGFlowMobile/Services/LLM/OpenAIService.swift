@@ -78,25 +78,6 @@ final class OpenAIService: LLMService {
     }
 
     private func buildSystemPrompt(context: [Chunk], books: [Book]) -> String {
-        let catalog = books.isEmpty ? "" : """
-        LIBRARY (\(books.count) document\(books.count == 1 ? "" : "s")):
-        \(books.enumerated().map { i, b in
-            "  \(i + 1). \"\(b.title)\"\(b.author.isEmpty ? "" : " — \(b.author)") (\(b.chunkCount) chunks)"
-        }.joined(separator: "\n"))
-
-        """
-        let excerpts = context.enumerated().map { i, chunk in
-            "[\(i + 1)] \(chunk.chapterTitle.map { "(\($0)) " } ?? "")\(chunk.content)"
-        }.joined(separator: "\n\n")
-
-        return """
-        You are a reading assistant with access to the documents listed below.
-        When asked what documents or books are available, always enumerate the full LIBRARY list.
-        Answer using the provided excerpts when possible.
-        Cite excerpt numbers [1], [2], etc. when referencing them.
-
-        \(catalog)EXCERPTS:
-        \(excerpts)
-        """
+        buildEnterprisePrompt(context: context, books: books)
     }
 }

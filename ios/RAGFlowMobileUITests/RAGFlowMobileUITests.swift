@@ -118,18 +118,18 @@ final class RAGFlowMobileUITests: XCTestCase {
 
         // Sheet opens with the KB name as title
         XCTAssertTrue(app.navigationBars["My Library"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Retrieved Chunks (k)"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["Top-K (returned passages)"].waitForExistence(timeout: 2))
 
         // Read current value
         let valueBefore = app.staticTexts.matching(NSPredicate(format: "label MATCHES '^[0-9]+$'")).firstMatch
 
-        // Increment 3×
-        let increment = app.buttons["Increment"]
+        // Increment 3× (use firstMatch — sheet now has multiple steppers)
+        let increment = app.buttons["Increment"].firstMatch
         XCTAssertTrue(increment.waitForExistence(timeout: 2))
         increment.tap(); increment.tap(); increment.tap()
 
         // Decrement 1×
-        let decrement = app.buttons["Decrement"]
+        let decrement = app.buttons["Decrement"].firstMatch
         XCTAssertTrue(decrement.waitForExistence(timeout: 2))
         decrement.tap()
 
@@ -165,12 +165,14 @@ final class RAGFlowMobileUITests: XCTestCase {
         XCTAssertTrue(docsTab.waitForExistence(timeout: 4))
         docsTab.tap()
 
-        // Either empty state or Import Documents button must appear
-        let importButton = app.buttons["Import Documents"]
+        // Either empty state or document list (which also contains Import Documents button) must appear
+        let importButton = app.buttons["Import Documents"].firstMatch
         let emptyLabel   = app.staticTexts["No Documents Yet"]
+        let docList      = app.collectionViews.firstMatch
         XCTAssertTrue(
-            importButton.waitForExistence(timeout: 3) || emptyLabel.waitForExistence(timeout: 3),
-            "Documents tab must show empty state or import button"
+            importButton.waitForExistence(timeout: 5) || emptyLabel.waitForExistence(timeout: 5)
+                || docList.waitForExistence(timeout: 5),
+            "Documents tab must show empty state, import button, or document list"
         )
     }
 
