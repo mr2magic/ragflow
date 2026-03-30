@@ -181,7 +181,7 @@ struct LibraryView: View {
         List {
             ForEach(vm.filteredBooks) { book in
                 Button(action: { selectedBook = book }) {
-                    BookRow(book: book)
+                    BookRow(book: book, isIndexing: vm.ingestingFilePaths.contains(book.filePath))
                 }
                 .buttonStyle(.plain)
                 .contextMenu {
@@ -313,25 +313,47 @@ struct LibraryView: View {
 
 private struct BookRow: View {
     let book: Book
+    var isIndexing: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(book.title)
-                .font(.headline)
-                .lineLimit(2)
-            if !book.author.isEmpty {
-                Text(book.author)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+        HStack(alignment: .top, spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(book.title)
+                    .font(.headline)
+                    .lineLimit(2)
+                if !book.author.isEmpty {
+                    Text(book.author)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                HStack(spacing: 12) {
+                    Label("\(book.chunkCount) chunks", systemImage: "square.stack")
+                    Label(book.addedAt.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
+                }
+                .font(.caption)
+                .foregroundStyle(.tertiary)
             }
-            HStack(spacing: 12) {
-                Label("\(book.chunkCount) chunks", systemImage: "square.stack")
-                Label(book.addedAt.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
-            }
-            .font(.caption)
-            .foregroundStyle(.tertiary)
+            Spacer()
+            statusBadge
         }
         .padding(.vertical, 6)
+    }
+
+    @ViewBuilder
+    private var statusBadge: some View {
+        if isIndexing {
+            ProgressView()
+                .scaleEffect(0.8)
+                .frame(width: 24, height: 24)
+        } else if book.chunkCount > 0 {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+                .imageScale(.medium)
+        } else {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+                .imageScale(.medium)
+        }
     }
 }
 

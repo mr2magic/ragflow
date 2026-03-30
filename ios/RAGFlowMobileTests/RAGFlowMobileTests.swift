@@ -277,6 +277,11 @@ final class DatabaseServiceTests: XCTestCase {
                 t.column("preview", .text).notNull()
             }
         }
+        migrator.registerMigration("v7") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
+            }
+        }
         try migrator.migrate(queue)
     }
 
@@ -532,6 +537,11 @@ final class ChunkFetchTests: XCTestCase {
                 t.column("preview", .text).notNull()
             }
         }
+        m.registerMigration("v7") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
+            }
+        }
         try m.migrate(dbq)
     }
 
@@ -781,6 +791,11 @@ final class MultiDocImportTests: XCTestCase {
                            arguments: [KnowledgeBase.defaultID, "My Library", Date()])
             try db.alter(table: "books") { t in
                 t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        m.registerMigration("v7") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
             }
         }
         try m.migrate(queue)

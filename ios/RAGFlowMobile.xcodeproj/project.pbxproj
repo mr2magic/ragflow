@@ -15,6 +15,7 @@
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
 		31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */; };
 		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
+		C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */; };
 		3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23157B24B0E2E44B3978039A /* OfficeParser.swift */; };
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
@@ -39,6 +40,7 @@
 		8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */; };
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
+		A2B3C4D5E6F7A8B9C0D1E2F3 /* KBRetrievalSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
@@ -68,6 +70,13 @@
 			remoteGlobalIDString = EF1F4525075086C1DC62636B;
 			remoteInfo = RAGFlowMobile;
 		};
+		C1D2E3F4A5B60007C2D3E4F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EF1F4525075086C1DC62636B;
+			remoteInfo = RAGFlowMobile;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +89,8 @@
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileUITests.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
 		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
 		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
@@ -103,8 +114,8 @@
 		84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskCoordinator.swift; sourceTree = "<group>"; };
 		8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneKBListView.swift; sourceTree = "<group>"; };
 		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9128C8C2964AF5134AA52824 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
@@ -118,6 +129,7 @@
 		CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
 		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
@@ -202,6 +214,7 @@
 				0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */,
 				10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */,
 				8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */,
+				B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */,
 			);
 			path = KB;
 			sourceTree = "<group>";
@@ -211,6 +224,7 @@
 			children = (
 				8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */,
 				45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */,
+				C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,9 +234,18 @@
 			children = (
 				90FC790467F4D05481B78B80 /* RAGFlowMobile */,
 				CDEB0C38B1C841D81EB028EF /* RAGFlowMobileTests */,
+				C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */,
 				CF26EB3B52F9ADE4ED6271A9 /* Frameworks */,
 				44D8A205BEA0E8EA70D43C86 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */,
+			);
+			path = RAGFlowMobileUITests;
 			sourceTree = "<group>";
 		};
 		4F4C99203F3F22E475F4DDB9 /* Library */ = {
@@ -352,6 +375,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */;
+			buildPhases = (
+				C1D2E3F4A5B60005C2D3E4F5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */,
+			);
+			name = RAGFlowMobileUITests;
+			productName = RAGFlowMobileUITests;
+			productReference = C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 503BC6CD7260E1D249CBD08C /* Build configuration list for PBXNativeTarget "RAGFlowMobileTests" */;
@@ -404,6 +443,10 @@
 					EF1F4525075086C1DC62636B = {
 						ProvisioningStyle = Automatic;
 					};
+					C1D2E3F4A5B60006C2D3E4F5 = {
+						ProvisioningStyle = Automatic;
+						TestTargetID = EF1F4525075086C1DC62636B;
+					};
 				};
 			};
 			buildConfigurationList = C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */;
@@ -417,7 +460,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */,
-				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */,
 				2D427263B7DD77A57C5D4338 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -427,6 +470,7 @@
 			targets = (
 				EF1F4525075086C1DC62636B /* RAGFlowMobile */,
 				354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */,
+				C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -465,6 +509,7 @@
 				9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */,
 				CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */,
 				08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */,
+				A2B3C4D5E6F7A8B9C0D1E2F3 /* KBRetrievalSettingsSheet.swift in Sources */,
 				69AA751EA0AA6A888F51D90F /* KnowledgeBase.swift in Sources */,
 				8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */,
 				F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */,
@@ -502,6 +547,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C1D2E3F4A5B60005C2D3E4F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -509,6 +562,11 @@
 			isa = PBXTargetDependency;
 			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
 			targetProxy = 9A76D5BD869BC86746DB7CA1 /* PBXContainerItemProxy */;
+		};
+		C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
+			targetProxy = C1D2E3F4A5B60007C2D3E4F5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -537,6 +595,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -566,6 +625,42 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RAGFlowMobile.app/RAGFlowMobile";
+			};
+			name = Release;
+		};
+		C1D2E3F4A5B6000AC2D3E4F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RAGFlowMobile;
+			};
+			name = Debug;
+		};
+		C1D2E3F4A5B6000BC2D3E4F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = RAGFlowMobile;
 			};
 			name = Release;
 		};
@@ -694,6 +789,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -729,6 +825,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1D2E3F4A5B6000AC2D3E4F5 /* Debug */,
+				C1D2E3F4A5B6000BC2D3E4F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -749,7 +854,7 @@
 				minimumVersion = 2.1.0;
 			};
 		};
-		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
@@ -775,7 +880,7 @@
 		};
 		2C0C19C6F20A9821E0BA0BCF /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		F3134F9E7523B881974419D8 /* EPUBKit */ = {

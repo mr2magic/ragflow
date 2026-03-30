@@ -33,7 +33,16 @@
       "    WorkflowRunner.run(): begin/advance/finish workflow coordinator calls",
       "    Info.plist: BGTaskSchedulerPermittedIdentifiers declared for both task IDs",
       "    BACKGROUND_PROCESSING.md: spec doc with design rationale and scenario table",
-      "  — Tags: BeforeBackgroundProcessing (eb731a7), AfterBackgroundProcessing (99cb1ca)"
+      "  — Tags: BeforeBackgroundProcessing (eb731a7), AfterBackgroundProcessing (99cb1ca)",
+      "Session 2026-03-29: Local notifications on background task completion",
+      "  — BackgroundTaskCoordinator: UNUserNotificationCenter integration",
+      "    sendBackgroundNotification() guards on applicationState != .active (no-op if foregrounded)",
+      "    finishImport(success:): fires 'Import Complete / Incomplete' notification",
+      "    finishWorkflow(success:): fires 'Workflow Complete / Failed: <name>' notification",
+      "    workflowName stored in beginWorkflow() for use in completion notification",
+      "    requestNotificationAuthorization(): public, called once from ContentView .task",
+      "  — ContentView: .task { BackgroundTaskCoordinator.shared.requestNotificationAuthorization() }",
+      "  — Brave Search UI in SettingsView: already implemented (checkpoint note was stale)"
     ],
     "in_progress": [],
     "next_steps": [
@@ -46,9 +55,7 @@
       "  — Background GPU entitlement for on-device embedding (iOS 26, sparse hardware support)",
       "  — Add Categorize step type (branching — requires design beyond linear model)",
       "  — Add WorkflowTemplates using rewrite/webSearch step types",
-      "  — Brave Search API key entry in SettingsView (currently keychain only, no UI field)",
-      "  — Investigate Deep Summarizer 'Failed' status (root cause uninvestigated)",
-      "  — Local notification when BGContinuedProcessingTask completes while app is backgrounded"
+      "  — Investigate Deep Summarizer 'Failed' status (root cause uninvestigated)"
     ]
   },
   "phase_status": {
@@ -65,12 +72,13 @@
     "iOS_bug_fixes_2026-03-25": "COMPLETE — PDF import, chat persistence, clear chat, suggested prompts, import button",
     "iOS_landscape_QA_2026-03-25": "COMPLETE — all fixes verified on iPad Pro 13-inch M5 iOS 26.4 landscape",
     "iOS_workflow_editor_2026-03-25": "COMPLETE — WorkflowEditorView + 3 new step types, commit 54bfaf3",
-    "iOS_background_processing_2026-03-27": "COMPLETE — BGContinuedProcessingTask + UIKit fence, commit 99cb1ca, tag AfterBackgroundProcessing"
+    "iOS_background_processing_2026-03-27": "COMPLETE — BGContinuedProcessingTask + UIKit fence, commit 99cb1ca, tag AfterBackgroundProcessing",
+    "iOS_local_notifications_2026-03-29": "COMPLETE — UNUserNotificationCenter fires on finishImport/finishWorkflow when app is backgrounded"
   },
   "known_gaps": {
     "code_signing": "DEVELOPMENT_TEAM not set — user must configure in Xcode for real device",
     "workflow_failed": "Deep Summarizer shown as 'Failed' in user screenshot — root cause uninvestigated",
-    "brave_search_ui": "Brave Search API key has no Settings UI field — stored in keychain only",
+    "brave_search_ui": "RESOLVED — SecureField for Brave Search API key already present in SettingsView agentToolsSection",
     "workflow_categorize": "Categorize/Switch step types not yet implemented — requires branching design beyond linear model",
     "bg_task_simulator": "BGContinuedProcessingTask cannot be triggered in the iOS Simulator — real device required for end-to-end test",
     "streaming_background": "LLM streaming (URLSession DataTask) cannot use background URLSession — 30s fence is best achievable; verified expected OS limitation"

@@ -141,6 +141,15 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v7") { db in
+            let cols = try db.columns(in: "knowledge_bases").map { $0.name }
+            if !cols.contains("topK") {
+                try db.alter(table: "knowledge_bases") { t in
+                    t.add(column: "topK", .integer).notNull().defaults(to: 10)
+                }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 

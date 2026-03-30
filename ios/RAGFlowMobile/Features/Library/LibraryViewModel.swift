@@ -10,6 +10,7 @@ final class LibraryViewModel: ObservableObject {
     @Published var urlInput = ""
     @Published var isIngesting = false
     @Published var ingestProgress: String = ""
+    @Published var ingestingFilePaths: Set<String> = []
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var bookToRename: Book?
@@ -159,20 +160,23 @@ final class LibraryViewModel: ObservableObject {
         defer {
             isIngesting = false
             ingestProgress = ""
+            ingestingFilePaths = []
         }
         var succeeded = 0
         for (i, url) in urls.enumerated() {
             ingestProgress = "Importing \(i + 1) of \(urls.count)…"
+            ingestingFilePaths.insert(url.path)
             do {
                 _ = try await rag.ingest(url: url, kbId: kb.id)
                 succeeded += 1
             } catch {
                 show(error: "Failed to import \(url.lastPathComponent): \(error.localizedDescription)")
             }
+            ingestingFilePaths.remove(url.path)
             coordinator.advanceImport()
+            reload()
         }
         coordinator.finishImport(success: succeeded > 0)
-        reload()
         if succeeded > 0 { haptics.notificationOccurred(.success) }
     }
 

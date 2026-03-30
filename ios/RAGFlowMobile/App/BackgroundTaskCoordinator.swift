@@ -1,5 +1,6 @@
 import BackgroundTasks
 import UIKit
+import UserNotifications
 
 /// Central coordinator for all background processing in RAGFlow.
 ///
@@ -38,6 +39,7 @@ final class BackgroundTaskCoordinator {
     private var workflowBGTask: AnyObject?  // BGContinuedProcessingTask on iOS 26+
     private var workflowProgress: Progress?
     private var workflowResult: Bool?       // nil = still running
+    private var workflowName: String = ""
 
     // MARK: - Attachment (called from BGTaskScheduler handlers registered in App.init)
 
@@ -125,6 +127,10 @@ final class BackgroundTaskCoordinator {
             (importBGTask as? BGContinuedProcessingTask)?.setTaskCompleted(success: success)
         }
         importBGTask = nil
+        sendBackgroundNotification(
+            title: success ? "Import Complete" : "Import Incomplete",
+            body: success ? "Your documents are ready in the knowledge base." : "Some files could not be imported."
+        )
     }
 
     // MARK: - Workflow lifecycle API
@@ -135,6 +141,7 @@ final class BackgroundTaskCoordinator {
         let p = Progress(totalUnitCount: Int64(max(stepCount, 1)))
         workflowProgress = p
         workflowResult = nil
+        workflowName = name
 
         if #available(iOS 26, *) {
             let req = BGContinuedProcessingTaskRequest(
@@ -160,6 +167,36 @@ final class BackgroundTaskCoordinator {
             (workflowBGTask as? BGContinuedProcessingTask)?.setTaskCompleted(success: success)
         }
         workflowBGTask = nil
+        let name = workflowName
+        sendBackgroundNotification(
+            title: success ? "Workflow Complete" : "Workflow Failed",
+            body: success ? "\(name) finished." : "\(name) did not complete."
+        )
+    }
+
+    // MARK: - Local notifications
+
+    /// Request authorization once, early in the app lifecycle. No-ops if already granted/denied.
+    func requestNotificationAuthorization() {
+        Task {
+            try? await UNUserNotificationCenter.current()
+                .requestAuthorization(options: [.alert, .sound])
+        }
+    }
+
+    /// Posts an immediate local notification — but only when the app is not in the foreground.
+    private func sendBackgroundNotification(title: String, body: String) {
+        guard UIApplication.shared.applicationState != .active else { return }
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil    // deliver immediately
+        )
+        UNUserNotificationCenter.current().add(request)
     }
 
     // MARK: - Short-lived background fence (UIKit, all iOS versions)

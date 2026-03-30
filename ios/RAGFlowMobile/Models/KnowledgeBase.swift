@@ -5,6 +5,7 @@ struct KnowledgeBase: Identifiable, Codable, FetchableRecord, PersistableRecord,
     var id: String
     var name: String
     var createdAt: Date
+    var topK: Int = 10
 
     static let databaseTableName = "knowledge_bases"
 

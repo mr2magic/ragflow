@@ -156,14 +156,14 @@ final class ChatViewModel: ObservableObject {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
             if let queryVec = try? await embService.embed(text: query) {
                 for activeKB in activeKBs {
-                    let chunks = try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: activeKB.id)
+                    let chunks = try rag.retrieveWithEmbedding(query: query, queryEmbedding: queryVec, kbId: activeKB.id, topK: activeKB.topK)
                     results.append(contentsOf: chunks)
                 }
                 return results
             }
         }
         for activeKB in activeKBs {
-            let chunks = try rag.retrieve(query: query, kbId: activeKB.id)
+            let chunks = try rag.retrieve(query: query, kbId: activeKB.id, topK: activeKB.topK)
             results.append(contentsOf: chunks)
         }
         return results

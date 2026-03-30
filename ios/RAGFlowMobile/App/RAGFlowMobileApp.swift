@@ -14,8 +14,7 @@ struct RAGFlowMobileApp: App {
             forTaskWithIdentifier: BackgroundTaskCoordinator.TaskID.import,
             using: .main
         ) { task in
-            guard #available(iOS 26, *),
-                  let bgTask = task as? BGContinuedProcessingTask else {
+            guard let bgTask = task as? BGContinuedProcessingTask else {
                 task.setTaskCompleted(success: false)
                 return
             }
@@ -26,8 +25,7 @@ struct RAGFlowMobileApp: App {
             forTaskWithIdentifier: BackgroundTaskCoordinator.TaskID.workflow,
             using: .main
         ) { task in
-            guard #available(iOS 26, *),
-                  let bgTask = task as? BGContinuedProcessingTask else {
+            guard let bgTask = task as? BGContinuedProcessingTask else {
                 task.setTaskCompleted(success: false)
                 return
             }

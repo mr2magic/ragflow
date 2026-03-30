@@ -16,6 +16,9 @@ struct KBListView: View {
                             vm.renameText = kb.name
                             vm.kbToRename = kb
                         }
+                        Button("Retrieval Settings") {
+                            vm.kbToSettings = kb
+                        }
                         Button("Delete", role: .destructive) {
                             vm.requestDelete(kb: kb)
                         }
@@ -35,9 +38,13 @@ struct KBListView: View {
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
                     }
+                    .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("btn.settings")
                     Button { showWorkflows = true } label: {
                         Image(systemName: "cpu")
                     }
+                    .accessibilityLabel("Workflows")
+                    .accessibilityIdentifier("btn.workflows")
                 }
             }
             #if DEBUG
@@ -73,6 +80,11 @@ struct KBListView: View {
             TextField("Name", text: $vm.renameText)
             Button("Save") { vm.commitRename() }
             Button("Cancel", role: .cancel) { vm.kbToRename = nil }
+        }
+        .sheet(item: $vm.kbToSettings) { kb in
+            KBRetrievalSettingsSheet(kb: kb) { updated in
+                vm.saveKBSettings(updated)
+            }
         }
         .onAppear { vm.reload() }
         .confirmationDialog(

@@ -299,7 +299,7 @@ final class RAGService: ObservableObject {
     // MARK: - Retrieve (Hybrid, KB-scoped)
 
     func retrieve(query: String, kbId: String, topK: Int = 5) throws -> [Chunk] {
-        let candidates = (try? db.keywordSearch(query: query, kbId: kbId, limit: 20)) ?? []
+        let candidates = (try? db.keywordSearch(query: query, kbId: kbId, limit: max(topK * 3, 20))) ?? []
         return Array(candidates.prefix(topK))
     }
 

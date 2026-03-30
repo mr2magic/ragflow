@@ -8,6 +8,7 @@ final class KBListViewModel: ObservableObject {
     @Published var kbToRename: KnowledgeBase?
     @Published var renameText = ""
     @Published var kbToDelete: KnowledgeBase?
+    @Published var kbToSettings: KnowledgeBase?
 
     private let db = DatabaseService.shared
     private let haptics = UINotificationFeedbackGenerator()
@@ -60,6 +61,12 @@ final class KBListViewModel: ObservableObject {
         haptics.notificationOccurred(.success)
     }
     #endif
+
+    func saveKBSettings(_ kb: KnowledgeBase) {
+        try? db.saveKB(kb)
+        kbToSettings = nil
+        reload()
+    }
 
     func commitRename() {
         guard let kb = kbToRename else { return }

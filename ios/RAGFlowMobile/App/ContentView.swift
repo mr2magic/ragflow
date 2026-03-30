@@ -23,6 +23,9 @@ struct ContentView: View {
         )) {
             OnboardingView()
         }
+        .task {
+            BackgroundTaskCoordinator.shared.requestNotificationAuthorization()
+        }
     }
 
     // MARK: - iPhone / Compact

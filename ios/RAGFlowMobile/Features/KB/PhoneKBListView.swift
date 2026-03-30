@@ -17,6 +17,9 @@ struct PhoneKBListView: View {
                         vm.renameText = kb.name
                         vm.kbToRename = kb
                     }
+                    Button("Retrieval Settings") {
+                        vm.kbToSettings = kb
+                    }
                     Button("Delete", role: .destructive) {
                         vm.requestDelete(kb: kb)
                     }
@@ -55,6 +58,11 @@ struct PhoneKBListView: View {
             TextField("Name", text: $vm.renameText)
             Button("Save") { vm.commitRename() }
             Button("Cancel", role: .cancel) { vm.kbToRename = nil }
+        }
+        .sheet(item: $vm.kbToSettings) { kb in
+            KBRetrievalSettingsSheet(kb: kb) { updated in
+                vm.saveKBSettings(updated)
+            }
         }
         .onAppear { vm.reload() }
         .confirmationDialog(
