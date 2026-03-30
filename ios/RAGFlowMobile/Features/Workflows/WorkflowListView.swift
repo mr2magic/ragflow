@@ -98,11 +98,13 @@ private struct NewWorkflowSheet: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             Form {
                 // 1. NAME — top, always visible
                 Section("Workflow Name") {
                     TextField("e.g. Christie Q&A", text: $vm.newWorkflowName)
                 }
+                .id("top")
 
                 // 2. KNOWLEDGE BASE — always visible, required
                 Section {
@@ -147,6 +149,9 @@ private struct NewWorkflowSheet: View {
                     }
                 }
             }
+            .onChange(of: vm.selectedTemplate?.id) { _, _ in
+                withAnimation { proxy.scrollTo("top", anchor: .top) }
+            }
             .navigationTitle("New Workflow")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -169,6 +174,7 @@ private struct NewWorkflowSheet: View {
             } message: {
                 Text("You must choose a knowledge base before creating a workflow. The workflow retrieves passages from it to answer your queries.")
             }
+            } // ScrollViewReader
         }
     }
 

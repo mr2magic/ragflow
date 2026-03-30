@@ -4,12 +4,14 @@ import SwiftUI
 struct KBDetailView: View {
     let kb: KnowledgeBase
     var initialTab: Int = 0
+    var autoImport: Bool = false
 
     @State private var selectedTab: Int
 
-    init(kb: KnowledgeBase, initialTab: Int = 0) {
+    init(kb: KnowledgeBase, initialTab: Int = 0, autoImport: Bool = false) {
         self.kb = kb
         self.initialTab = initialTab
+        self.autoImport = autoImport
         _selectedTab = State(initialValue: initialTab)
     }
 
@@ -21,7 +23,7 @@ struct KBDetailView: View {
             .tabItem { Label("Chat", systemImage: "bubble.left.and.text.bubble.right") }
             .tag(0)
 
-            LibraryView(kb: kb)
+            LibraryView(kb: kb, autoImport: autoImport)
                 .tabItem { Label("Documents", systemImage: "folder") }
                 .tag(1)
         }

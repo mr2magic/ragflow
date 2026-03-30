@@ -32,7 +32,7 @@ struct PhoneKBListView: View {
             KBDetailView(kb: kb)
         }
         .navigationDestination(item: $newKBDestination) { kb in
-            KBDetailView(kb: kb, initialTab: 1)
+            KBDetailView(kb: kb, initialTab: 1, autoImport: true)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

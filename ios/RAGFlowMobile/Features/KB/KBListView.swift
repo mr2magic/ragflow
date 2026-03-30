@@ -2,6 +2,7 @@ import SwiftUI
 
 struct KBListView: View {
     @Binding var selectedKB: KnowledgeBase?
+    @Binding var pendingAutoImportKBId: String?
     @StateObject private var vm = KBListViewModel()
     @State private var showSettings = false
     @State private var showWorkflows = false
@@ -69,7 +70,10 @@ struct KBListView: View {
         .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)
             Button("Create") {
-                if let kb = vm.createKB() { selectedKB = kb }
+                if let kb = vm.createKB() {
+                    pendingAutoImportKBId = kb.id
+                    selectedKB = kb
+                }
             }
             Button("Cancel", role: .cancel) { vm.newKBName = "" }
         }

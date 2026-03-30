@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var selectedKB: KnowledgeBase?
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var showPadSettings = false
+    @State private var pendingAutoImportKBId: String? = nil
 
     var body: some View {
         Group {
@@ -58,11 +59,13 @@ struct ContentView: View {
     /// Using 2 columns avoids showing two identical "Select a KB" placeholders on launch.
     private var padLayout: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            KBListView(selectedKB: $selectedKB)
+            KBListView(selectedKB: $selectedKB, pendingAutoImportKBId: $pendingAutoImportKBId)
         } detail: {
             if let kb = selectedKB {
-                KBDetailView(kb: kb)
+                let autoImport = pendingAutoImportKBId == kb.id
+                KBDetailView(kb: kb, initialTab: autoImport ? 1 : 0, autoImport: autoImport)
                     .id(kb.id) // force fresh ChatViewModel when KB changes
+                    .onAppear { pendingAutoImportKBId = nil }
             } else {
                 ContentUnavailableView(
                     "Select a Knowledge Base",

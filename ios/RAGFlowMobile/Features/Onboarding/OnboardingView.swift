@@ -21,7 +21,7 @@ private let onboardingPages: [OnboardingPage] = [
         bullets: [
             ("bubble.left.and.text.bubble.right", "Chat with any book or document using AI"),
             ("square.stack.3d.up",                "Organize documents into Knowledge Bases"),
-            ("lock.shield",                        "Runs locally with Ollama, or in the cloud with Claude"),
+            ("lock.shield",                        "Runs locally with Ollama, or in the cloud with Claude or OpenAI"),
         ]
     ),
     .init(
@@ -41,7 +41,7 @@ private let onboardingPages: [OnboardingPage] = [
         title: "Import Documents",
         subtitle: "PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, and more",
         bullets: [
-            ("plus",                               "Tap + in the Documents tab to import files from Files or iCloud"),
+            ("plus",                               "Creating a new KB goes straight to Documents — the file picker opens automatically"),
             ("doc.richtext",                       "Supports PDF, ePub, Office documents (DOCX/XLSX/PPTX), email (EML), HTML, CSV, JSON, code, and plain text"),
             ("link",                               "Or paste a web URL to import directly from the internet"),
         ]
@@ -83,11 +83,11 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "gearshape.2.fill",
         tint: .indigo,
         title: "Choose Your AI",
-        subtitle: "Claude or Ollama — you decide",
+        subtitle: "Claude, OpenAI, or Ollama — you decide",
         bullets: [
-            ("sparkles",                           "Claude: paste your Anthropic API key to get started"),
-            ("server.rack",                        "Ollama: connect to a local model for complete privacy"),
-            ("brain",                              "Ollama also powers semantic embeddings for smarter search"),
+            ("sparkles",                           "Claude: paste your Anthropic API key for best-in-class reasoning"),
+            ("wand.and.rays",                      "OpenAI: use GPT-4o or any OpenAI model with your API key"),
+            ("server.rack",                        "Ollama: connect to a local model for complete offline privacy — also powers semantic embeddings"),
         ]
     ),
     .init(
@@ -97,8 +97,8 @@ private let onboardingPages: [OnboardingPage] = [
         subtitle: "Three steps to your first conversation",
         bullets: [
             ("1.circle.fill",                      "Open Settings (gear icon) and add your API key"),
-            ("2.circle.fill",                      "Tap + to create a Knowledge Base"),
-            ("3.circle.fill",                      "Import a book and start asking questions"),
+            ("2.circle.fill",                      "Tap + to create a Knowledge Base — the file importer opens automatically"),
+            ("3.circle.fill",                      "Import documents and start asking questions"),
         ]
     ),
 ]

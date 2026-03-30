@@ -97,14 +97,17 @@ private struct DocumentPickerPresenter: UIViewControllerRepresentable {
 
 struct LibraryView: View {
     let kb: KnowledgeBase
+    let autoImport: Bool
     @StateObject private var vm: LibraryViewModel
     @ObservedObject private var ragService = RAGService.shared
     @State private var showImportOptions = false
     @State private var showImporter = false
     @State private var selectedBook: Book?
+    @State private var didAutoImport = false
 
-    init(kb: KnowledgeBase) {
+    init(kb: KnowledgeBase, autoImport: Bool = false) {
         self.kb = kb
+        self.autoImport = autoImport
         _vm = StateObject(wrappedValue: LibraryViewModel(kb: kb))
     }
 
@@ -146,6 +149,12 @@ struct LibraryView: View {
         .overlay { ingestOverlay }
         .sheet(item: $selectedBook) { book in
             DocumentDetailView(book: book)
+        }
+        .task {
+            guard autoImport, !didAutoImport else { return }
+            didAutoImport = true
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            showImporter = true
         }
         .alert("Import Error", isPresented: $vm.showError) {
             Button("OK", role: .cancel) {}
