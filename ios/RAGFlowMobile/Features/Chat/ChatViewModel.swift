@@ -112,8 +112,9 @@ final class ChatViewModel: ObservableObject {
                 let history = messages.dropLast().map {
                     LLMMessage(role: $0.role == .user ? .user : .assistant, content: $0.content)
                 }
+                let allBooks = activeKBs.flatMap { (try? db.allBooks(kbId: $0.id)) ?? [] }
 
-                let stream = try await llm.complete(messages: Array(history), context: chunks)
+                let stream = try await llm.complete(messages: Array(history), context: chunks, books: allBooks)
 
                 for try await token in stream {
                     if Task.isCancelled { break }

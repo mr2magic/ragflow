@@ -76,7 +76,7 @@ final class WorkflowRunner: ObservableObject {
                     }
                     let rewriteLLM = makeLLMService(config: settings.config)
                     let rewriteMsg = LLMMessage(role: .user, content: rewritePrompt)
-                    let rewriteStream = try await rewriteLLM.complete(messages: [rewriteMsg], context: [])
+                    let rewriteStream = try await rewriteLLM.complete(messages: [rewriteMsg], context: [], books: [])
                     var rewritten = ""
                     for try await token in rewriteStream { rewritten += token }
                     rewritten = rewritten.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -98,7 +98,7 @@ final class WorkflowRunner: ObservableObject {
                     let prompt = ctx.render(step.promptTemplate)
                     let llm = makeLLMService(config: settings.config)
                     let userMsg = LLMMessage(role: .user, content: prompt)
-                    let stream = try await llm.complete(messages: [userMsg], context: [])
+                    let stream = try await llm.complete(messages: [userMsg], context: [], books: [])
 
                     var response = ""
                     // Only stream to UI if this is the final LLM step before answer

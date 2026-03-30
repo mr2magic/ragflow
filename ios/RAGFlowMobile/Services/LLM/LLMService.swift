@@ -1,7 +1,7 @@
 import Foundation
 
 protocol LLMService {
-    func complete(messages: [LLMMessage], context: [Chunk]) async throws -> AsyncThrowingStream<String, Error>
+    func complete(messages: [LLMMessage], context: [Chunk], books: [Book]) async throws -> AsyncThrowingStream<String, Error>
 }
 
 struct LLMMessage {
