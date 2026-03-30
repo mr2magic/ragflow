@@ -3,11 +3,29 @@ import UniformTypeIdentifiers
 
 // Pulled out so Swift's type checker doesn't time out inside body.
 private let supportedImportTypes: [UTType] = {
-    var types: [UTType] = [.pdf, .epub, .plainText, .html, .xml, .json, .commaSeparatedText]
-    let extensions = ["md", "mdx", "rtf", "jsonl", "yml", "yaml", "csv", "tsv",
-                      "py", "js", "ts", "swift", "sql", "sh"]
-    for ext in extensions {
-        types.append(UTType(filenameExtension: ext) ?? .plainText)
+    // Abstract parent types — iOS uses conformance so all variants are shown
+    // (e.g. .spreadsheet covers .xlsx AND .xls AND .ods, etc.)
+    var types: [UTType] = [
+        .pdf, .epub,
+        .spreadsheet,    // xls, xlsx, ods, numbers, …
+        .presentation,   // ppt, pptx, odp, key, …
+        .html, .xml, .json, .commaSeparatedText, .plainText,
+    ]
+    // Explicit extensions — belt-and-suspenders for formats whose abstract type
+    // may not be declared on the device, and for formats with no abstract parent.
+    let explicit = [
+        // Office Open XML + legacy Office
+        "docx", "doc", "xlsx", "xls", "pptx", "ppt",
+        "odt", "ods", "odp",
+        // Email
+        "eml", "emlx",
+        // Markup / text variants
+        "htm", "rtf", "md", "mdx", "jsonl", "yml", "yaml", "tsv",
+        // Code
+        "py", "js", "ts", "swift", "java", "c", "cpp", "h", "go", "sql", "sh",
+    ]
+    for ext in explicit {
+        if let t = UTType(filenameExtension: ext) { types.append(t) }
     }
     return types
 }()
