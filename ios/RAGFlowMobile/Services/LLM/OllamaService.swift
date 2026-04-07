@@ -5,10 +5,13 @@ final class OllamaService: LLMService {
     private let model: String
 
     /// Long-lived session: 10 min request timeout, unlimited resource timeout for streaming.
+    /// Proxy is disabled — Ollama is always a local/LAN server and iCloud Private Relay
+    /// cannot route requests to local hostnames (e.g. the-black-pearl:11434).
     private static let session: URLSession = {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 600   // wait up to 10 min for first byte
         config.timeoutIntervalForResource = 0    // no cap on total transfer time
+        config.connectionProxyDictionary = [:]   // bypass iCloud Private Relay for local hosts
         return URLSession(configuration: config)
     }()
 

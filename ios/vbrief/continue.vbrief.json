@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "project": "RAGFlowMobile",
+  "date": "2026-04-07",
+  "status": "in_progress",
+  "phase": "bugfix — Ollama proxy",
+
+  "completed_this_session": [
+    "Initialized deft framework: created deft/core/project.md, deft/resilience/continue-here.md, vbrief/",
+    "PROJECT.md: Swift iOS app, brownfield strategy, 85% coverage",
+    "Fixed OllamaService: added connectionProxyDictionary = [:] to bypass iCloud Private Relay",
+    "Fixed OllamaModelsService: switched from URLSession.shared to a proxy-free session"
+  ],
+
+  "in_progress": [
+    "Ollama connectivity fix deployed in code — user needs to rebuild and test",
+    "User reported errors after rebuild but did not paste them yet"
+  ],
+
+  "next": [
+    "Confirm Ollama fix resolves the nw_endpoint_flow_failed errors",
+    "Resume brownfield improvement planning once Ollama is confirmed working",
+    "Generate SPECIFICATION.md for the next improvement area"
+  ],
+
+  "key_facts": {
+    "ollama_host": "http://the-black-pearl:11434",
+    "ollama_model": "qwen3-coder:30b",
+    "app_version": "0.2.0",
+    "bundle_id": "com.dhorn.ragflowmobile",
+    "team_id": "LVK5C2V4J8",
+    "last_testflight": "0.2.0 build 1 on 2026-04-03"
+  },
+
+  "open_questions": [
+    "What errors did user see after rebuild? (message came through empty)"
+  ]
+}
