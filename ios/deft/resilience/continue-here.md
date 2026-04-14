@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.4.0 features implemented + BUILD SUCCEEDED — ready to bump version, archive, upload (2026-04-14)
-**Phase**: Brownfield improvement — workflow power + export/import shipped
-**Next**: Bump version to 0.4.0 (build 4), archive, upload to TestFlight
+**Status**: 0.4.0 committed + pushed — archive ready to run from Xcode Organizer (2026-04-14)
+**Phase**: Brownfield improvement — workflow power + export/import shipped, version bumped
+**Next**: Open Xcode → Product → Archive → Window → Organizer → Distribute to TestFlight
 
 ## What Was Done (0.3.0 session)
 
@@ -46,11 +46,32 @@ When starting a new session, Claude reads this file to understand where things l
 - Cross-KB document search — deferred to later version
 - Workflow undo — deferred
 
+## What Was Done (0.4.0 session)
+
+### Features added
+- **Variable Assigner step**: set/append/clear workflow slot variables
+- **Switch step**: condition-based routing between branches (cursor-driven execution model)
+- **Categorize step**: LLM classifies input to a named category and routes accordingly
+- **Pluggable search tools**: `SearchTool` protocol + `SearchToolRegistry`; DuckDuckGo and Wikipedia added as free alternatives to Brave Search
+- **Workflow export/import**: `.ragflow-workflow` files via `ExportImportService`; share sheet in `WorkflowDetailView`; file importer in `WorkflowListView`
+- **KB export/import**: `.ragflow-kb` bundles include all chunks; re-embedded on import; export/import in `LibraryView`
+- **ShareSheet**: `UIViewControllerRepresentable` wrapper in `SharedViews.swift`
+
+### Architecture changes
+- `WorkflowRunner`: replaced sequential `for` loop with cursor-driven `while` loop; `_next` signal in `StepContext` drives routing; cycle guard via `visitedIds: Set<String>`
+- New files: `Services/ExportImport/ExportBundle.swift`, `Services/ExportImport/ExportImportService.swift`
+- `RAGService`: added `embedChunksForKB(kbId:)` public wrapper for background re-embedding after import
+- DB migration v9 (no SQL — documents new step types in stepsJSON blob)
+
+### Onboarding updated (0.4.0)
+- Page 6 (Agent Workflows): added Switch/Categorize, DuckDuckGo/Wikipedia, workflow export/import bullets
+- Version history comment updated
+
 ## Active Context
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.3.0** (build 3) — committed, not yet in TestFlight
+- Version: **0.4.0** (build 4) — committed + pushed, not yet in TestFlight
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
 
 ## Notes
