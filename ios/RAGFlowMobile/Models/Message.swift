@@ -7,6 +7,7 @@ struct Message: Identifiable {
     var sources: [ChunkSource] = []
     var toolActivity: String? = nil
     var timestamp = Date()
+    var tokenUsage: TokenUsage? = nil
 
     enum Role {
         case user, assistant

@@ -148,6 +148,9 @@ final class ChatViewModel: ObservableObject {
                     messages[assistantIndex].content += token
                 }
 
+                // Attach token usage from the completed response
+                messages[assistantIndex].tokenUsage = llm.lastUsage
+
                 // Persist assistant message on normal completion (or partial if cancelled mid-stream).
                 let assistantMsg = messages[assistantIndex]
                 if !assistantMsg.content.isEmpty {

@@ -7,6 +7,7 @@ final class ClaudeService: LLMService {
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
 
     var onToolActivity: ((String?) -> Void)?   // reports "Searching Brave…" etc.
+    private(set) var lastUsage: TokenUsage?
 
     init(apiKey: String, braveApiKey: String = "") {
         self.apiKey = apiKey
@@ -72,6 +73,14 @@ final class ClaudeService: LLMService {
                                     .flatMap { String(data: $0, encoding: .utf8) } ?? ""
                             ))
                         } else {
+                            // Capture token usage from final response
+                            if let usage = json["usage"] as? [String: Any] {
+                                let input = usage["input_tokens"] as? Int ?? 0
+                                let output = usage["output_tokens"] as? Int ?? 0
+                                self.lastUsage = TokenUsage(inputTokens: input, outputTokens: output,
+                                                            model: self.model, provider: .claude)
+                            }
+
                             // Final response — stream it out
                             let text = contentBlocks
                                 .filter { ($0["type"] as? String) == "text" }

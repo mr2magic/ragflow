@@ -15,6 +15,8 @@ final class OllamaService: LLMService {
         return URLSession(configuration: config)
     }()
 
+    private(set) var lastUsage: TokenUsage?
+
     init(host: String, model: String) {
         self.host = host
         self.model = model
@@ -66,6 +68,10 @@ final class OllamaService: LLMService {
                         continuation.yield(content)
 
                         if (json["done"] as? Bool) == true {
+                            let input = json["prompt_eval_count"] as? Int ?? 0
+                            let output = json["eval_count"] as? Int ?? 0
+                            self.lastUsage = TokenUsage(inputTokens: input, outputTokens: output,
+                                                        model: self.model, provider: .ollama)
                             continuation.finish()
                             return
                         }

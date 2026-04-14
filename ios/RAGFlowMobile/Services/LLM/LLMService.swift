@@ -2,6 +2,55 @@ import Foundation
 
 protocol LLMService {
     func complete(messages: [LLMMessage], context: [Chunk], books: [Book]) async throws -> AsyncThrowingStream<String, Error>
+    var lastUsage: TokenUsage? { get }
+}
+
+// MARK: - Token Usage
+
+struct TokenUsage {
+    let inputTokens: Int
+    let outputTokens: Int
+    let model: String
+    let provider: LLMProvider
+
+    var totalTokens: Int { inputTokens + outputTokens }
+
+    var cost: Double {
+        let r = ModelPricing.rates[model] ?? (0, 0)
+        return Double(inputTokens) * r.0 / 1_000_000
+             + Double(outputTokens) * r.1 / 1_000_000
+    }
+
+    var formattedCost: String {
+        if provider == .ollama { return "Free" }
+        if cost < 0.000_05 { return "<$0.0001" }
+        return String(format: "$%.4f", cost)
+    }
+
+    var formattedTokens: String {
+        totalTokens >= 1000
+            ? String(format: "%.1fk tokens", Double(totalTokens) / 1000)
+            : "\(totalTokens) tokens"
+    }
+}
+
+enum ModelPricing {
+    /// (input $/M, output $/M) — update as provider pricing changes
+    static let rates: [String: (Double, Double)] = [
+        // Claude
+        "claude-opus-4-6":         (15.00, 75.00),
+        "claude-sonnet-4-6":       ( 3.00, 15.00),
+        "claude-haiku-4-5-20251001":( 0.80,  4.00),
+        "claude-haiku-4-5":        ( 0.80,  4.00),
+        "claude-haiku-3-5":        ( 0.80,  4.00),
+        // OpenAI
+        "gpt-4o":                  ( 2.50, 10.00),
+        "gpt-4o-mini":             ( 0.15,  0.60),
+        "gpt-4-turbo":             (10.00, 30.00),
+        "o1":                      (15.00, 60.00),
+        "o1-mini":                 ( 3.00, 12.00),
+        "o3-mini":                 ( 1.10,  4.40),
+    ]
 }
 
 struct LLMMessage {

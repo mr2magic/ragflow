@@ -5,6 +5,8 @@ final class OpenAIService: LLMService {
     private let model = "gpt-4o"
     private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
 
+    private(set) var lastUsage: TokenUsage?
+
     init(apiKey: String) {
         self.apiKey = apiKey
     }
@@ -26,6 +28,14 @@ final class OpenAIService: LLMService {
                           let message = first["message"] as? [String: Any],
                           let text = message["content"] as? String else {
                         throw LLMError.badResponse
+                    }
+
+                    // Capture token usage
+                    if let usage = json["usage"] as? [String: Any] {
+                        let input = usage["prompt_tokens"] as? Int ?? 0
+                        let output = usage["completion_tokens"] as? Int ?? 0
+                        self.lastUsage = TokenUsage(inputTokens: input, outputTokens: output,
+                                                    model: self.model, provider: .openAI)
                     }
 
                     // Emit word-by-word for a streaming feel, matching ClaudeService behaviour

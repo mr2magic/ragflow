@@ -356,6 +356,9 @@ private struct MessageBubble: View {
             if message.role == .assistant && !message.sources.isEmpty {
                 sourcesDisclosure
             }
+            if message.role == .assistant, let usage = message.tokenUsage {
+                tokenCostChip(usage)
+            }
         }
     }
 
@@ -407,6 +410,23 @@ private struct MessageBubble: View {
         )
         .padding(.horizontal, 4)
         .frame(maxWidth: 280, alignment: .leading)
+    }
+
+    private func tokenCostChip(_ usage: TokenUsage) -> some View {
+        HStack(spacing: 4) {
+            Text(usage.formattedCost)
+                .foregroundStyle(usage.provider == .ollama ? Color.green.opacity(0.8) : Color.secondary)
+            Text("·")
+                .foregroundStyle(.quaternary)
+            Text(usage.formattedTokens)
+            Text("·")
+                .foregroundStyle(.quaternary)
+            Text(usage.model)
+                .lineLimit(1)
+        }
+        .font(.caption2.monospacedDigit())
+        .foregroundStyle(.tertiary)
+        .padding(.horizontal, 4)
     }
 
     private func copyMessage() {
