@@ -32,6 +32,14 @@ When starting a new session, Claude reads this file to understand where things l
 - Status badges (indexed, not-indexed, done, failed, indexing) have `.accessibilityLabel`
 - Typing indicator has `.accessibilityLabel("AI is typing")`
 
+### Onboarding updated (0.3.0)
+- Added "Library & Passages" page (page 4) covering search, sort, status badges, Passage Viewer, Re-index
+- Updated Chat page: sources disclosure, multi-KB scope, share button, session auto-naming
+- Updated KB page: Retrieval Settings (Top-K, chunk size, chunking method)
+- Merged Agent Tools into Workflows page (Jina Reader removed — not yet implemented)
+- Added maintainer note at top of OnboardingView.swift with version history
+- Total pages: 8 (same count, better coverage)
+
 ### What was NOT changed (deliberately)
 - `PrivacyInfo.xcprivacy` — current declaration correct (UserDefaults CA92.1); no new API types needed
 - App icon — only 1024x1024 JPG; App Store accepts this via asset catalog compilation, but ideally should be PNG. Cannot fix without the source image.
