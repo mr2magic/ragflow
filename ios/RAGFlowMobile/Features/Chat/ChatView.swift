@@ -19,8 +19,8 @@ struct ChatView: View {
         VStack(spacing: 0) {
             kbScopeBar
             Divider()
-            // Show the compact banner only when there are already messages (user can't miss it).
-            // The empty-chat state handles the no-provider case more prominently.
+            // Compact orange banner only shown once messages exist —
+            // the empty state handles the no-provider case more prominently.
             if !settings.isConfigured && !vm.messages.isEmpty {
                 providerBanner
             }
@@ -29,8 +29,24 @@ struct ChatView: View {
             inputBar
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
-        .navigationTitle(session.name)
+        // sessionTitle updates after auto-naming from the first message
+        .navigationTitle(vm.sessionTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            // Share chat history when conversation has content
+            if !vm.messages.isEmpty {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ShareLink(
+                        item: vm.conversationExport,
+                        subject: Text(vm.sessionTitle),
+                        message: Text("Exported from RAGFlow")
+                    ) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("Share conversation")
+                }
+            }
+        }
         .confirmationDialog("Clear conversation?", isPresented: $showClearConfirm, titleVisibility: .visible) {
             Button("Clear", role: .destructive) { vm.clearConversation() }
             Button("Cancel", role: .cancel) {}
@@ -76,6 +92,7 @@ struct ChatView: View {
                             .foregroundStyle(.red.opacity(0.8))
                             .labelStyle(.titleAndIcon)
                     }
+                    .accessibilityLabel("Clear chat history")
                 }
 
                 if !vm.availableKBsToAdd.isEmpty {
@@ -90,6 +107,7 @@ struct ChatView: View {
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.tint)
                     }
+                    .accessibilityLabel("Add another knowledge base")
                 }
             }
             .padding(.horizontal, 16)
@@ -102,6 +120,7 @@ struct ChatView: View {
                         HStack(spacing: 5) {
                             Image(systemName: "square.stack.3d.up.fill")
                                 .font(.caption2.weight(.semibold))
+                                .accessibilityHidden(true)
                             Text(activeKB.name)
                                 .font(.caption.weight(.semibold))
                             if vm.activeKBs.count > 1 {
@@ -110,6 +129,7 @@ struct ChatView: View {
                                         .font(.caption)
                                         .foregroundStyle(.tint.opacity(0.6))
                                 }
+                                .accessibilityLabel("Remove \(activeKB.name)")
                             }
                         }
                         .padding(.horizontal, 12)
@@ -125,13 +145,14 @@ struct ChatView: View {
         .background(.bar)
     }
 
-    // MARK: - Provider Banner
+    // MARK: - Provider Banner (compact — only shown when messages already exist)
 
     private var providerBanner: some View {
         Button(action: { showSettings = true }) {
             HStack(spacing: 10) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("No AI provider configured")
                         .font(.subheadline.weight(.semibold))
@@ -143,12 +164,14 @@ struct ChatView: View {
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(Color.orange.opacity(0.10))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("No AI provider configured. Tap to open Settings.")
     }
 
     // MARK: - Message List
@@ -184,17 +207,17 @@ struct ChatView: View {
         }
     }
 
-    // MARK: - Empty State Prompts
+    // MARK: - Empty State
 
     private var emptyChatPrompts: some View {
         VStack(spacing: Spacing.lg) {
             if !settings.isConfigured {
-                // Prominent setup-required state — replaces the thin orange banner
-                // when there are no messages yet, making it impossible to miss.
+                // Full hero when no provider is configured
                 VStack(spacing: Spacing.md) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.system(size: 44))
                         .foregroundStyle(.orange)
+                        .accessibilityHidden(true)
 
                     VStack(spacing: Spacing.sm) {
                         Text("AI Provider Required")
@@ -212,12 +235,33 @@ struct ChatView: View {
                         .controlSize(.large)
                 }
                 .padding(.vertical, Spacing.xxl)
+            } else if !vm.hasDocuments {
+                // No documents in this KB — remind user to import first
+                VStack(spacing: Spacing.md) {
+                    Image(systemName: "tray")
+                        .font(.system(size: 44))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
+
+                    VStack(spacing: Spacing.sm) {
+                        Text("No Documents Yet")
+                            .font(.title3.weight(.semibold))
+
+                        Text("Import documents into **\(kb.name)** before chatting. The AI answers from your indexed content.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, Spacing.xxl)
+                    }
+                }
+                .padding(.vertical, Spacing.xxl)
             } else {
                 // Normal empty state with suggested prompts
                 Image(systemName: "text.book.closed")
                     .font(.system(size: 48))
                     .foregroundStyle(.tertiary)
                     .padding(.bottom, Spacing.sm)
+                    .accessibilityHidden(true)
 
                 Text("Ask anything about the documents in **\(kb.name)**")
                     .font(.headline)
@@ -244,7 +288,6 @@ struct ChatView: View {
         .padding(.vertical, 40)
     }
 
-
     // MARK: - Input Bar
 
     private var inputBar: some View {
@@ -262,6 +305,7 @@ struct ChatView: View {
                         .font(.title2)
                         .foregroundColor(.red)
                 }
+                .accessibilityLabel("Stop generating")
                 .transition(.scale.combined(with: .opacity))
             } else {
                 Button(action: { Task { await vm.send() } }) {
@@ -270,6 +314,7 @@ struct ChatView: View {
                         .foregroundColor(vm.input.isEmpty ? .secondary : .accentColor)
                 }
                 .disabled(vm.input.isEmpty)
+                .accessibilityLabel("Send message")
                 .transition(.scale.combined(with: .opacity))
             }
         }
@@ -370,19 +415,6 @@ private struct MessageBubble: View {
     }
 }
 
-// MARK: - Bubble Shape
-
-private struct BubbleShape: Shape {
-    let role: Message.Role
-
-    func path(in rect: CGRect) -> Path {
-        let r: CGFloat = 18
-        var path = Path()
-        path.addRoundedRect(in: rect, cornerSize: CGSize(width: r, height: r))
-        return path
-    }
-}
-
 // MARK: - Typing Indicator
 
 private struct TypingIndicator: View {
@@ -406,5 +438,6 @@ private struct TypingIndicator: View {
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 18))
         .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear { phase = 2 }
+        .accessibilityLabel("AI is typing")
     }
 }

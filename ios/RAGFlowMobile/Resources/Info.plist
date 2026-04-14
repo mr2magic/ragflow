@@ -9,9 +9,9 @@
     <key>CFBundleIdentifier</key>
     <string>com.dhorn.ragflowmobile</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>3</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.2.0</string>
+    <string>0.3.0</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundlePackageType</key>
@@ -33,6 +33,11 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <!-- Required for BGProcessingTask (background document import & workflow runs) -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>processing</string>
+    </array>
     <key>NSSupportsLiveActivities</key>
     <false/>
     <key>UIFileSharingEnabled</key>
@@ -41,11 +46,13 @@
     <true/>
     <key>NSAppTransportSecurity</key>
     <dict>
+        <!-- Ollama runs on the local network; iCloud Private Relay cannot route
+             to private hostnames such as the-black-pearl:11434 -->
         <key>NSAllowsLocalNetworking</key>
         <true/>
     </dict>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>RAGFlow connects to Ollama on your local network to run AI models privately on-device.</string>
+    <string>RAGFlow connects to Ollama on your local network to run AI models privately on your own hardware.</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>BGTaskSchedulerPermittedIdentifiers</key>

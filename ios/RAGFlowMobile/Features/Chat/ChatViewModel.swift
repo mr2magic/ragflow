@@ -9,6 +9,10 @@ final class ChatViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var suggestedPrompts: [String] = []
+    /// False when the primary KB has no indexed documents — shown as a warning in the empty state.
+    @Published var hasDocuments = true
+    /// Current session display name — kept in sync when auto-naming fires after the first message.
+    @Published var sessionTitle: String
 
     let kb: KnowledgeBase
     let session: ChatSession
@@ -19,10 +23,13 @@ final class ChatViewModel: ObservableObject {
     private let db = DatabaseService.shared
     private var streamTask: Task<Void, Never>?
     private let haptics = UIImpactFeedbackGenerator(style: .light)
+    /// Prevents auto-naming from firing more than once per session.
+    private var hasAutoNamed = false
 
     init(kb: KnowledgeBase, session: ChatSession) {
         self.kb = kb
         self.session = session
+        self.sessionTitle = session.name
         self.activeKBs = [kb]
         self.messages = (try? db.loadMessages(sessionId: session.id)) ?? []
         buildSuggestedPrompts()
@@ -30,12 +37,9 @@ final class ChatViewModel: ObservableObject {
 
     private func buildSuggestedPrompts() {
         let books = (try? db.allBooks(kbId: kb.id)) ?? []
+        hasDocuments = !books.isEmpty
         guard !books.isEmpty else {
-            suggestedPrompts = [
-                "Summarize the key points in this corpus.",
-                "What are the most important findings or conclusions?",
-                "What topics are covered across these documents?"
-            ]
+            suggestedPrompts = []
             return
         }
 
@@ -81,6 +85,16 @@ final class ChatViewModel: ObservableObject {
         activeKBs.removeAll { $0.id == kb.id }
     }
 
+    /// Plain-text export of the full conversation for sharing.
+    var conversationExport: String {
+        let header = "Chat in \(kb.name) — \(session.createdAt.formatted(date: .abbreviated, time: .shortened))\n\n"
+        let body = messages.map { msg -> String in
+            let role = msg.role == .user ? "You" : "RAGFlow"
+            return "\(role): \(msg.content)"
+        }.joined(separator: "\n\n")
+        return header + body
+    }
+
     func send() async {
         let query = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return }
@@ -97,6 +111,16 @@ final class ChatViewModel: ObservableObject {
 
         // Persist the user message immediately so it survives cancellation or navigation away.
         try? db.saveMessages([userMsg], sessionId: session.id, kbId: kb.id)
+
+        // Auto-name the session from the first user message (fires once, only when
+        // the session still has the default "Chat" name).
+        if !hasAutoNamed && session.name == "Chat" {
+            hasAutoNamed = true
+            let raw = query.prefix(50).trimmingCharacters(in: .whitespacesAndNewlines)
+            let autoName = raw.count < query.count ? raw + "…" : raw
+            try? db.renameSession(id: session.id, name: autoName)
+            sessionTitle = autoName
+        }
 
         streamTask = Task {
             // Keep the process alive for ~30 seconds after a Stage Manager window switch

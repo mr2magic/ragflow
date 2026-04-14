@@ -144,6 +144,9 @@ struct LibraryView: View {
                         vm.renameText = book.title
                         vm.bookToRename = book
                     }
+                    Button("Re-index") {
+                        Task { await vm.reindex(book: book) }
+                    }
                     Button("Delete", role: .destructive) {
                         vm.requestDelete(book: book)
                     }
@@ -172,6 +175,7 @@ struct LibraryView: View {
                 .font(.system(size: 56))
                 .foregroundStyle(.tertiary)
                 .padding(.bottom, 16)
+                .accessibilityHidden(true)
 
             Text("No Documents Yet")
                 .font(.title2.bold())
@@ -312,14 +316,17 @@ private struct BookRow: View {
             ProgressView()
                 .scaleEffect(0.8)
                 .frame(width: 24, height: 24)
+                .accessibilityLabel("Indexing")
         } else if book.chunkCount > 0 {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.green)
                 .imageScale(.medium)
+                .accessibilityLabel("Indexed — \(book.chunkCount) passages")
         } else {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
                 .imageScale(.medium)
+                .accessibilityLabel("Not indexed — no passages found")
         }
     }
 

@@ -126,6 +126,37 @@ final class LibraryViewModel: ObservableObject {
         reload()
     }
 
+    /// Delete the document's existing chunks and re-parse from the stored file path,
+    /// applying the KB's current chunking settings. Requires the original file to still
+    /// exist on disk (files in the app's Documents folder persist; temp-copy imports may not).
+    func reindex(book: Book) async {
+        let filePath = book.filePath
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            show(error: "Original file not found on disk. Please re-import the document to apply new settings.")
+            return
+        }
+        isIngesting = true
+        ingestingFilePaths.insert(filePath)
+        ingestProgress = "Re-indexing…"
+        defer {
+            isIngesting = false
+            ingestingFilePaths.remove(filePath)
+            ingestProgress = ""
+        }
+        do {
+            // Remove existing record (cascades to chunks + FTS index)
+            try db.deleteBook(book.id)
+            // Re-parse with current KB chunking settings; creates a new book record
+            _ = try await rag.ingest(url: URL(fileURLWithPath: filePath), kbId: book.kbId)
+            reload()
+            haptics.notificationOccurred(.success)
+        } catch {
+            // Restore old record on failure so the document isn't lost
+            try? db.save(book)
+            show(error: "Re-index failed: \(error.localizedDescription)")
+        }
+    }
+
     func importFromURL() async {
         let urlString = urlInput.trimmingCharacters(in: .whitespacesAndNewlines)
         urlInput = ""

@@ -96,6 +96,7 @@ struct ConversationsListView: View {
                 .foregroundStyle(.tint)
                 .frame(width: 36, height: 36)
                 .background(.tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(session.name)
@@ -111,6 +112,7 @@ struct ConversationsListView: View {
             Image(systemName: "chevron.right")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
         }
         .padding(.vertical, 4)
     }
@@ -122,6 +124,7 @@ struct ConversationsListView: View {
             Image(systemName: "bubble.left.and.text.bubble.right")
                 .font(.system(size: 56))
                 .foregroundStyle(.tertiary)
+                .accessibilityHidden(true)
 
             VStack(spacing: Spacing.sm) {
                 Text("No Chats Yet")

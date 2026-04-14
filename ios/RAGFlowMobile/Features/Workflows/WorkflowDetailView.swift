@@ -67,6 +67,7 @@ struct WorkflowDetailView: View {
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                         .padding(.leading, 22)
+                        .accessibilityHidden(true)
                 }
             }
         }
@@ -98,6 +99,7 @@ struct WorkflowDetailView: View {
                             .foregroundStyle(.tint)
                     }
                 }
+                .accessibilityLabel(runner.isRunning ? "Stop workflow" : "Run workflow")
                 .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !runner.isRunning)
             }
         }
@@ -165,6 +167,7 @@ struct WorkflowDetailView: View {
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                 }
                 .contentShape(Rectangle())
             }
@@ -222,5 +225,6 @@ struct WorkflowDetailView: View {
             .foregroundStyle(color)
             .padding(.horizontal, 6).padding(.vertical, 2)
             .background(color.opacity(0.12), in: Capsule())
+            .accessibilityLabel("Status: \(label)")
     }
 }
