@@ -3,55 +3,60 @@
   "project": "RAGFlowMobile",
   "date": "2026-04-14",
   "status": "in_progress",
-  "phase": "brownfield improvement — post 0.3.0 archive, awaiting TestFlight upload",
+  "phase": "brownfield improvement — 0.5.0 committed + pushed, ready to archive for TestFlight",
 
   "completed_this_session": [
-    "UI audit + 12 consistency fixes (alert→sheet, empty states, accessibility labels, spacing constants)",
-    "Added SharedViews.swift (Spacing, RenameSheet, CreateKBSheet, URLImportSheet) + wired into project.pbxproj",
-    "ChatViewModel: session auto-naming, hasDocuments flag, conversationExport",
-    "ChatView: no-provider hero, no-documents hero, ShareLink toolbar, provider banner, all a11y labels",
-    "LibraryViewModel: reindex(book:) — delete+re-ingest from stored file path",
-    "LibraryView: Re-index context menu item, RenameSheet, URLImportSheet, sort menu fix, a11y",
-    "WorkflowListView: custom empty state with borderedProminent button",
-    "WorkflowEditorView: drag handle icon, footer hint text",
-    "WorkflowDetailView: all a11y labels on play/stop, arrows, chevrons, status badges",
-    "Info.plist: 0.3.0, build 3, UIBackgroundModes:[processing], improved NSLocalNetworkUsageDescription",
-    "App icon: replaced ragflow_mobile_logo.jpg with PNG (668KB); Contents.json already referenced .png",
-    "Committed as 'Golden_Child' (9e48dd27c), pushed to origin/main",
-    "xcodebuild archive → ARCHIVE SUCCEEDED at ios/build/archive/RAGFlowMobile.xcarchive",
-    "xcodebuild -exportArchive → EXPORT SUCCEEDED; IPA at ios/build/export/RAGFlow.ipa",
-    "Saved submission_requirements.md with App Store metadata drafts (description, keywords, URLs, age rating, privacy policy notes)",
-    "OnboardingView.swift rewritten for 0.3.0: added Library & Passages page, updated Chat/KB/Workflows pages, added maintainer note",
-    "Memory saved: Claude must update onboarding unprompted after significant feature changes",
-    "Committed 30f9a7313, pushed to origin/main"
+    "Token pricing display: TokenUsage struct, ModelPricing table, ClaudeService/OpenAIService/OllamaService extract usage, Message.tokenUsage, ChatViewModel assigns after stream, ChatView renders cost chip ($0.0023 · 1.4k tokens · model-name)",
+    "iOS-native feature wave 1: 9 new files registered in project.pbxproj",
+    "AppEntities.swift: KBEntity + WorkflowEntity AppEntity types with EntityQuery",
+    "RAGFlowIntents.swift: QueryKBIntent (Siri voice query), QuickQueryIntent (Action Button), RunWorkflowIntent, ImportURLToRAGFlowIntent, RAGFlowAppShortcuts provider",
+    "FocusFilterIntent.swift: SetFocusFilterIntent hides/shows KBs per Focus mode; FocusFilterStore",
+    "SpotlightIndexer.swift: CSSearchableItem indexing for books + chunk snippets; deindex on delete",
+    "IndexingActivityAttributes.swift + IndexingActivityManager: Live Activity for import progress",
+    "WorkflowActivityAttributes.swift + WorkflowActivityManager: Live Activity for workflow step progress",
+    "WorkflowRunner.swift: wired to WorkflowActivityManager start/update/finish",
+    "VisionOCRParser.swift: on-device OCR via VNRecognizeTextRequest for images and PDFs",
+    "DocumentCameraView.swift: VNDocumentCameraViewController wrapper; OCRs pages; ingests to RAGService",
+    "SharedGroupDefaults.swift: App Group 'group.com.dhorn.ragflowmobile' for future Share Extension + Widget",
+    "LibraryView.swift: Scan Document button, drag-and-drop (.onDrop), fullScreenCover for camera",
+    "LibraryViewModel.swift: IndexingActivityManager + SpotlightIndexer + SharedGroupDefaults wired in",
+    "ContentView.swift: .onContinueUserActivity for Handoff, SharedGroupDefaults.syncFromApp in .task",
+    "ChatView.swift: WritingToolsLimitedModifier on query input",
+    "WorkflowDetailView.swift: WritingToolsLimitedModifier on query input",
+    "SharedViews.swift: WritingToolsLimitedModifier (iOS 18+ guarded)",
+    "Info.plist: NSSupportsLiveActivities=true, NSSupportsLiveActivitiesFrequentUpdates=true, NSCameraUsageDescription, UIApplicationSupportsMultipleScenes=true",
+    "OnboardingView.swift: updated to 9 pages — camera scan + drag-drop on Import page; new 'Built for iPhone & iPad' page for Siri/Spotlight/Live Activities/token cost",
+    "Version bumped to 0.5.0 build 5",
+    "Committed as 1a21b157d, pushed to origin/main",
+    "pbxproj reorder committed as 09f2a23ba, pushed"
   ],
 
   "in_progress": [
-    "TestFlight upload pending — IPA exported but not yet uploaded",
-    "User chose Xcode Organizer (Option 1) for upload — Xcode opened with archive"
+    "TestFlight archive for 0.5.0 not yet created — must be done from Xcode GUI"
   ],
 
   "next": [
-    "Confirm TestFlight upload completes via Xcode Organizer (Window → Organizer → Distribute App)",
-    "Once processed (~15 min), add 0.3.0 build to TestFlight tester group",
-    "Fill App Store metadata if targeting external TestFlight or App Store: see submission_requirements.md",
-    "Decide next feature area for 0.4.0"
+    "Open Xcode → Product → Archive, then Window → Organizer (⌘⇧O) → Distribute App to TestFlight",
+    "Add App Group entitlement 'group.com.dhorn.ragflowmobile' in Xcode Signing & Capabilities (needed before Share Extension + Widget targets)",
+    "Share Extension target: RAGFlowShareExtension/ShareViewController.swift — reads pending imports queue from SharedGroupDefaults, KB picker, triggers ingest in main app",
+    "Widget Extension target: Recent Chat + KB Status + Quick Query widgets; Live Activity presentation views (Dynamic Island + lock screen SwiftUI)",
+    "Core ML embeddings: bundle quantized MiniLM .mlpackage for on-device embeddings (no API key needed)",
+    "iCloud sync (CloudKit) — deferred to 0.8.0"
   ],
 
   "key_facts": {
     "ollama_host": "http://the-black-pearl:11434",
-    "ollama_model": "qwen3-coder:30b",
-    "app_version": "0.3.0",
-    "build_number": "3",
+    "app_version": "0.5.0",
+    "build_number": "5",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id": "LVK5C2V4J8",
     "last_testflight": "0.2.0 build 1 on 2026-04-03",
-    "archive_path": "ios/build/archive/RAGFlowMobile.xcarchive",
-    "ipa_path": "ios/build/export/RAGFlow.ipa",
-    "export_options_plist": "ios/ExportOptions.plist"
+    "app_group": "group.com.dhorn.ragflowmobile",
+    "last_commit": "09f2a23ba"
   },
 
   "open_questions": [
-    "Has the 0.3.0 TestFlight upload completed successfully via Xcode Organizer?"
+    "App Group entitlement added in Xcode Signing & Capabilities? (required for Share Extension and Widget to share data)",
+    "Has the 0.5.0 archive been submitted to TestFlight via Xcode Organizer?"
   ]
 }

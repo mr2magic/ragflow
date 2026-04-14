@@ -8,8 +8,8 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.4.0 committed + pushed — archive ready to run from Xcode Organizer (2026-04-14)
-**Phase**: Brownfield improvement — workflow power + export/import shipped, version bumped
+**Status**: 0.5.0 committed + pushed — archive ready to run from Xcode Organizer (2026-04-14)
+**Phase**: Brownfield improvement — iOS-native feature wave 1 shipped
 **Next**: Open Xcode → Product → Archive → Window → Organizer → Distribute to TestFlight
 
 ## What Was Done (0.3.0 session)
@@ -20,31 +20,13 @@ When starting a new session, Claude reads this file to understand where things l
 - Improved `NSLocalNetworkUsageDescription` copy for App Store review
 
 ### Features added
-- **Session auto-naming**: first message content (up to 50 chars) becomes the chat title; `sessionTitle` published property keeps nav bar in sync
-- **Empty KB state in chat**: when primary KB has no documents, shows "No Documents Yet" hero instead of generic prompts
-- **Re-index document**: long-press context menu → "Re-index" re-parses the file with current KB chunking settings; graceful error if original file was a temp copy
-- **Share chat history**: ShareLink toolbar button (appears when conversation has messages) exports as plain text
-
-### App Store / reliability fixes
-- `UIBackgroundModes` now declares `processing` (was missing, would fail background task registration)
-- All icon-only buttons have `.accessibilityLabel` (send, stop, play/stop workflow, clear, add/remove KB tag, share)
-- Decorative images (chevrons, connector arrows, empty-state icons) have `.accessibilityHidden(true)`
-- Status badges (indexed, not-indexed, done, failed, indexing) have `.accessibilityLabel`
-- Typing indicator has `.accessibilityLabel("AI is typing")`
+- **Session auto-naming**: first message content (up to 50 chars) becomes the chat title
+- **Empty KB state in chat**: when primary KB has no documents, shows "No Documents Yet" hero
+- **Re-index document**: long-press context menu → "Re-index" re-parses the file with current KB chunking settings
+- **Share chat history**: ShareLink toolbar button exports conversation as plain text
 
 ### Onboarding updated (0.3.0)
-- Added "Library & Passages" page (page 4) covering search, sort, status badges, Passage Viewer, Re-index
-- Updated Chat page: sources disclosure, multi-KB scope, share button, session auto-naming
-- Updated KB page: Retrieval Settings (Top-K, chunk size, chunking method)
-- Merged Agent Tools into Workflows page (Jina Reader removed — not yet implemented)
-- Added maintainer note at top of OnboardingView.swift with version history
-- Total pages: 8 (same count, better coverage)
-
-### What was NOT changed (deliberately)
-- `PrivacyInfo.xcprivacy` — current declaration correct (UserDefaults CA92.1); no new API types needed
-- App icon — only 1024x1024 JPG; App Store accepts this via asset catalog compilation, but ideally should be PNG. Cannot fix without the source image.
-- Cross-KB document search — deferred to later version
-- Workflow undo — deferred
+- Added "Library & Passages" page; updated Chat/KB/Workflows pages; 8 pages total
 
 ## What Was Done (0.4.0 session)
 
@@ -52,31 +34,72 @@ When starting a new session, Claude reads this file to understand where things l
 - **Variable Assigner step**: set/append/clear workflow slot variables
 - **Switch step**: condition-based routing between branches (cursor-driven execution model)
 - **Categorize step**: LLM classifies input to a named category and routes accordingly
-- **Pluggable search tools**: `SearchTool` protocol + `SearchToolRegistry`; DuckDuckGo and Wikipedia added as free alternatives to Brave Search
-- **Workflow export/import**: `.ragflow-workflow` files via `ExportImportService`; share sheet in `WorkflowDetailView`; file importer in `WorkflowListView`
-- **KB export/import**: `.ragflow-kb` bundles include all chunks; re-embedded on import; export/import in `LibraryView`
-- **ShareSheet**: `UIViewControllerRepresentable` wrapper in `SharedViews.swift`
+- **Pluggable search tools**: SearchTool protocol + SearchToolRegistry; DuckDuckGo + Wikipedia added
+- **Workflow export/import**: `.ragflow-workflow` files via ExportImportService
+- **KB export/import**: `.ragflow-kb` bundles include all chunks; re-embedded on import
 
 ### Architecture changes
-- `WorkflowRunner`: replaced sequential `for` loop with cursor-driven `while` loop; `_next` signal in `StepContext` drives routing; cycle guard via `visitedIds: Set<String>`
-- New files: `Services/ExportImport/ExportBundle.swift`, `Services/ExportImport/ExportImportService.swift`
-- `RAGService`: added `embedChunksForKB(kbId:)` public wrapper for background re-embedding after import
-- DB migration v9 (no SQL — documents new step types in stepsJSON blob)
+- WorkflowRunner: cursor-driven while loop; `_next` signal in StepContext; cycle guard via visitedIds
 
 ### Onboarding updated (0.4.0)
-- Page 6 (Agent Workflows): added Switch/Categorize, DuckDuckGo/Wikipedia, workflow export/import bullets
-- Version history comment updated
+- Page 6 (Agent Workflows): Switch/Categorize, DuckDuckGo/Wikipedia, export/import bullets
+
+## What Was Done (0.5.0 session)
+
+### Features added — iOS-native wave 1
+- **Token pricing display**: cost chip on every assistant reply (`$0.0023 · 1.4k tokens · claude-sonnet-4-6`); free for Ollama; extracted from real API usage fields
+- **Siri + App Intents**: QueryKBIntent (voice query), QuickQueryIntent (Action Button), RunWorkflowIntent, ImportURLIntent; AppShortcutsProvider surfaces "Ask RAGFlow" to Siri
+- **Focus Filters**: SetFocusFilterIntent hides/shows KBs per Work/Personal Focus mode
+- **Core Spotlight**: SpotlightIndexer indexes every book + chunk snippets; results appear in device Spotlight; deindexed on delete
+- **Live Activities**: IndexingActivityManager (import progress) + WorkflowActivityManager (per-step); wired into LibraryViewModel and WorkflowRunner; shows on lock screen + Dynamic Island
+- **Vision OCR + Document Camera**: VisionOCRParser (on-device, no server); DocumentCameraView wraps VNDocumentCameraViewController; "Scan Document" in LibraryView
+- **Drag & Drop (iPad)**: `.onDrop(of: .fileURL)` on book list and empty state; drags from Files.app split-view
+- **Handoff**: `.onContinueUserActivity` in ContentView restores selectedKB on resume
+- **Shared App Group**: SharedGroupDefaults (`group.com.dhorn.ragflowmobile`) syncs KB list + doc count for future Share Extension + Widget
+- **Apple Intelligence Writing Tools (iOS 18+)**: WritingToolsLimitedModifier on chat and workflow query inputs
+- **Stage Manager / Multi-Window**: UIApplicationSupportsMultipleScenes = true
+
+### Info.plist changes (0.5.0)
+- NSSupportsLiveActivities = true, NSSupportsLiveActivitiesFrequentUpdates = true
+- NSCameraUsageDescription added
+- UIApplicationSupportsMultipleScenes = true
+- Version: 0.5.0 build 5
+
+### Onboarding updated (0.5.0)
+- 9 pages total (was 8)
+- Import page: camera scan + drag-and-drop bullets
+- New page 8: "Built for iPhone & iPad" — Siri, Spotlight, Live Activities, token cost
+
+### New files
+- Services/Intents/AppEntities.swift
+- Services/Intents/RAGFlowIntents.swift
+- Services/Intents/FocusFilterIntent.swift
+- Services/Spotlight/SpotlightIndexer.swift
+- Services/LiveActivity/IndexingActivityAttributes.swift
+- Services/LiveActivity/WorkflowActivityAttributes.swift
+- Services/RAG/VisionOCRParser.swift
+- Features/Library/DocumentCameraView.swift
+- Services/Storage/SharedGroupDefaults.swift
 
 ## Active Context
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.4.0** (build 4) — committed + pushed, not yet in TestFlight
+- Version: **0.5.0** (build 5) — committed + pushed, not yet in TestFlight
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
+
+## Pending for Next Wave (0.6.0)
+
+- App Group entitlement in Xcode Signing & Capabilities (`group.com.dhorn.ragflowmobile`) — required before Share Extension + Widget targets can share data
+- Share Extension target (`RAGFlowShareExtension/ShareViewController.swift`)
+- Widget Extension target (Recent Chat, KB Status, Quick Query; Live Activity presentation views)
+- Core ML embeddings (.mlpackage bundle for on-device MiniLM)
+- iCloud sync (CloudKit) — deferred to 0.8.0
 
 ## Notes
 
 - Do NOT modify existing working Swift files without explicit instruction
-- SharedViews.swift is the home for shared UI primitives (RenameSheet, CreateKBSheet, URLImportSheet, Spacing)
+- SharedViews.swift is the home for shared UI primitives
 - Spacing enum constants should be used in all new code
-- Re-index requires file to still exist at `book.filePath`; temp-copy imports won't work (documented in error message)
+- WritingToolsLimitedModifier is in SharedViews.swift (use it instead of .writingToolsBehavior directly)
+- App Group suite name: "group.com.dhorn.ragflowmobile"
