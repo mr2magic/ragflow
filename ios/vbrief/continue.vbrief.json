@@ -1,38 +1,57 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-07",
+  "date": "2026-04-14",
   "status": "in_progress",
-  "phase": "bugfix — Ollama proxy",
+  "phase": "brownfield improvement — post 0.3.0 archive, awaiting TestFlight upload",
 
   "completed_this_session": [
-    "Initialized deft framework: created deft/core/project.md, deft/resilience/continue-here.md, vbrief/",
-    "PROJECT.md: Swift iOS app, brownfield strategy, 85% coverage",
-    "Fixed OllamaService: added connectionProxyDictionary = [:] to bypass iCloud Private Relay",
-    "Fixed OllamaModelsService: switched from URLSession.shared to a proxy-free session"
+    "UI audit + 12 consistency fixes (alert→sheet, empty states, accessibility labels, spacing constants)",
+    "Added SharedViews.swift (Spacing, RenameSheet, CreateKBSheet, URLImportSheet) + wired into project.pbxproj",
+    "ChatViewModel: session auto-naming, hasDocuments flag, conversationExport",
+    "ChatView: no-provider hero, no-documents hero, ShareLink toolbar, provider banner, all a11y labels",
+    "LibraryViewModel: reindex(book:) — delete+re-ingest from stored file path",
+    "LibraryView: Re-index context menu item, RenameSheet, URLImportSheet, sort menu fix, a11y",
+    "WorkflowListView: custom empty state with borderedProminent button",
+    "WorkflowEditorView: drag handle icon, footer hint text",
+    "WorkflowDetailView: all a11y labels on play/stop, arrows, chevrons, status badges",
+    "Info.plist: 0.3.0, build 3, UIBackgroundModes:[processing], improved NSLocalNetworkUsageDescription",
+    "App icon: replaced ragflow_mobile_logo.jpg with PNG (668KB); Contents.json already referenced .png",
+    "Committed as 'Golden_Child' (9e48dd27c), pushed to origin/main",
+    "xcodebuild archive → ARCHIVE SUCCEEDED at ios/build/archive/RAGFlowMobile.xcarchive",
+    "xcodebuild -exportArchive → EXPORT SUCCEEDED; IPA at ios/build/export/RAGFlow.ipa",
+    "Saved submission_requirements.md with App Store metadata drafts (description, keywords, URLs, age rating, privacy policy notes)",
+    "OnboardingView.swift rewritten for 0.3.0: added Library & Passages page, updated Chat/KB/Workflows pages, added maintainer note",
+    "Memory saved: Claude must update onboarding unprompted after significant feature changes",
+    "Committed 30f9a7313, pushed to origin/main"
   ],
 
   "in_progress": [
-    "Ollama connectivity fix deployed in code — user needs to rebuild and test",
-    "User reported errors after rebuild but did not paste them yet"
+    "TestFlight upload pending — IPA exported but not yet uploaded",
+    "User chose Xcode Organizer (Option 1) for upload — Xcode opened with archive"
   ],
 
   "next": [
-    "Confirm Ollama fix resolves the nw_endpoint_flow_failed errors",
-    "Resume brownfield improvement planning once Ollama is confirmed working",
-    "Generate SPECIFICATION.md for the next improvement area"
+    "Confirm TestFlight upload completes via Xcode Organizer (Window → Organizer → Distribute App)",
+    "Once processed (~15 min), add 0.3.0 build to TestFlight tester group",
+    "Fill App Store metadata if targeting external TestFlight or App Store: see submission_requirements.md",
+    "Decide next feature area for 0.4.0"
   ],
 
   "key_facts": {
     "ollama_host": "http://the-black-pearl:11434",
     "ollama_model": "qwen3-coder:30b",
-    "app_version": "0.2.0",
+    "app_version": "0.3.0",
+    "build_number": "3",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id": "LVK5C2V4J8",
-    "last_testflight": "0.2.0 build 1 on 2026-04-03"
+    "last_testflight": "0.2.0 build 1 on 2026-04-03",
+    "archive_path": "ios/build/archive/RAGFlowMobile.xcarchive",
+    "ipa_path": "ios/build/export/RAGFlow.ipa",
+    "export_options_plist": "ios/ExportOptions.plist"
   },
 
   "open_questions": [
-    "What errors did user see after rebuild? (message came through empty)"
+    "Has the 0.3.0 TestFlight upload completed successfully via Xcode Organizer?"
   ]
 }
