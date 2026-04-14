@@ -9,9 +9,9 @@
     <key>CFBundleIdentifier</key>
     <string>com.dhorn.ragflowmobile</string>
     <key>CFBundleVersion</key>
-    <string>4</string>
+    <string>5</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.4.0</string>
+    <string>0.5.0</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundlePackageType</key>
@@ -39,7 +39,18 @@
         <string>processing</string>
     </array>
     <key>NSSupportsLiveActivities</key>
-    <false/>
+    <true/>
+    <key>NSSupportsLiveActivitiesFrequentUpdates</key>
+    <true/>
+    <key>NSCameraUsageDescription</key>
+    <string>RAGFlow uses the camera to scan physical documents and import them into your knowledge base.</string>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <true/>
+        <key>UISceneConfigurations</key>
+        <dict/>
+    </dict>
     <key>UIFileSharingEnabled</key>
     <true/>
     <key>LSSupportsOpeningDocumentsInPlace</key>

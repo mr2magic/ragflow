@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import VisionKit
 
 // Pulled out so Swift's type checker doesn't time out inside body.
 private let supportedImportTypes: [UTType] = {
@@ -47,6 +48,8 @@ struct LibraryView: View {
     @State private var kbImportError: String?
     @State private var showKBImportError = false
     @State private var isImportingKB = false
+    @State private var showCameraScanner = false
+    @State private var isDropTargeted = false
 
     init(kb: KnowledgeBase, autoImport: Bool = false) {
         self.kb = kb
@@ -94,10 +97,16 @@ struct LibraryView: View {
         .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
             Button("Browse Files (iPhone & iCloud)") { showImporter = true }
             Button("Import from URL") { vm.showURLEntry = true }
+            if isDocumentScanningAvailable {
+                Button("Scan Document") { showCameraScanner = true }
+            }
             Button("Import Knowledge Base Archive") { showKBImporter = true }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a supported document.")
+        }
+        .fullScreenCover(isPresented: $showCameraScanner) {
+            DocumentCameraView(kbId: kb.id)
         }
         .sheet(isPresented: $vm.showURLEntry) {
             URLImportSheet(urlInput: $vm.urlInput) {
@@ -163,6 +172,16 @@ struct LibraryView: View {
 
     private var bookList: some View {
         List {
+            // Drag-and-drop target banner (visible while a file is dragged over)
+            if isDropTargeted {
+                Label("Drop to import", systemImage: "arrow.down.doc.fill")
+                    .font(.subheadline.weight(.medium))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                    .foregroundStyle(.tint)
+            }
+
             ForEach(vm.filteredBooks) { book in
                 Button(action: { selectedBook = book }) {
                     BookRow(book: book, isIndexing: vm.ingestingFilePaths.contains(book.filePath))
@@ -192,6 +211,23 @@ struct LibraryView: View {
         }
         .listStyle(.insetGrouped)
         .animation(.default, value: vm.filteredBooks.map(\.id))
+        // iPad drag & drop from Files.app or other apps
+        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
+            for provider in providers {
+                _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                    guard let url else { return }
+                    let accessed = url.startAccessingSecurityScopedResource()
+                    let tmp = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString)
+                        .appendingPathExtension(url.pathExtension)
+                    let copied = (try? FileManager.default.copyItem(at: url, to: tmp)) != nil
+                    if accessed { url.stopAccessingSecurityScopedResource() }
+                    guard copied else { return }
+                    Task { @MainActor in await vm.ingestURLs([tmp]) }
+                }
+            }
+            return true
+        }
     }
 
     // MARK: - Empty State
@@ -237,6 +273,22 @@ struct LibraryView: View {
             .controlSize(.large)
 
             Spacer()
+        }
+        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
+            for provider in providers {
+                _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                    guard let url else { return }
+                    let accessed = url.startAccessingSecurityScopedResource()
+                    let tmp = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString)
+                        .appendingPathExtension(url.pathExtension)
+                    let copied = (try? FileManager.default.copyItem(at: url, to: tmp)) != nil
+                    if accessed { url.stopAccessingSecurityScopedResource() }
+                    guard copied else { return }
+                    Task { @MainActor in await vm.ingestURLs([tmp]) }
+                }
+            }
+            return true
         }
     }
 

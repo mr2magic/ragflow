@@ -163,3 +163,17 @@ struct ShareSheet: UIViewControllerRepresentable {
 
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
+
+// MARK: - Writing Tools Behavior
+
+/// Applies `.writingToolsBehavior(.limited)` on iOS 18+ so Apple Intelligence
+/// can rewrite/proofread but not summarize user-typed chat/query input.
+struct WritingToolsLimitedModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.writingToolsBehavior(.limited)
+        } else {
+            content
+        }
+    }
+}

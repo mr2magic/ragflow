@@ -99,13 +99,18 @@ final class LibraryViewModel: ObservableObject {
 
     func confirmDelete() {
         if let book = bookToDelete {
+            SpotlightIndexer.shared.deindex(bookId: book.id)
             try? db.deleteBook(book.id)
             bookToDelete = nil
         } else if let offsets = offsetsToDelete {
-            for i in offsets { try? db.deleteBook(filteredBooks[i].id) }
+            for i in offsets {
+                SpotlightIndexer.shared.deindex(bookId: filteredBooks[i].id)
+                try? db.deleteBook(filteredBooks[i].id)
+            }
             offsetsToDelete = nil
         }
         reload()
+        SharedGroupDefaults.syncFromApp()
         haptics.notificationOccurred(.success)
     }
 
@@ -147,7 +152,10 @@ final class LibraryViewModel: ObservableObject {
             // Remove existing record (cascades to chunks + FTS index)
             try db.deleteBook(book.id)
             // Re-parse with current KB chunking settings; creates a new book record
-            _ = try await rag.ingest(url: URL(fileURLWithPath: filePath), kbId: book.kbId)
+            let reindexedBook = try await rag.ingest(url: URL(fileURLWithPath: filePath), kbId: book.kbId)
+            let reindexedChunks = (try? db.chunks(bookId: reindexedBook.id)) ?? []
+            SpotlightIndexer.shared.index(book: reindexedBook, chunks: reindexedChunks)
+            SharedGroupDefaults.syncFromApp()
             reload()
             haptics.notificationOccurred(.success)
         } catch {
@@ -176,7 +184,10 @@ final class LibraryViewModel: ObservableObject {
                 .appendingPathExtension(ext)
             try FileManager.default.moveItem(at: tmpURL, to: destURL)
             ingestProgress = "Indexing…"
-            _ = try await rag.ingest(url: destURL, kbId: kb.id, sourceURL: urlString)
+            let importedBook = try await rag.ingest(url: destURL, kbId: kb.id, sourceURL: urlString)
+            let importedChunks = (try? db.chunks(bookId: importedBook.id)) ?? []
+            SpotlightIndexer.shared.index(book: importedBook, chunks: importedChunks)
+            SharedGroupDefaults.syncFromApp()
             reload()
             haptics.notificationOccurred(.success)
         } catch {
@@ -188,6 +199,8 @@ final class LibraryViewModel: ObservableObject {
         isIngesting = true
         let coordinator = BackgroundTaskCoordinator.shared
         coordinator.beginImport(fileCount: urls.count)
+        let firstFileName = urls.first?.lastPathComponent ?? "file"
+        IndexingActivityManager.shared.start(kbName: kb.name, fileName: firstFileName, totalFiles: urls.count)
         defer {
             isIngesting = false
             ingestProgress = ""
@@ -197,9 +210,18 @@ final class LibraryViewModel: ObservableObject {
         for (i, url) in urls.enumerated() {
             ingestProgress = "Importing \(i + 1) of \(urls.count)…"
             ingestingFilePaths.insert(url.path)
+            IndexingActivityManager.shared.update(
+                fileName: url.lastPathComponent,
+                currentFile: i + 1,
+                totalFiles: urls.count,
+                phase: "Parsing"
+            )
             do {
-                _ = try await rag.ingest(url: url, kbId: kb.id)
+                let book = try await rag.ingest(url: url, kbId: kb.id)
                 succeeded += 1
+                // Index in Spotlight after successful ingest
+                let chunks = (try? db.chunks(bookId: book.id)) ?? []
+                SpotlightIndexer.shared.index(book: book, chunks: chunks)
             } catch {
                 show(error: "Failed to import \(url.lastPathComponent): \(error.localizedDescription)")
             }
@@ -208,6 +230,8 @@ final class LibraryViewModel: ObservableObject {
             reload()
         }
         coordinator.finishImport(success: succeeded > 0)
+        IndexingActivityManager.shared.finish(success: succeeded > 0)
+        SharedGroupDefaults.syncFromApp()
         if succeeded > 0 { haptics.notificationOccurred(.success) }
     }
 

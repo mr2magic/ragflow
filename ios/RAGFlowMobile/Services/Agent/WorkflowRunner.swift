@@ -19,6 +19,11 @@ final class WorkflowRunner: ObservableObject {
         let coordinator = BackgroundTaskCoordinator.shared
         let steps = workflow.steps
         coordinator.beginWorkflow(name: workflow.name, stepCount: steps.count)
+        WorkflowActivityManager.shared.start(
+            workflowName: workflow.name,
+            firstStepLabel: steps.first?.label ?? "Starting…",
+            totalSteps: steps.count
+        )
 
         defer {
             isRunning = false
@@ -50,6 +55,11 @@ final class WorkflowRunner: ObservableObject {
 
             currentStep = step.label
             log(into: &entries, "▶ \(step.label)")
+            WorkflowActivityManager.shared.update(
+                stepLabel: step.label,
+                stepIndex: visitedIds.count,
+                totalSteps: steps.count
+            )
 
             do {
                 switch step.type {
@@ -243,6 +253,7 @@ final class WorkflowRunner: ObservableObject {
         }
 
         coordinator.finishWorkflow(success: !failed)
+        WorkflowActivityManager.shared.finish(success: !failed, totalSteps: steps.count)
 
         if finalOutput.isEmpty { finalOutput = ctx["output"] ?? streamingOutput }
         stepLog = entries

@@ -26,6 +26,14 @@ struct ContentView: View {
         }
         .task {
             BackgroundTaskCoordinator.shared.requestNotificationAuthorization()
+            SharedGroupDefaults.syncFromApp()
+        }
+        // Handoff — resume a chat started on another Apple device
+        .onContinueUserActivity("com.dhorn.ragflowmobile.chat") { activity in
+            if let kbId = activity.userInfo?["kbId"] as? String,
+               let kb = try? DatabaseService.shared.kb(id: kbId) {
+                selectedKB = kb
+            }
         }
     }
 

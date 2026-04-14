@@ -106,6 +106,7 @@ struct WorkflowDetailView: View {
                     .lineLimit(3...6)
                     .textFieldStyle(.roundedBorder)
                     .disabled(runner.isRunning)
+                    .modifier(WritingToolsLimitedModifier())
 
                 Button {
                     Task { await runWorkflow() }

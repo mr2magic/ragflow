@@ -39,4 +39,16 @@ struct PDFParser {
 
         return sections
     }
+
+    /// Returns true when PDFKit found no text layer (e.g. scanned/image-only PDF).
+    /// Callers should fall back to VisionOCRParser in that case.
+    func hasTextLayer(url: URL) -> Bool {
+        guard let doc = PDFDocument(url: url), doc.pageCount > 0 else { return false }
+        // Sample the first 3 pages; if any yield text, the PDF has a text layer.
+        for p in 0..<min(3, doc.pageCount) {
+            if let text = doc.page(at: p)?.string,
+               text.count > 20 { return true }
+        }
+        return false
+    }
 }

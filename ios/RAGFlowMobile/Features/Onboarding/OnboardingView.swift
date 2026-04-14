@@ -8,11 +8,13 @@ import SwiftUI
 //
 // Version history:
 //   0.1.0 — initial 8-page carousel
-//   0.4.0 — Workflows page: Switch/Categorize steps, DuckDuckGo/Wikipedia search,
-//            workflow export/import, KB export/import
 //   0.3.0 — added Library page; updated Chat (share, auto-naming, multi-KB,
 //            sources); updated KB (retrieval settings); merged Agent Tools into
 //            Workflows; dropped Jina Reader (not yet implemented); 8 pages total
+//   0.4.0 — Workflows page: Switch/Categorize steps, DuckDuckGo/Wikipedia search,
+//            workflow export/import, KB export/import
+//   0.5.0 — iOS-native features: Siri shortcuts, Spotlight search, token cost display,
+//            document scanning, drag-and-drop import, Live Activities, Handoff
 // ─────────────────────────────────────────────────────────────────────────────
 
 // MARK: - Data model
@@ -63,11 +65,11 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "doc.badge.plus",
         tint: .green,
         title: "Import Documents",
-        subtitle: "20+ file types — if you can read it, RAGFlow can index it",
+        subtitle: "20+ file types — any way you like",
         bullets: [
-            ("doc.on.doc",                        "Documents: PDF · ePub · Word (DOCX/DOC) · Excel (XLSX/XLS) · PowerPoint (PPTX/PPT) · LibreOffice (ODT/ODS/ODP)"),
-            ("text.alignleft",                    "Text & data: TXT · RTF · Markdown · HTML · XML · CSV · TSV · JSON · JSONL · YAML · Email (EML/EMLX)"),
-            ("chevron.left.forwardslash.chevron.right", "Code: Swift · Python · JavaScript · TypeScript · Java · C/C++ · Go · SQL · Shell — or paste any web URL"),
+            ("doc.on.doc",                        "Documents: PDF · ePub · Word · Excel · PowerPoint · LibreOffice · TXT · RTF · Markdown · HTML · Email · and more"),
+            ("camera.viewfinder",                 "Scan physical pages with your camera — Vision OCR converts them to searchable text instantly"),
+            ("arrow.down.doc",                    "Drag a PDF or document from Files.app directly onto the document list (iPad)"),
             ("arrow.clockwise",                   "Long-press any document → Re-index to re-parse it with updated chunk settings"),
         ]
     ),
@@ -128,7 +130,21 @@ private let onboardingPages: [OnboardingPage] = [
         ]
     ),
 
-    // ── 8. You're All Set! ────────────────────────────────────────────────────
+    // ── 8. iOS-Native Power Features ─────────────────────────────────────────
+    .init(
+        systemImage: "iphone.gen3",
+        tint: .teal,
+        title: "Built for iPhone & iPad",
+        subtitle: "Native features the web app can't match",
+        bullets: [
+            ("siri",                              "Ask Siri to query your knowledge base — works hands-free while driving or cooking"),
+            ("magnifyingglass",                   "Documents appear in Spotlight search — find anything without opening the app"),
+            ("bolt.fill",                         "Live Activities show indexing and workflow progress on the lock screen and Dynamic Island"),
+            ("dollarsign.circle",                 "Every AI reply shows exact token count and cost — see what you spend per answer"),
+        ]
+    ),
+
+    // ── 9. You're All Set! ────────────────────────────────────────────────────
     .init(
         systemImage: "checkmark.seal.fill",
         tint: .green,

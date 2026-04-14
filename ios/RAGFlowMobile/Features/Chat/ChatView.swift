@@ -58,6 +58,16 @@ struct ChatView: View {
         } message: {
             Text(vm.errorMessage)
         }
+        // Handoff — lets the user continue this chat on another Apple device
+        .userActivity("com.dhorn.ragflowmobile.chat") { activity in
+            activity.title = vm.sessionTitle
+            activity.userInfo = [
+                "sessionId": session.id,
+                "kbId": kb.id
+            ]
+            activity.isEligibleForHandoff = true
+            activity.isEligibleForSearch = false
+        }
     }
 
     private var activeModelLabel: String {
@@ -298,6 +308,9 @@ struct ChatView: View {
                 .padding(.vertical, 8)
                 .focused($inputFocused)
                 .onSubmit { Task { await vm.send() } }
+                // Allow Rewrite/Proofread but not Summarize (which would summarize the
+                // input field, not the knowledge base — confusing in this context).
+                .modifier(WritingToolsLimitedModifier())
 
             if vm.isLoading {
                 Button(action: vm.stop) {
