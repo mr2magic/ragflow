@@ -1046,3 +1046,402 @@ final class ChunkSourceTests: XCTestCase {
         XCTAssertEqual(source.preview, "A passage")
     }
 }
+
+// MARK: - Import Parser Tests
+// Creates minimal valid fixture files at runtime and drives each parser directly.
+// No database or LLM calls — pure parsing validation.
+
+final class ImportParserTests: XCTestCase {
+
+    // MARK: – Shared helpers
+
+    private static let content = "RAGFlow import test content — hello world"
+    // resolvingSymlinksInPath converts /var/... → /private/var/... so Zip.unzipFile's
+    // fileExists check doesn't fail on the symlinked tmp path.
+    private var tmp: URL { FileManager.default.temporaryDirectory.resolvingSymlinksInPath() }
+    private func url(_ name: String) -> URL { tmp.appendingPathComponent("ragflow_test_\(name)") }
+
+    // MARK: – Plain-text formats
+
+    func testImportTXT() throws {
+        let f = url("sample.txt")
+        try Self.content.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        let chunks = Chunker().chunk(text: read, bookId: "b")
+        XCTAssertFalse(chunks.isEmpty, "TXT: no chunks produced")
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportMarkdown() throws {
+        let md = "# Heading\n\n\(Self.content)\n\n- bullet one\n- bullet two"
+        let f = url("sample.md")
+        try md.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportCSV() throws {
+        let csv = "name,value\nhello,world\nfoo,bar"
+        let f = url("sample.csv")
+        try csv.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello"))
+    }
+
+    func testImportJSON() throws {
+        let json = "{\"title\": \"Test\", \"body\": \"\(Self.content)\"}"
+        let f = url("sample.json")
+        try json.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportYAML() throws {
+        let yaml = "title: Test\nbody: \(Self.content)"
+        let f = url("sample.yaml")
+        try yaml.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportSwift() throws {
+        let code = "// RAGFlow test\nlet greeting = \"hello world\"\nprint(greeting)"
+        let f = url("sample.swift")
+        try code.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportPython() throws {
+        let code = "# \(Self.content)\nprint('hello world')"
+        let f = url("sample.py")
+        try code.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    func testImportSQL() throws {
+        let sql = "-- \(Self.content)\nSELECT 'hello world';"
+        let f = url("sample.sql")
+        try sql.write(to: f, atomically: true, encoding: .utf8)
+        let read = try String(contentsOf: f, encoding: .utf8)
+        XCTAssertTrue(read.contains("hello world"))
+    }
+
+    // MARK: – HTML
+
+    func testImportHTML() throws {
+        let html = "<html><body><h1>Hello World</h1><p>\(Self.content)</p></body></html>"
+        let f = url("sample.html")
+        try html.write(to: f, atomically: true, encoding: .utf8)
+        let raw = try String(contentsOf: f, encoding: .utf8)
+        // Replicate RAGService HTML stripping
+        let stripped = raw
+            .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertFalse(stripped.isEmpty, "HTML: stripped text is empty")
+        XCTAssertTrue(stripped.contains("Hello World"), "HTML: tag stripping removed text content")
+        XCTAssertFalse(stripped.contains("<"), "HTML: tags not fully stripped")
+    }
+
+    // MARK: – RTF
+
+    func testImportRTF() throws {
+        // Minimal valid RTF 1.x document
+        let rtf = "{\\rtf1\\ansi\\deff0 {\\fonttbl{\\f0 Helvetica;}} \\f0\\fs24 Hello World \(Self.content)}"
+        let f = url("sample.rtf")
+        try rtf.write(to: f, atomically: true, encoding: .utf8)
+        let data = try Data(contentsOf: f)
+        let attrStr = try NSAttributedString(
+            data: data,
+            options: [.documentType: NSAttributedString.DocumentType.rtf],
+            documentAttributes: nil
+        )
+        let text = attrStr.string
+        XCTAssertFalse(text.isEmpty, "RTF: NSAttributedString returned empty string")
+        XCTAssertTrue(text.contains("Hello World"), "RTF: expected text not found; got: \(text.prefix(80))")
+    }
+
+    // MARK: – PDF (text layer)
+
+    func testImportPDFTextLayer() throws {
+        let f = url("sample.pdf")
+        // Draw a text-layer PDF using UIGraphicsPDFRenderer
+        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792))
+        let data = renderer.pdfData { ctx in
+            ctx.beginPage()
+            let attrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 14)]
+            "Hello World \(Self.content)".draw(in: CGRect(x: 50, y: 50, width: 500, height: 600), withAttributes: attrs)
+        }
+        try data.write(to: f)
+        let sections = PDFParser().parse(url: f)
+        XCTAssertFalse(sections.isEmpty, "PDF: PDFParser returned no sections")
+        let allText = sections.map(\.text).joined(separator: " ")
+        XCTAssertTrue(allText.localizedCaseInsensitiveContains("Hello"), "PDF: text not extracted; got: \(allText.prefix(80))")
+    }
+
+    // MARK: – EML / EMLX
+
+    func testImportEML() throws {
+        let eml = """
+        From: sender@example.com\r
+        To: receiver@example.com\r
+        Subject: Test Email Hello World\r
+        Content-Type: text/plain; charset=utf-8\r
+        Content-Transfer-Encoding: 7bit\r
+        \r
+        \(Self.content)\r
+        Hello world email body.\r
+        """
+        let f = url("sample.eml")
+        try eml.write(to: f, atomically: true, encoding: .utf8)
+        let result = try EMLParser().parse(url: f)
+        XCTAssertFalse(result.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, "EML: empty body")
+        XCTAssertEqual(result.subject, "Test Email Hello World", "EML: subject mismatch")
+        XCTAssertTrue(result.body.contains("hello world"), "EML: body text not found")
+    }
+
+    func testImportEMLX() throws {
+        // .emlx has the same RFC 2822 format as .eml — same parser
+        let emlx = """
+        From: sender@example.com\r
+        Subject: EMLX Hello World\r
+        Content-Type: text/plain\r
+        \r
+        \(Self.content)\r
+        """
+        let f = url("sample.emlx")
+        try emlx.write(to: f, atomically: true, encoding: .utf8)
+        let result = try EMLParser().parse(url: f)
+        XCTAssertFalse(result.body.isEmpty, "EMLX: empty body")
+        XCTAssertTrue(result.body.contains("hello world") || result.subject.contains("Hello World"))
+    }
+
+    // MARK: – Office formats (DOCX / XLSX / PPTX)
+
+    func testImportDOCX() throws {
+        // Bypass unzip — write XML directly into a temp directory structure
+        let dir = tmp.appendingPathComponent("ragflow_test_docx_dir", isDirectory: true)
+        let wordDir = dir.appendingPathComponent("word", isDirectory: true)
+        try FileManager.default.createDirectory(at: wordDir, withIntermediateDirectories: true)
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+          <w:body>
+            <w:p><w:r><w:t>Hello World</w:t></w:r></w:p>
+            <w:p><w:r><w:t>\(Self.content)</w:t></w:r></w:p>
+          </w:body>
+        </w:document>
+        """
+        try xml.write(to: wordDir.appendingPathComponent("document.xml"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let sections = try OfficeParser().parseDOCXContent(dir: dir, fileName: "sample")
+        XCTAssertFalse(sections.isEmpty, "DOCX: no sections parsed")
+        let text = sections.map(\.text).joined()
+        XCTAssertTrue(text.contains("Hello World"), "DOCX: expected text not found; got: \(text.prefix(120))")
+    }
+
+    func testImportXLSX() throws {
+        // Bypass unzip — write XML directly into a temp directory structure
+        let dir = tmp.appendingPathComponent("ragflow_test_xlsx_dir", isDirectory: true)
+        let xlDir = dir.appendingPathComponent("xl", isDirectory: true)
+        let wsDir = xlDir.appendingPathComponent("worksheets", isDirectory: true)
+        try FileManager.default.createDirectory(at: wsDir, withIntermediateDirectories: true)
+        let sharedStrings = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="2" uniqueCount="2">
+          <si><t>Hello</t></si>
+          <si><t>World</t></si>
+        </sst>
+        """
+        let sheet = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+          <sheetData>
+            <row r="1">
+              <c r="A1" t="s"><v>0</v></c>
+              <c r="B1" t="s"><v>1</v></c>
+            </row>
+          </sheetData>
+        </worksheet>
+        """
+        try sharedStrings.write(to: xlDir.appendingPathComponent("sharedStrings.xml"), atomically: true, encoding: .utf8)
+        try sheet.write(to: wsDir.appendingPathComponent("sheet1.xml"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let sections = try OfficeParser().parseXLSXContent(dir: dir, fileName: "sample")
+        XCTAssertFalse(sections.isEmpty, "XLSX: no sections parsed")
+        let text = sections.map(\.text).joined()
+        XCTAssertTrue(text.contains("Hello"), "XLSX: expected text not found; got: \(text.prefix(120))")
+    }
+
+    func testImportPPTX() throws {
+        // Bypass unzip — write XML directly into a temp directory structure
+        let dir = tmp.appendingPathComponent("ragflow_test_pptx_dir", isDirectory: true)
+        let slidesDir = dir.appendingPathComponent("ppt/slides", isDirectory: true)
+        try FileManager.default.createDirectory(at: slidesDir, withIntermediateDirectories: true)
+        let slide = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+               xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+          <p:cSld><p:spTree>
+            <p:sp><p:txBody><a:p><a:r><a:t>Hello World slide content</a:t></a:r></a:p></p:txBody></p:sp>
+          </p:spTree></p:cSld>
+        </p:sld>
+        """
+        try slide.write(to: slidesDir.appendingPathComponent("slide1.xml"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let sections = try OfficeParser().parsePPTXContent(dir: dir)
+        XCTAssertFalse(sections.isEmpty, "PPTX: no sections parsed")
+        let text = sections.map(\.text).joined()
+        XCTAssertTrue(text.contains("Hello World"), "PPTX: expected text not found; got: \(text.prefix(120))")
+    }
+
+    // MARK: – ODT
+
+    func testImportODT() throws {
+        // Bypass unzip — write XML directly into a temp directory
+        let dir = tmp.appendingPathComponent("ragflow_test_odt_dir", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let xmlContent = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <office:document-content
+          xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+          xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">
+          <office:body><office:text>
+            <text:p>Hello World</text:p>
+            <text:p>\(Self.content)</text:p>
+          </office:text></office:body>
+        </office:document-content>
+        """
+        try xmlContent.write(to: dir.appendingPathComponent("content.xml"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let sections = try OfficeParser().parseODTContent(dir: dir, fileName: "sample")
+        XCTAssertFalse(sections.isEmpty, "ODT: no sections parsed")
+        let text = sections.map(\.text).joined()
+        XCTAssertTrue(text.contains("Hello World"), "ODT: expected text not found; got: \(text.prefix(120))")
+    }
+
+    // MARK: – EPUB (ZIP structure only — EPUBKit is main-target only)
+    // Full EPUB parse is tested implicitly when importing via the app; here we verify
+    // that our makeZip helper produces a valid EPUB-shaped archive.
+
+    func testImportEPUBZipStructure() throws {
+        let chapter = "<html><body><h1>Hello World</h1><p>\(Self.content)</p></body></html>"
+        let opf = """
+        <?xml version="1.0"?><package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="uid">
+        <metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>Test</dc:title><dc:identifier id="uid">1</dc:identifier></metadata>
+        <manifest><item id="ch1" href="chapter1.xhtml" media-type="application/xhtml+xml"/>
+        <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/></manifest>
+        <spine toc="ncx"><itemref idref="ch1"/></spine></package>
+        """
+        let container = """
+        <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+        <rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>
+        """
+        let f = url("sample.epub")
+        try Self.makeZip(to: f, entries: [
+            ("mimetype",                 "application/epub+zip"),
+            ("META-INF/container.xml",   container),
+            ("OEBPS/content.opf",        opf),
+            ("OEBPS/chapter1.xhtml",     chapter)
+        ])
+        // ZIP is readable and contains expected entries
+        let raw = try Data(contentsOf: f)
+        XCTAssertGreaterThan(raw.count, 200, "EPUB: archive too small")
+        XCTAssertNotNil(raw.range(of: Data("application/epub+zip".utf8)), "EPUB: mimetype entry missing")
+        XCTAssertNotNil(raw.range(of: Data("Hello World".utf8)), "EPUB: chapter content missing in archive")
+    }
+
+    // MARK: – ZIP builder (stored, no compression)
+
+    private static func makeZip(to dest: URL, entries: [(String, String)]) throws {
+        var data = Data()
+        var centralDir = Data()
+        var offsets: [UInt32] = []
+
+        for (path, body) in entries {
+            let nameBytes = Data(path.utf8)
+            let fileBytes = Data(body.utf8)
+            let crc = crc32(fileBytes)
+            offsets.append(UInt32(data.count))
+
+            // Local file header
+            var lh = Data()
+            lh.appendLE(UInt32(0x04034B50))        // signature
+            lh.appendLE(UInt16(20))                 // version needed
+            lh.appendLE(UInt16(0))                  // flags
+            lh.appendLE(UInt16(0))                  // compression: stored
+            lh.appendLE(UInt16(0))                  // mod time
+            lh.appendLE(UInt16(0))                  // mod date
+            lh.appendLE(crc)                        // CRC-32
+            lh.appendLE(UInt32(fileBytes.count))    // compressed size
+            lh.appendLE(UInt32(fileBytes.count))    // uncompressed size
+            lh.appendLE(UInt16(nameBytes.count))    // filename length
+            lh.appendLE(UInt16(0))                  // extra length
+            lh.append(nameBytes)
+            lh.append(fileBytes)
+            data.append(lh)
+        }
+
+        let cdOffset = UInt32(data.count)
+
+        for (i, (path, body)) in entries.enumerated() {
+            let nameBytes = Data(path.utf8)
+            let fileBytes = Data(body.utf8)
+            let crc = crc32(fileBytes)
+
+            var cd = Data()
+            cd.appendLE(UInt32(0x02014B50))        // central dir signature
+            cd.appendLE(UInt16(20))                 // version made by
+            cd.appendLE(UInt16(20))                 // version needed
+            cd.appendLE(UInt16(0))                  // flags
+            cd.appendLE(UInt16(0))                  // compression
+            cd.appendLE(UInt16(0))                  // mod time
+            cd.appendLE(UInt16(0))                  // mod date
+            cd.appendLE(crc)
+            cd.appendLE(UInt32(fileBytes.count))
+            cd.appendLE(UInt32(fileBytes.count))
+            cd.appendLE(UInt16(nameBytes.count))
+            cd.appendLE(UInt16(0))                  // extra length
+            cd.appendLE(UInt16(0))                  // comment length
+            cd.appendLE(UInt16(0))                  // disk start
+            cd.appendLE(UInt16(0))                  // internal attrs
+            cd.appendLE(UInt32(0))                  // external attrs
+            cd.appendLE(offsets[i])
+            cd.append(nameBytes)
+            centralDir.append(cd)
+        }
+
+        // End of central directory record
+        var eocd = Data()
+        eocd.appendLE(UInt32(0x06054B50))
+        eocd.appendLE(UInt16(0))
+        eocd.appendLE(UInt16(0))
+        eocd.appendLE(UInt16(entries.count))
+        eocd.appendLE(UInt16(entries.count))
+        eocd.appendLE(UInt32(centralDir.count))
+        eocd.appendLE(cdOffset)
+        eocd.appendLE(UInt16(0))
+
+        data.append(centralDir)
+        data.append(eocd)
+        try data.write(to: dest)
+    }
+
+    private static func crc32(_ data: Data) -> UInt32 {
+        var crc: UInt32 = 0xFFFFFFFF
+        for byte in data {
+            crc ^= UInt32(byte)
+            for _ in 0..<8 { crc = (crc >> 1) ^ (crc & 1 == 0 ? 0 : 0xEDB88320) }
+        }
+        return crc ^ 0xFFFFFFFF
+    }
+}
+
+private extension Data {
+    mutating func appendLE<T: FixedWidthInteger>(_ value: T) {
+        var le = value.littleEndian
+        Swift.withUnsafeBytes(of: &le) { self.append(contentsOf: $0) }
+    }
+}

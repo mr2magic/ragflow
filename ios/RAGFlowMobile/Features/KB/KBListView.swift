@@ -48,11 +48,6 @@ struct KBListView: View {
                     .accessibilityIdentifier("btn.workflows")
                 }
             }
-            #if DEBUG
-            ToolbarItem(placement: .secondaryAction) {
-                Button("Seed Test Data") { vm.seedDummy() }
-            }
-            #endif
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
@@ -88,6 +83,9 @@ struct KBListView: View {
             }
         }
         .onAppear { vm.reload() }
+        .onReceive(NotificationCenter.default.publisher(for: .focusFilterChanged)) { _ in
+            vm.reload()
+        }
         .confirmationDialog(
             "Delete \"\(vm.kbToDelete?.name ?? "this knowledge base")\"?",
             isPresented: Binding(

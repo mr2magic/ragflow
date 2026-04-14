@@ -16,7 +16,12 @@ final class KBListViewModel: ObservableObject {
     init() { reload() }
 
     func reload() {
-        kbs = (try? db.allKBs()) ?? []
+        let all = (try? db.allKBs()) ?? []
+        if let filter = FocusFilterStore.visibleKBIds {
+            kbs = all.filter { filter.contains($0.id) }
+        } else {
+            kbs = all
+        }
     }
 
     @discardableResult
@@ -53,14 +58,6 @@ final class KBListViewModel: ObservableObject {
     func cancelDelete() {
         kbToDelete = nil
     }
-
-    #if DEBUG
-    func seedDummy() {
-        try? db.seedDummyData()
-        reload()
-        haptics.notificationOccurred(.success)
-    }
-    #endif
 
     func saveKBSettings(_ kb: KnowledgeBase) {
         try? db.saveKB(kb)

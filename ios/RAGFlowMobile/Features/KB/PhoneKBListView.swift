@@ -3,6 +3,7 @@ import SwiftUI
 /// Compact (iPhone) KB list. Uses NavigationLink → KBDetailView.
 /// Reuses KBListViewModel for all CRUD logic.
 struct PhoneKBListView: View {
+    @Binding var handoffKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
     @State private var newKBDestination: KnowledgeBase?
 
@@ -34,17 +35,15 @@ struct PhoneKBListView: View {
         .navigationDestination(item: $newKBDestination) { kb in
             KBDetailView(kb: kb, initialTab: 1, autoImport: true)
         }
+        .navigationDestination(item: $handoffKB) { kb in
+            KBDetailView(kb: kb)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { vm.showCreateAlert = true } label: {
                     Image(systemName: "plus")
                 }
             }
-            #if DEBUG
-            ToolbarItem(placement: .secondaryAction) {
-                Button("Seed Test Data") { vm.seedDummy() }
-            }
-            #endif
         }
         // MARK: - Create KB
         .sheet(isPresented: $vm.showCreateAlert) {
@@ -64,6 +63,9 @@ struct PhoneKBListView: View {
             }
         }
         .onAppear { vm.reload() }
+        .onReceive(NotificationCenter.default.publisher(for: .focusFilterChanged)) { _ in
+            vm.reload()
+        }
         .confirmationDialog(
             "Delete \"\(vm.kbToDelete?.name ?? "this knowledge base")\"?",
             isPresented: Binding(

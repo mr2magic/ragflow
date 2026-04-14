@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var showPadSettings = false
     @State private var pendingAutoImportKBId: String? = nil
+    // iPhone Handoff — KB to navigate to after resume
+    @State private var handoffKB: KnowledgeBase? = nil
 
     var body: some View {
         Group {
@@ -32,7 +34,8 @@ struct ContentView: View {
         .onContinueUserActivity("com.dhorn.ragflowmobile.chat") { activity in
             if let kbId = activity.userInfo?["kbId"] as? String,
                let kb = try? DatabaseService.shared.kb(id: kbId) {
-                selectedKB = kb
+                selectedKB = kb       // iPad
+                handoffKB  = kb       // iPhone
             }
         }
     }
@@ -45,7 +48,7 @@ struct ContentView: View {
     private var phoneLayout: some View {
         TabView {
             NavigationStack {
-                PhoneKBListView()
+                PhoneKBListView(handoffKB: $handoffKB)
             }
             .tabItem { Label("Knowledge Bases", systemImage: "square.stack.3d.up") }
 

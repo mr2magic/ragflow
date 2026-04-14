@@ -277,29 +277,6 @@ final class DatabaseService {
         }
     }
 
-    #if DEBUG
-    func seedDummyData() throws {
-        let scifi = KnowledgeBase(id: UUID().uuidString, name: "Sci-Fi Classics", createdAt: Date().addingTimeInterval(-86400 * 14))
-        let philosophy = KnowledgeBase(id: UUID().uuidString, name: "Philosophy", createdAt: Date().addingTimeInterval(-86400 * 7))
-        try saveKB(scifi)
-        try saveKB(philosophy)
-
-        let dummyBooks: [Book] = [
-            // My Library
-            Book(id: UUID().uuidString, kbId: KnowledgeBase.defaultID, title: "Pride and Prejudice", author: "Jane Austen", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 10), chunkCount: 312),
-            Book(id: UUID().uuidString, kbId: KnowledgeBase.defaultID, title: "Sherlock Holmes", author: "Arthur Conan Doyle", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 5), chunkCount: 47),
-            // Sci-Fi Classics
-            Book(id: UUID().uuidString, kbId: scifi.id, title: "Dune", author: "Frank Herbert", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 12), chunkCount: 892),
-            Book(id: UUID().uuidString, kbId: scifi.id, title: "Foundation", author: "Isaac Asimov", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 8), chunkCount: 445),
-            Book(id: UUID().uuidString, kbId: scifi.id, title: "Neuromancer", author: "William Gibson", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 3), chunkCount: 267),
-            // Philosophy
-            Book(id: UUID().uuidString, kbId: philosophy.id, title: "Meditations", author: "Marcus Aurelius", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 6), chunkCount: 198),
-            Book(id: UUID().uuidString, kbId: philosophy.id, title: "Nicomachean Ethics", author: "Aristotle", filePath: "", addedAt: Date().addingTimeInterval(-86400 * 2), chunkCount: 341),
-        ]
-        for book in dummyBooks { try save(book) }
-    }
-    #endif
-
     func updateEmbeddingsBatch(_ updates: [(id: String, embedding: Data)]) throws {
         try dbQueue.write { db in
             for (id, data) in updates {

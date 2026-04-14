@@ -52,8 +52,10 @@ final class RAGService: ObservableObject {
             return try await ingestXLSX(url: url, kbId: kbId, chunker: c)
         case "pptx":
             return try await ingestPPTX(url: url, kbId: kbId, chunker: c)
-        case "eml":
+        case "eml", "emlx":
             return try await ingestEML(url: url, kbId: kbId, chunker: c)
+        case "odt":
+            return try await ingestODT(url: url, kbId: kbId, chunker: c)
         default:
             throw IngestError.unsupportedFormat
         }
@@ -62,7 +64,16 @@ final class RAGService: ObservableObject {
     // PDFKit is not thread-safe — parse on @MainActor, only chunk on background thread.
     private func ingestPDF(url: URL, kbId: String, chunker c: Chunker) async throws -> Book {
         ingestPhase = "Parsing PDF…"
-        let sections = pdfParser.parse(url: url)
+        var sections = pdfParser.parse(url: url)
+
+        // Scanned / image-only PDF — no text layer. Fall back to on-device Vision OCR.
+        if sections.isEmpty {
+            ingestPhase = "Scanning with OCR…"
+            let pageTexts = await VisionOCRParser().extractText(fromPDFAt: url)
+            sections = pageTexts.enumerated().map { i, text in
+                PDFParser.PDFSection(title: "Page \(i + 1)", text: text)
+            }
+        }
         guard !sections.isEmpty else { throw IngestError.parseFailure }
 
         let pdfDoc = PDFDocument(url: url)
@@ -229,6 +240,14 @@ final class RAGService: ObservableObject {
             try officeParser.parsePPTX(url: url)
         }.value
         return try await ingestOffice(url: url, kbId: kbId, chunker: c, sections: sections, ext: "pptx")
+    }
+
+    private func ingestODT(url: URL, kbId: String, chunker c: Chunker) async throws -> Book {
+        ingestPhase = "Parsing ODT…"
+        let sections = try await Task.detached(priority: .utility) { [officeParser] in
+            try officeParser.parseODT(url: url)
+        }.value
+        return try await ingestOffice(url: url, kbId: kbId, chunker: c, sections: sections, ext: "odt")
     }
 
     private func ingestEML(url: URL, kbId: String, chunker c: Chunker) async throws -> Book {

@@ -34,10 +34,10 @@ struct EMLParser {
             } else {
                 // Handle folded headers (continuation lines start with whitespace)
                 if (line.first == " " || line.first == "\t"), let lastKey = headers.keys.sorted().last {
-                    headers[lastKey, default: ""] += " " + line.trimmingCharacters(in: .whitespaces)
+                    headers[lastKey, default: ""] += " " + line.trimmingCharacters(in: .whitespacesAndNewlines)
                 } else if let colon = line.firstIndex(of: ":") {
-                    let key = String(line[line.startIndex..<colon]).lowercased().trimmingCharacters(in: .whitespaces)
-                    let value = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespaces)
+                    let key = String(line[line.startIndex..<colon]).lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                    let value = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespacesAndNewlines)
                     headers[key] = value
                 }
             }
@@ -103,8 +103,8 @@ struct EMLParser {
                 break
             }
             if let colon = line.firstIndex(of: ":") {
-                let key = String(line[line.startIndex..<colon]).lowercased().trimmingCharacters(in: .whitespaces)
-                let value = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespaces)
+                let key = String(line[line.startIndex..<colon]).lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                let value = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespacesAndNewlines)
                 headers[key] = value
             }
         }

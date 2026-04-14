@@ -15,8 +15,12 @@ struct OfficeParser {
     func parseDOCX(url: URL) throws -> [Section] {
         let dest = try unzip(url)
         defer { try? FileManager.default.removeItem(at: dest) }
+        return try parseDOCXContent(dir: dest, fileName: url.deletingPathExtension().lastPathComponent)
+    }
 
-        let xmlURL = dest.appendingPathComponent("word/document.xml")
+    /// Visible for testing — parse an already-unzipped DOCX directory.
+    func parseDOCXContent(dir: URL, fileName: String) throws -> [Section] {
+        let xmlURL = dir.appendingPathComponent("word/document.xml")
         guard let data = try? Data(contentsOf: xmlURL),
               let xml = String(data: data, encoding: .utf8) else {
             throw OfficeError.missingPart("word/document.xml")
@@ -27,7 +31,7 @@ struct OfficeParser {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw OfficeError.emptyContent
         }
-        return [Section(title: url.deletingPathExtension().lastPathComponent, text: text)]
+        return [Section(title: fileName, text: text)]
     }
 
     // MARK: - XLSX
@@ -35,10 +39,14 @@ struct OfficeParser {
     func parseXLSX(url: URL) throws -> [Section] {
         let dest = try unzip(url)
         defer { try? FileManager.default.removeItem(at: dest) }
+        return try parseXLSXContent(dir: dest, fileName: url.deletingPathExtension().lastPathComponent)
+    }
 
+    /// Visible for testing — parse an already-unzipped XLSX directory.
+    func parseXLSXContent(dir: URL, fileName: String) throws -> [Section] {
         // Build shared strings table
         var sharedStrings: [String] = []
-        let ssURL = dest.appendingPathComponent("xl/sharedStrings.xml")
+        let ssURL = dir.appendingPathComponent("xl/sharedStrings.xml")
         if let data = try? Data(contentsOf: ssURL),
            let xml = String(data: data, encoding: .utf8) {
             sharedStrings = extractAll(pattern: "<si>.*?</si>", from: xml)
@@ -46,7 +54,7 @@ struct OfficeParser {
         }
 
         // Parse sheet1 into TSV rows
-        let sheetURL = dest.appendingPathComponent("xl/worksheets/sheet1.xml")
+        let sheetURL = dir.appendingPathComponent("xl/worksheets/sheet1.xml")
         guard let data = try? Data(contentsOf: sheetURL),
               let xml = String(data: data, encoding: .utf8) else {
             throw OfficeError.missingPart("xl/worksheets/sheet1.xml")
@@ -72,7 +80,7 @@ struct OfficeParser {
         }
 
         guard !rows.isEmpty else { throw OfficeError.emptyContent }
-        return [Section(title: url.deletingPathExtension().lastPathComponent, text: rows.joined(separator: "\n"))]
+        return [Section(title: fileName, text: rows.joined(separator: "\n"))]
     }
 
     // MARK: - PPTX
@@ -80,8 +88,12 @@ struct OfficeParser {
     func parsePPTX(url: URL) throws -> [Section] {
         let dest = try unzip(url)
         defer { try? FileManager.default.removeItem(at: dest) }
+        return try parsePPTXContent(dir: dest)
+    }
 
-        let slidesDir = dest.appendingPathComponent("ppt/slides")
+    /// Visible for testing — parse an already-unzipped PPTX directory.
+    func parsePPTXContent(dir: URL) throws -> [Section] {
+        let slidesDir = dir.appendingPathComponent("ppt/slides")
         guard let slideFiles = try? FileManager.default.contentsOfDirectory(
             at: slidesDir, includingPropertiesForKeys: nil
         ) else {
@@ -132,7 +144,7 @@ struct OfficeParser {
             var inner = para[para.startIndex...]
             while let tStart = inner.range(of: "<w:t") {
                 guard let gt = inner[tStart.upperBound...].range(of: ">") else { break }
-                let contentStart = inner.index(after: gt.upperBound)
+                let contentStart = gt.upperBound
                 guard let tEnd = inner[contentStart...].range(of: "</w:t>") else { break }
                 paraText += String(inner[contentStart..<tEnd.lowerBound])
                 inner = inner[tEnd.upperBound...]
@@ -144,7 +156,7 @@ struct OfficeParser {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private func stripXML(_ xml: String) -> String {
+    func stripXML(_ xml: String) -> String {
         xml.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
             .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -165,6 +177,29 @@ struct OfficeParser {
               match.numberOfRanges > 1,
               let range = Range(match.range(at: 1), in: string) else { return nil }
         return String(string[range])
+    }
+
+    // MARK: - ODT
+
+    /// OpenDocument Text (.odt) — ZIP archive, text lives in content.xml under XML tags.
+    func parseODT(url: URL) throws -> [Section] {
+        let dest = try unzip(url)
+        defer { try? FileManager.default.removeItem(at: dest) }
+        return try parseODTContent(dir: dest, fileName: url.deletingPathExtension().lastPathComponent)
+    }
+
+    /// Visible for testing — parse an already-unzipped ODT directory.
+    func parseODTContent(dir: URL, fileName: String) throws -> [Section] {
+        let xmlURL = dir.appendingPathComponent("content.xml")
+        guard let data = try? Data(contentsOf: xmlURL),
+              let xml = String(data: data, encoding: .utf8) else {
+            throw OfficeError.missingPart("content.xml")
+        }
+        let text = stripXML(xml)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw OfficeError.emptyContent
+        }
+        return [Section(title: fileName, text: text)]
     }
 
     enum OfficeError: LocalizedError {

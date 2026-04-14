@@ -76,19 +76,6 @@ final class LibraryViewModel: ObservableObject {
         await ingest(urls: urls)
     }
 
-    func importFiles(result: Result<[URL], Error>) async {
-        switch result {
-        case .failure(let error):
-            show(error: error.localizedDescription)
-        case .success(let urls):
-            // Start security scope for all URLs; only release the ones that returned true.
-            // Files from "On My iPhone" return false (no scoping needed) but are still readable.
-            let scoped = urls.filter { $0.startAccessingSecurityScopedResource() }
-            defer { scoped.forEach { $0.stopAccessingSecurityScopedResource() } }
-            await ingest(urls: urls)
-        }
-    }
-
     func requestDelete(at offsets: IndexSet) {
         offsetsToDelete = offsets
     }
