@@ -66,7 +66,7 @@ struct WorkflowEditorView: View {
                 } header: {
                     Text("Steps")
                 } footer: {
-                    Text("Tap a step to configure it. Use Edit to reorder or delete.")
+                    Text("Tap to configure. Tap **Edit** to drag-reorder or swipe-delete steps.")
                         .font(.caption)
                 }
             }
@@ -165,8 +165,10 @@ private struct StepEditorRow: View {
                     .lineLimit(1)
             }
             Spacer()
-            Image(systemName: "chevron.right")
-                .font(.caption2)
+            // Drag-handle hint — always visible so users discover reorder.
+            // Dragging only activates in Edit mode (see footer note).
+            Image(systemName: "line.3.horizontal")
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(.tertiary)
         }
         .padding(.vertical, 2)

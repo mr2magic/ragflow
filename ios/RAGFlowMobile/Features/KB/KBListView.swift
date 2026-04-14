@@ -67,23 +67,20 @@ struct KBListView: View {
                     }
             }
         }
-        .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
-            TextField("Name", text: $vm.newKBName)
-            Button("Create") {
+        // MARK: - Create KB
+        .sheet(isPresented: $vm.showCreateAlert) {
+            CreateKBSheet(name: $vm.newKBName) {
                 if let kb = vm.createKB() {
                     pendingAutoImportKBId = kb.id
                     selectedKB = kb
                 }
             }
-            Button("Cancel", role: .cancel) { vm.newKBName = "" }
         }
-        .alert("Rename", isPresented: Binding(
-            get: { vm.kbToRename != nil },
-            set: { if !$0 { vm.kbToRename = nil } }
-        )) {
-            TextField("Name", text: $vm.renameText)
-            Button("Save") { vm.commitRename() }
-            Button("Cancel", role: .cancel) { vm.kbToRename = nil }
+        // MARK: - Rename KB
+        .sheet(item: $vm.kbToRename) { _ in
+            RenameSheet(title: "Rename Knowledge Base", text: $vm.renameText) {
+                vm.commitRename()
+            }
         }
         .sheet(item: $vm.kbToSettings) { kb in
             KBRetrievalSettingsSheet(kb: kb) { updated in

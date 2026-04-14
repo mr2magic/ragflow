@@ -19,7 +19,9 @@ struct ChatView: View {
         VStack(spacing: 0) {
             kbScopeBar
             Divider()
-            if !settings.isConfigured {
+            // Show the compact banner only when there are already messages (user can't miss it).
+            // The empty-chat state handles the no-provider case more prominently.
+            if !settings.isConfigured && !vm.messages.isEmpty {
                 providerBanner
             }
             messageList
@@ -185,28 +187,55 @@ struct ChatView: View {
     // MARK: - Empty State Prompts
 
     private var emptyChatPrompts: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "text.book.closed")
-                .font(.system(size: 48))
-                .foregroundStyle(.tertiary)
-                .padding(.bottom, 8)
+        VStack(spacing: Spacing.lg) {
+            if !settings.isConfigured {
+                // Prominent setup-required state — replaces the thin orange banner
+                // when there are no messages yet, making it impossible to miss.
+                VStack(spacing: Spacing.md) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 44))
+                        .foregroundStyle(.orange)
 
-            Text("Ask anything about the documents in **\(kb.name)**")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                    VStack(spacing: Spacing.sm) {
+                        Text("AI Provider Required")
+                            .font(.title3.weight(.semibold))
 
-            VStack(spacing: 8) {
-                ForEach(vm.suggestedPrompts, id: \.self) { prompt in
-                    Button(action: {
-                        vm.input = prompt
-                        inputFocused = true
-                    }) {
-                        Text(prompt)
+                        Text("Add an API key or configure Ollama in Settings to start chatting.")
                             .font(.subheadline)
-                            .foregroundStyle(.primary)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(.quaternary, in: RoundedRectangle(cornerRadius: 20))
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, Spacing.xxl)
+                    }
+
+                    Button("Open Settings") { showSettings = true }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                }
+                .padding(.vertical, Spacing.xxl)
+            } else {
+                // Normal empty state with suggested prompts
+                Image(systemName: "text.book.closed")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.tertiary)
+                    .padding(.bottom, Spacing.sm)
+
+                Text("Ask anything about the documents in **\(kb.name)**")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+
+                VStack(spacing: Spacing.sm) {
+                    ForEach(vm.suggestedPrompts, id: \.self) { prompt in
+                        Button(action: {
+                            vm.input = prompt
+                            inputFocused = true
+                        }) {
+                            Text(prompt)
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                                .padding(.horizontal, Spacing.lg)
+                                .padding(.vertical, 10)
+                                .background(.quaternary, in: RoundedRectangle(cornerRadius: 20))
+                        }
                     }
                 }
             }

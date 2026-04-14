@@ -19,6 +19,7 @@
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
+		119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D4390906542F1801126AF /* SharedViews.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
 		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
 		4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AA166907EB447DD28FB0C6 /* Workflow.swift */; };
@@ -95,6 +96,7 @@
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
+		439D4390906542F1801126AF /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */,
 				1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */,
 				361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */,
+				439D4390906542F1801126AF /* SharedViews.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -521,6 +524,7 @@
 				D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */,
 				C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */,
 				40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */,
+				119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */,
 				98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */,
 				F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */,
 				65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */,

@@ -67,11 +67,31 @@ struct WorkflowListView: View {
     }
 
     private var emptyState: some View {
-        ContentUnavailableView(
-            "No Workflows",
-            systemImage: "cpu",
-            description: Text("Tap + to create an agent workflow from a template or build a custom pipeline.")
-        )
+        VStack(spacing: Spacing.xl) {
+            Image(systemName: "cpu")
+                .font(.system(size: 56))
+                .foregroundStyle(.tertiary)
+
+            VStack(spacing: Spacing.sm) {
+                Text("No Workflows")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(.primary)
+
+                Text("Build an agent pipeline from a template or create a custom workflow.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+
+            Button(action: { vm.showNewWorkflow = true }) {
+                Label("New Workflow", systemImage: "plus")
+                    .font(.headline)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

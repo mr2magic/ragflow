@@ -34,13 +34,11 @@ struct ConversationsListView: View {
                 }
             }
         }
-        .alert("Rename Chat", isPresented: Binding(
-            get: { sessionToRename != nil },
-            set: { if !$0 { sessionToRename = nil } }
-        )) {
-            TextField("Name", text: $renameText)
-            Button("Save") { commitRename() }
-            Button("Cancel", role: .cancel) { sessionToRename = nil }
+        // MARK: - Rename Chat
+        .sheet(item: $sessionToRename) { _ in
+            RenameSheet(title: "Rename Chat", text: $renameText) {
+                commitRename()
+            }
         }
         .confirmationDialog(
             "Delete \"\(sessionToDelete?.name ?? "this chat")\"?",
@@ -120,29 +118,29 @@ struct ConversationsListView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Spacing.xl) {
             Image(systemName: "bubble.left.and.text.bubble.right")
                 .font(.system(size: 56))
                 .foregroundStyle(.tertiary)
 
-            Text("No Chats Yet")
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(.primary)
+            VStack(spacing: Spacing.sm) {
+                Text("No Chats Yet")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(.primary)
 
-            Text("Start a new chat to ask questions about your documents in **\(kb.name)**.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
+                Text("Start a new chat to ask questions about your documents in **\(kb.name)**.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
 
             Button(action: createNewSession) {
                 Label("New Chat", systemImage: "square.and.pencil")
                     .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(.tint, in: RoundedRectangle(cornerRadius: 12))
-                    .foregroundStyle(.white)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

@@ -90,15 +90,10 @@ struct LibraryView: View {
         } message: {
             Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a supported document.")
         }
-        .alert("Import from URL", isPresented: $vm.showURLEntry) {
-            TextField("https://example.com/report.pdf", text: $vm.urlInput)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-                .keyboardType(.URL)
-            Button("Import") { Task { await vm.importFromURL() } }
-            Button("Cancel", role: .cancel) { vm.urlInput = "" }
-        } message: {
-            Text("Paste a direct link to a PDF, ePub, or text file.")
+        .sheet(isPresented: $vm.showURLEntry) {
+            URLImportSheet(urlInput: $vm.urlInput) {
+                Task { await vm.importFromURL() }
+            }
         }
         .overlay { ingestOverlay }
         .sheet(item: $selectedBook) { book in
@@ -115,13 +110,10 @@ struct LibraryView: View {
         } message: {
             Text(vm.errorMessage)
         }
-        .alert("Rename Document", isPresented: Binding(
-            get: { vm.bookToRename != nil },
-            set: { if !$0 { vm.bookToRename = nil } }
-        )) {
-            TextField("Title", text: $vm.renameText)
-            Button("Save") { vm.commitRename() }
-            Button("Cancel", role: .cancel) { vm.bookToRename = nil }
+        .sheet(item: $vm.bookToRename) { _ in
+            RenameSheet(title: "Rename Document", text: $vm.renameText) {
+                vm.commitRename()
+            }
         }
         .confirmationDialog(
             "Delete \"\(vm.bookToDelete?.title ?? "this document")\"?",
@@ -226,14 +218,25 @@ struct LibraryView: View {
         }
         ToolbarItem(placement: .secondaryAction) {
             Menu {
-                Picker("Sort By", selection: $vm.sortOrder) {
-                    ForEach(LibraryViewModel.SortOrder.allCases) { order in
-                        Text(order.rawValue).tag(order)
+                ForEach(LibraryViewModel.SortOrder.allCases) { order in
+                    Button {
+                        vm.sortOrder = order
+                    } label: {
+                        if vm.sortOrder == order {
+                            Label(order.rawValue, systemImage: "checkmark")
+                        } else {
+                            Text(order.rawValue)
+                        }
                     }
                 }
             } label: {
-                Image(systemName: "arrow.up.arrow.down")
+                // Fill the icon when a non-default sort is active so users
+                // can tell at a glance that results are sorted differently.
+                Image(systemName: vm.sortOrder == .dateAdded
+                      ? "arrow.up.arrow.down"
+                      : "arrow.up.arrow.down.circle.fill")
             }
+            .accessibilityLabel("Sort documents — \(vm.sortOrder.rawValue)")
         }
     }
 
