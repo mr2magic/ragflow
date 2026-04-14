@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.5.0 committed + pushed — archive ready to run from Xcode Organizer (2026-04-14)
-**Phase**: Brownfield improvement — iOS-native feature wave 1 shipped
-**Next**: Open Xcode → Product → Archive → Window → Organizer → Distribute to TestFlight
+**Status**: 0.6.0 committed + pushed (build 6) — archive failed due to expired Xcode credentials (2026-04-14)
+**Phase**: Brownfield improvement — iOS-native feature wave 1 (0.5.0) shipped; 0.6.0 import/parser fixes committed
+**Next**: Open Xcode → Settings → Accounts → re-sign in → Product → Archive → Distribute to TestFlight
 
 ## What Was Done (0.3.0 session)
 
@@ -70,28 +70,66 @@ When starting a new session, Claude reads this file to understand where things l
 - Import page: camera scan + drag-and-drop bullets
 - New page 8: "Built for iPhone & iPad" — Siri, Spotlight, Live Activities, token cost
 
-### New files
-- Services/Intents/AppEntities.swift
-- Services/Intents/RAGFlowIntents.swift
-- Services/Intents/FocusFilterIntent.swift
-- Services/Spotlight/SpotlightIndexer.swift
-- Services/LiveActivity/IndexingActivityAttributes.swift
-- Services/LiveActivity/WorkflowActivityAttributes.swift
-- Services/RAG/VisionOCRParser.swift
-- Features/Library/DocumentCameraView.swift
-- Services/Storage/SharedGroupDefaults.swift
+## What Was Done (0.6.0 session)
+
+### Bugs fixed
+- **EMLParser**: header trimming `.whitespaces` → `.whitespacesAndNewlines` — CRLF emails left `\r` on subject/headers
+- **OfficeParser.extractWText**: off-by-one: `index(after: gt.upperBound)` → `gt.upperBound` — first character of every `<w:t>` run in DOCX was silently dropped
+- **RAGService.ingestPDF**: added VisionOCRParser fallback for image-only (scanned) PDFs
+- **RAGService**: added `.emlx` to EML dispatch case; added `.odt` case → new `ingestODT`
+- **OfficeParser**: added `parseODT` method; refactored DOCX/XLSX/PPTX/ODT to expose dir-based `parseXContent` methods (bypasses Zip, testable)
+
+### Audit fixes
+- **KBListViewModel.reload()**: now applies `FocusFilterStore.visibleKBIds` — filter was silently ignored
+- **KBListView / PhoneKBListView**: observe `.focusFilterChanged` notification; removed Seed Test Data button
+- **PhoneKBListView / ContentView**: added `handoffKB` `@Binding` so Handoff opens correct KB on iPhone (was only working on iPad)
+- **LibraryViewModel**: removed dead `importFiles()` method
+- **DatabaseService**: removed `#if DEBUG seedDummyData()` block
+
+### Infrastructure
+- **App Group entitlement**: `RAGFlowMobile/RAGFlowMobile.entitlements` created with `group.com.dhorn.ragflowmobile`; wired into both Debug + Release build configs in pbxproj
+
+### Tests
+- **ImportParserTests**: 17/17 passing — CSV, EML, EMLX, EPUB (structure), HTML, JSON, Markdown, ODT, PDF (text), PPTX, Python, RTF, SQL, Swift, TXT, XLSX, YAML
+
+### Info.plist changes (0.6.0)
+- Version: 0.6.0 build 6
 
 ## Active Context
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.5.0** (build 5) — committed + pushed, not yet in TestFlight
+- Version: **0.6.0** (build 6) — committed + pushed, archive blocked by expired Xcode credentials
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
 
-## Pending for Next Wave (0.6.0)
+## To Archive for TestFlight
 
-- App Group entitlement in Xcode Signing & Capabilities (`group.com.dhorn.ragflowmobile`) — required before Share Extension + Widget targets can share data
-- Share Extension target (`RAGFlowShareExtension/ShareViewController.swift`)
+The xcodebuild archive command fails with "No Account for Team 5FLM4GQ73L". Steps to fix:
+
+1. Open Xcode → Settings (⌘,) → Accounts
+2. Re-sign in with your Apple ID
+3. Then run from `/Users/Dans_iMac/Projects/ragflow/ragflow/ios`:
+   ```bash
+   xcodebuild archive \
+     -project RAGFlowMobile.xcodeproj \
+     -scheme RAGFlowMobile \
+     -configuration Release \
+     -destination "generic/platform=iOS" \
+     -archivePath "$HOME/Library/Developer/Xcode/Archives/RAGFlowMobile-0.6.0.xcarchive" \
+     -allowProvisioningUpdates \
+     CODE_SIGN_STYLE=Automatic \
+     DEVELOPMENT_TEAM=5FLM4GQ73L
+   ```
+4. Then export to TestFlight via Xcode Organizer or:
+   ```bash
+   xcrun altool --upload-app --type ios \
+     --file RAGFlowMobile-0.6.0.ipa \
+     --apiKey <key> --apiIssuer <issuer>
+   ```
+
+## Pending for Next Wave (0.7.0)
+
+- Share Extension target (`RAGFlowShareExtension/ShareViewController.swift`) — App Group entitlement already in place
 - Widget Extension target (Recent Chat, KB Status, Quick Query; Live Activity presentation views)
 - Core ML embeddings (.mlpackage bundle for on-device MiniLM)
 - iCloud sync (CloudKit) — deferred to 0.8.0
@@ -103,3 +141,4 @@ When starting a new session, Claude reads this file to understand where things l
 - Spacing enum constants should be used in all new code
 - WritingToolsLimitedModifier is in SharedViews.swift (use it instead of .writingToolsBehavior directly)
 - App Group suite name: "group.com.dhorn.ragflowmobile"
+- Xcode team ID: 5FLM4GQ73L
