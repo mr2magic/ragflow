@@ -10,6 +10,7 @@
 		01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */; };
 		08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */; };
 		09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0C19C6F20A9821E0BA0BCF /* GRDB */; };
+		119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D4390906542F1801126AF /* SharedViews.swift */; };
 		25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */; };
 		266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */; };
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
@@ -19,9 +20,6 @@
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
-		119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D4390906542F1801126AF /* SharedViews.swift */; };
-		EE0001110000000000000001 /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000002 /* ExportBundle.swift */; };
-		EE0001110000000000000003 /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000004 /* ExportImportService.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
 		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
 		4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AA166907EB447DD28FB0C6 /* Workflow.swift */; };
@@ -59,6 +57,8 @@
 		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
+		EE0001110000000000000001 /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000002 /* ExportBundle.swift */; };
+		EE0001110000000000000003 /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000004 /* ExportImportService.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
@@ -98,10 +98,8 @@
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
 		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
-		439D4390906542F1801126AF /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
-		EE0001110000000000000002 /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
-		EE0001110000000000000004 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		439D4390906542F1801126AF /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
 		4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -137,6 +135,8 @@
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
 		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
+		EE0001110000000000000002 /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
+		EE0001110000000000000004 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -368,6 +368,15 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		EE0001110000000000000005 /* ExportImport */ = {
+			isa = PBXGroup;
+			children = (
+				EE0001110000000000000002 /* ExportBundle.swift */,
+				EE0001110000000000000004 /* ExportImportService.swift */,
+			);
+			path = ExportImport;
+			sourceTree = "<group>";
+		};
 		F95BA93CBD769006D0A43843 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -378,15 +387,6 @@
 				D3EBF1A3274E654C8B60ABBC /* Storage */,
 			);
 			path = Services;
-			sourceTree = "<group>";
-		};
-		EE0001110000000000000005 /* ExportImport */ = {
-			isa = PBXGroup;
-			children = (
-				EE0001110000000000000002 /* ExportBundle.swift */,
-				EE0001110000000000000004 /* ExportImportService.swift */,
-			);
-			path = ExportImport;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
