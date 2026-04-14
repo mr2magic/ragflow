@@ -20,6 +20,8 @@
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
 		119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D4390906542F1801126AF /* SharedViews.swift */; };
+		EE0001110000000000000001 /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000002 /* ExportBundle.swift */; };
+		EE0001110000000000000003 /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000004 /* ExportImportService.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
 		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
 		4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AA166907EB447DD28FB0C6 /* Workflow.swift */; };
@@ -97,6 +99,8 @@
 		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
 		439D4390906542F1801126AF /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
+		EE0001110000000000000002 /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
+		EE0001110000000000000004 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
@@ -368,11 +372,21 @@
 			isa = PBXGroup;
 			children = (
 				3B19236A7AA25378849B5D61 /* Agent */,
+				EE0001110000000000000005 /* ExportImport */,
 				C7A241C531FB4C21F1691873 /* LLM */,
 				23ABCE1D0A3FA9E6FC7C9F38 /* RAG */,
 				D3EBF1A3274E654C8B60ABBC /* Storage */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		EE0001110000000000000005 /* ExportImport */ = {
+			isa = PBXGroup;
+			children = (
+				EE0001110000000000000002 /* ExportBundle.swift */,
+				EE0001110000000000000004 /* ExportImportService.swift */,
+			);
+			path = ExportImport;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -504,6 +518,8 @@
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
 				3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
+				EE0001110000000000000001 /* ExportBundle.swift in Sources */,
+				EE0001110000000000000003 /* ExportImportService.swift in Sources */,
 				5ECDA6B86E3323BA65006FE9 /* EMLParser.swift in Sources */,
 				4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */,
 				9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */,

@@ -184,6 +184,14 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v9") { _ in
+            // WorkflowStep model gains new step types (variableAssigner, switchStep, categorize)
+            // and new optional fields (nextStepId, defaultNextStepId, switchBranches, assignments,
+            // categories, categoryPromptOverride, webSearchToolId) encoded in the stepsJSON TEXT blob.
+            // No SQL column changes required — JSON is self-describing and Codable decodes nil for
+            // missing keys, so existing workflows remain fully backward-compatible.
+        }
+
         try migrator.migrate(dbQueue)
     }
 

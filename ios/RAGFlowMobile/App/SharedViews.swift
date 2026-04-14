@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Spacing Design Tokens
 
@@ -148,4 +149,17 @@ struct URLImportSheet: View {
         onImport()
         dismiss()
     }
+}
+
+// MARK: - Share Sheet
+
+/// Thin wrapper around UIActivityViewController for sharing a file URL.
+struct ShareSheet: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }

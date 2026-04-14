@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.3.0 archived + IPA exported — TestFlight upload in progress via Xcode Organizer (2026-04-14)
-**Phase**: Brownfield improvement — post-0.3.0, awaiting TestFlight processing
-**Next**: Confirm TestFlight upload → add build to tester group → decide next feature area (0.4.0)
+**Status**: 0.4.0 features implemented + BUILD SUCCEEDED — ready to bump version, archive, upload (2026-04-14)
+**Phase**: Brownfield improvement — workflow power + export/import shipped
+**Next**: Bump version to 0.4.0 (build 4), archive, upload to TestFlight
 
 ## What Was Done (0.3.0 session)
 

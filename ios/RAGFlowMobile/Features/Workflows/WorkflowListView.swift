@@ -1,7 +1,11 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct WorkflowListView: View {
     @StateObject private var vm = WorkflowListViewModel()
+    @State private var showWorkflowImporter = false
+    @State private var importError: String?
+    @State private var showImportError = false
 
     var body: some View {
         Group {
@@ -29,16 +33,63 @@ struct WorkflowListView: View {
                     Image(systemName: "plus")
                 }
             }
+            ToolbarItem(placement: .secondaryAction) {
+                Button {
+                    showWorkflowImporter = true
+                } label: {
+                    Label("Import Workflow", systemImage: "square.and.arrow.down")
+                }
+            }
         }
         .onAppear { vm.reload() }
         .sheet(isPresented: $vm.showNewWorkflow, onDismiss: { vm.reload() }) {
             NewWorkflowSheet(vm: vm)
                 .onAppear { vm.prepareForNewWorkflow() }
         }
+        .fileImporter(
+            isPresented: $showWorkflowImporter,
+            allowedContentTypes: [UTType(filenameExtension: "ragflow-workflow") ?? .json],
+            allowsMultipleSelection: false
+        ) { result in
+            handleWorkflowImport(result: result)
+        }
+        .alert("Import Failed", isPresented: $showImportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(importError ?? "Unknown error")
+        }
         .alert("Error", isPresented: $vm.showError) {
             Button("OK") {}
         } message: {
             Text(vm.errorMessage)
+        }
+    }
+
+    private func handleWorkflowImport(result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            guard url.startAccessingSecurityScopedResource() else { return }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let tmp = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("ragflow-workflow")
+            guard (try? FileManager.default.copyItem(at: url, to: tmp)) != nil else {
+                importError = "Could not read the file."
+                showImportError = true
+                return
+            }
+            do {
+                let workflow = try ExportImportService.shared.importWorkflow(from: tmp)
+                try DatabaseService.shared.saveWorkflow(workflow)
+                vm.reload()
+            } catch {
+                importError = error.localizedDescription
+                showImportError = true
+            }
+        case .failure(let error):
+            importError = error.localizedDescription
+            showImportError = true
         }
     }
 

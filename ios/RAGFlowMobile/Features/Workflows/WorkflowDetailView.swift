@@ -8,6 +8,10 @@ struct WorkflowDetailView: View {
     @State private var expandedRunId: String?
     @State private var copiedOutput = false
     @State private var showEditor = false
+    @State private var exportURL: URL?
+    @State private var showExportSheet = false
+    @State private var exportError: String?
+    @State private var showExportError = false
 
     private let db = DatabaseService.shared
 
@@ -29,8 +33,24 @@ struct WorkflowDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button("Edit") { showEditor = true }
+                HStack(spacing: 16) {
+                    Button {
+                        exportWorkflow()
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("Export workflow")
+                    Button("Edit") { showEditor = true }
+                }
             }
+        }
+        .sheet(isPresented: $showExportSheet) {
+            if let url = exportURL { ShareSheet(url: url) }
+        }
+        .alert("Export Failed", isPresented: $showExportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportError ?? "")
         }
         .sheet(isPresented: $showEditor) {
             WorkflowEditorView(workflow: workflow) { updated in
@@ -63,9 +83,10 @@ struct WorkflowDetailView: View {
                 .background(runner.currentStep == step.label ? Color.accentColor.opacity(0.12) : Color.clear)
 
                 if idx < workflow.steps.count - 1 {
-                    Image(systemName: "arrow.down")
+                    let isBranching = step.type == .switchStep || step.type == .categorize
+                    Image(systemName: isBranching ? "arrow.triangle.branch" : "arrow.down")
                         .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(isBranching ? Color.yellow : Color.secondary.opacity(0.5))
                         .padding(.leading, 22)
                         .accessibilityHidden(true)
                 }
@@ -202,6 +223,16 @@ struct WorkflowDetailView: View {
     }
 
     // MARK: - Helpers
+
+    private func exportWorkflow() {
+        do {
+            exportURL = try ExportImportService.shared.workflowExportURL(for: workflow)
+            showExportSheet = true
+        } catch {
+            exportError = error.localizedDescription
+            showExportError = true
+        }
+    }
 
     private func runWorkflow() async {
         guard !runner.isRunning else { runner.cancel(); return }

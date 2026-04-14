@@ -8,6 +8,8 @@ import SwiftUI
 //
 // Version history:
 //   0.1.0 — initial 8-page carousel
+//   0.4.0 — Workflows page: Switch/Categorize steps, DuckDuckGo/Wikipedia search,
+//            workflow export/import, KB export/import
 //   0.3.0 — added Library page; updated Chat (share, auto-naming, multi-KB,
 //            sources); updated KB (retrieval settings); merged Agent Tools into
 //            Workflows; dropped Jina Reader (not yet implemented); 8 pages total
@@ -106,9 +108,9 @@ private let onboardingPages: [OnboardingPage] = [
         subtitle: "Build multi-step AI pipelines",
         bullets: [
             ("wand.and.stars",                    "Choose from templates: RAG Q&A, Deep Summarizer, Keyword Expander, or Custom"),
-            ("square.3.layers.3d",                "Chain steps: Retrieve → Rewrite query → LLM → Answer"),
-            ("magnifyingglass.circle",            "Add a Web Search step (requires a free Brave Search API key in Settings)"),
-            ("clock.arrow.circlepath",            "Every run is saved — tap History to review and copy past outputs"),
+            ("arrow.triangle.branch",             "Add Switch or Categorize steps to route between branches based on conditions or AI classification"),
+            ("globe.americas.fill",               "Web Search supports DuckDuckGo and Wikipedia (free) plus Brave Search (API key in Settings)"),
+            ("square.and.arrow.up",               "Export any workflow to share or back up — import on any device running RAGFlow Mobile"),
         ]
     ),
 

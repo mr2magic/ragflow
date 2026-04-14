@@ -103,7 +103,7 @@ struct WorkflowEditorView: View {
                 }
             }
             .sheet(item: $editingStep) { step in
-                StepConfigSheet(step: step, allKBs: allKBs) { updated in
+                StepConfigSheet(step: step, allKBs: allKBs, allSteps: steps) { updated in
                     if let i = steps.firstIndex(where: { $0.id == updated.id }) {
                         steps[i] = updated
                     }
@@ -142,6 +142,28 @@ struct WorkflowEditorView: View {
             return WorkflowStep(type: .webSearch, label: "Web Search", querySlot: "input", outputSlot: "search_results")
         case .answer:
             return WorkflowStep(type: .answer, label: "Result", outputSlot: "output")
+        case .variableAssigner:
+            return WorkflowStep(
+                type: .variableAssigner,
+                label: "Set Variables",
+                outputSlot: "",
+                assignments: [VariableAssignment()]
+            )
+        case .switchStep:
+            return WorkflowStep(
+                type: .switchStep,
+                label: "Switch",
+                outputSlot: "",
+                switchBranches: [SwitchBranch(label: "If", conditions: [SwitchCondition()])]
+            )
+        case .categorize:
+            return WorkflowStep(
+                type: .categorize,
+                label: "Classify",
+                querySlot: "input",
+                outputSlot: "category",
+                categories: [StepBranch(label: "Category A", condition: "Category A")]
+            )
         }
     }
 }
@@ -192,6 +214,15 @@ private struct StepEditorRow: View {
             return "query: \(step.querySlot)  → \(step.outputSlot)"
         case .answer:
             return "reads \(step.outputSlot)"
+        case .variableAssigner:
+            let count = step.assignments?.count ?? 0
+            return "\(count) assignment\(count == 1 ? "" : "s")"
+        case .switchStep:
+            let count = step.switchBranches?.count ?? 0
+            return "\(count) branch\(count == 1 ? "" : "es")"
+        case .categorize:
+            let count = step.categories?.count ?? 0
+            return "\(count) categor\(count == 1 ? "y" : "ies")  → \(step.outputSlot)"
         }
     }
 }
@@ -243,13 +274,15 @@ struct StepTypePicker: View {
 struct StepConfigSheet: View {
     @State private var step: WorkflowStep
     let allKBs: [KnowledgeBase]
+    let allSteps: [WorkflowStep]
     let onSave: (WorkflowStep) -> Void
 
     @Environment(\.dismiss) private var dismiss
 
-    init(step: WorkflowStep, allKBs: [KnowledgeBase], onSave: @escaping (WorkflowStep) -> Void) {
+    init(step: WorkflowStep, allKBs: [KnowledgeBase], allSteps: [WorkflowStep], onSave: @escaping (WorkflowStep) -> Void) {
         _step = State(initialValue: step)
         self.allKBs = allKBs
+        self.allSteps = allSteps.filter { $0.id != step.id }  // exclude self from routing targets
         self.onSave = onSave
     }
 
@@ -389,14 +422,215 @@ struct StepConfigSheet: View {
                         .font(.system(.body, design: .monospaced))
                         .frame(maxWidth: 140)
                 }
+                Picker("Search Engine", selection: Binding(
+                    get: { step.webSearchToolId ?? "brave_search" },
+                    set: { step.webSearchToolId = $0 }
+                )) {
+                    ForEach(SearchToolRegistry.shared.all, id: \.toolId) { tool in
+                        Text(tool.displayName).tag(tool.toolId)
+                    }
+                }
             } header: {
                 Text("Input")
             } footer: {
-                Text("Searches the web using the value stored in this variable. Requires a Brave Search API key in Settings.")
+                Text("DuckDuckGo and Wikipedia are free — no API key needed. Brave Search requires an API key in Settings.")
             }
 
         case .answer:
             EmptyView()
+
+        case .variableAssigner:
+            Section {
+                let assignments = Binding(
+                    get: { step.assignments ?? [] },
+                    set: { step.assignments = $0 }
+                )
+                ForEach(assignments) { $a in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            TextField("slot name", text: $a.targetSlot)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                                .font(.system(.body, design: .monospaced))
+                            Picker("", selection: $a.operation) {
+                                ForEach(AssignOperation.allCases, id: \.self) { op in
+                                    Text(op.displayName).tag(op)
+                                }
+                            }
+                            .labelsHidden()
+                            .frame(maxWidth: 100)
+                        }
+                        if a.operation.requiresValue {
+                            TextField("value or {slot}", text: $a.value)
+                                .font(.system(.body, design: .monospaced))
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .onDelete { step.assignments?.remove(atOffsets: $0) }
+                Button {
+                    step.assignments = (step.assignments ?? []) + [VariableAssignment()]
+                } label: {
+                    Label("Add Assignment", systemImage: "plus.circle")
+                        .foregroundStyle(.tint)
+                }
+            } header: {
+                Text("Assignments")
+            } footer: {
+                Text("Set overwrites the slot. Append adds with a newline. Clear empties it. Use {slot} in values to reference earlier outputs.")
+            }
+
+        case .switchStep:
+            let branches = Binding(
+                get: { step.switchBranches ?? [] },
+                set: { step.switchBranches = $0 }
+            )
+            ForEach(branches) { $branch in
+                Section {
+                    TextField("Branch label", text: $branch.label)
+                    ForEach($branch.conditions) { $cond in
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                TextField("slot", text: $cond.slot)
+                                    .autocorrectionDisabled()
+                                    .textInputAutocapitalization(.never)
+                                    .font(.system(.caption, design: .monospaced))
+                                    .frame(maxWidth: 90)
+                                Picker("", selection: $cond.op) {
+                                    ForEach(SwitchOperator.allCases, id: \.self) { op in
+                                        Text(op.displayName).tag(op)
+                                    }
+                                }
+                                .labelsHidden()
+                                .frame(maxWidth: 120)
+                            }
+                            if cond.op.requiresValue {
+                                TextField("value", text: $cond.value)
+                                    .font(.system(.body, design: .monospaced))
+                                    .autocorrectionDisabled()
+                                    .textInputAutocapitalization(.never)
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+                    .onDelete { branch.conditions.remove(atOffsets: $0) }
+                    Button {
+                        branch.conditions.append(SwitchCondition())
+                    } label: {
+                        Label("Add Condition", systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundStyle(.tint)
+                    }
+                    if branch.conditions.count > 1 {
+                        Picker("Logic", selection: $branch.logic) {
+                            ForEach(ConditionLogic.allCases, id: \.self) { l in
+                                Text(l.rawValue).tag(l)
+                            }
+                        }
+                    }
+                    stepTargetPicker(label: "Route to step", selection: $branch.nextStepId)
+                } header: {
+                    Text("Branch: \(branch.label.isEmpty ? "(unnamed)" : branch.label)")
+                }
+            }
+            Section {
+                Button {
+                    step.switchBranches = (step.switchBranches ?? []) + [
+                        SwitchBranch(label: "Branch \((step.switchBranches?.count ?? 0) + 1)", conditions: [SwitchCondition()])
+                    ]
+                } label: {
+                    Label("Add Branch", systemImage: "plus.circle")
+                        .foregroundStyle(.tint)
+                }
+                stepTargetPicker(
+                    label: "Default (no match)",
+                    selection: Binding(
+                        get: { step.defaultNextStepId ?? "" },
+                        set: { step.defaultNextStepId = $0.isEmpty ? nil : $0 }
+                    )
+                )
+            } footer: {
+                Text("Branches are evaluated top to bottom. The first matching branch wins. Default runs when no branch matches.")
+            }
+
+        case .categorize:
+            Section {
+                HStack {
+                    Text("Input variable")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    TextField("input", text: $step.querySlot)
+                        .multilineTextAlignment(.trailing)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(maxWidth: 140)
+                }
+            } header: {
+                Text("Input")
+            }
+            let categories = Binding(
+                get: { step.categories ?? [] },
+                set: { step.categories = $0 }
+            )
+            Section {
+                ForEach(categories) { $cat in
+                    VStack(alignment: .leading, spacing: 6) {
+                        TextField("Category name", text: $cat.condition)
+                            .autocorrectionDisabled()
+                        stepTargetPicker(label: "Route to step", selection: $cat.nextStepId)
+                    }
+                    .padding(.vertical, 2)
+                }
+                .onDelete { step.categories?.remove(atOffsets: $0) }
+                Button {
+                    let n = (step.categories?.count ?? 0) + 1
+                    step.categories = (step.categories ?? []) + [StepBranch(label: "Category \(n)", condition: "Category \(n)")]
+                } label: {
+                    Label("Add Category", systemImage: "plus.circle")
+                        .foregroundStyle(.tint)
+                }
+                stepTargetPicker(
+                    label: "Default (no match)",
+                    selection: Binding(
+                        get: { step.defaultNextStepId ?? "" },
+                        set: { step.defaultNextStepId = $0.isEmpty ? nil : $0 }
+                    )
+                )
+            } header: {
+                Text("Categories")
+            } footer: {
+                Text("The AI will classify the input into one of these categories. Category names should be clear and distinct.")
+            }
+            Section {
+                TextEditor(text: Binding(
+                    get: { step.categoryPromptOverride ?? "" },
+                    set: { step.categoryPromptOverride = $0.isEmpty ? nil : $0 }
+                ))
+                .frame(minHeight: 80)
+                .font(.body)
+            } header: {
+                Text("Custom Prompt (optional)")
+            } footer: {
+                Text("Leave blank to use the default classification prompt. Use {input} for the text being classified.")
+            }
+        }
+    }
+
+    /// Picker that shows available steps by label; empty string = "None / fall through".
+    @ViewBuilder
+    private func stepTargetPicker(label: String, selection: Binding<String>) -> some View {
+        Picker(label, selection: selection) {
+            Text("— none —").tag("")
+            ForEach(allSteps) { s in
+                HStack {
+                    StepTypeIcon(type: s.type).frame(width: 20, height: 20)
+                    Text(s.label)
+                }
+                .tag(s.id)
+            }
         }
     }
 
@@ -556,6 +790,12 @@ private struct HelpStepRow: View {
             return "Searches the web using Brave Search and stores the results in the output slot. Requires a Brave Search API key in Settings."
         case .answer:
             return "Always the last step. Reads from the specified slot and presents it as the final answer to the user. No output slot — it terminates the pipeline."
+        case .variableAssigner:
+            return "Sets, appends to, or clears named slots without calling the LLM. Useful for injecting fixed values, building up text across steps, or resetting a slot before a loop."
+        case .switchStep:
+            return "Evaluates conditions on slot values (equals, contains, is empty, etc.) and jumps to the first matching branch. Supports AND/OR logic per branch. Falls through to the default branch if nothing matches."
+        case .categorize:
+            return "Asks the LLM to classify the input into one of the categories you define, then routes to the matching step. Good for intent detection and routing different query types to specialised pipelines."
         }
     }
 }
@@ -575,25 +815,31 @@ struct StepTypeIcon: View {
 
     var iconName: String {
         switch type {
-        case .begin:     return "flag.fill"
-        case .retrieve:  return "magnifyingglass"
-        case .rewrite:   return "arrow.triangle.2.circlepath"
-        case .llm:       return "brain"
-        case .message:   return "text.bubble"
-        case .webSearch: return "globe.americas.fill"
-        case .answer:    return "checkmark.bubble.fill"
+        case .begin:            return "flag.fill"
+        case .retrieve:         return "magnifyingglass"
+        case .rewrite:          return "arrow.triangle.2.circlepath"
+        case .llm:              return "brain"
+        case .message:          return "text.bubble"
+        case .webSearch:        return "globe.americas.fill"
+        case .answer:           return "checkmark.bubble.fill"
+        case .variableAssigner: return "arrow.left.arrow.right.square"
+        case .switchStep:       return "arrow.triangle.branch"
+        case .categorize:       return "tag.fill"
         }
     }
 
     var iconColor: Color {
         switch type {
-        case .begin:     return .green
-        case .retrieve:  return .blue
-        case .rewrite:   return .cyan
-        case .llm:       return .purple
-        case .message:   return .indigo
-        case .webSearch: return .teal
-        case .answer:    return .orange
+        case .begin:            return .green
+        case .retrieve:         return .blue
+        case .rewrite:          return .cyan
+        case .llm:              return .purple
+        case .message:          return .indigo
+        case .webSearch:        return .teal
+        case .answer:           return .orange
+        case .variableAssigner: return .mint
+        case .switchStep:       return .yellow
+        case .categorize:       return .pink
         }
     }
 }

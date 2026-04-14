@@ -39,6 +39,14 @@ struct LibraryView: View {
     @State private var showImporter = false
     @State private var selectedBook: Book?
     @State private var didAutoImport = false
+    @State private var kbExportURL: URL?
+    @State private var showKBExportSheet = false
+    @State private var kbExportError: String?
+    @State private var showKBExportError = false
+    @State private var showKBImporter = false
+    @State private var kbImportError: String?
+    @State private var showKBImportError = false
+    @State private var isImportingKB = false
 
     init(kb: KnowledgeBase, autoImport: Bool = false) {
         self.kb = kb
@@ -86,6 +94,7 @@ struct LibraryView: View {
         .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
             Button("Browse Files (iPhone & iCloud)") { showImporter = true }
             Button("Import from URL") { vm.showURLEntry = true }
+            Button("Import Knowledge Base Archive") { showKBImporter = true }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a supported document.")
@@ -98,6 +107,26 @@ struct LibraryView: View {
         .overlay { ingestOverlay }
         .sheet(item: $selectedBook) { book in
             DocumentDetailView(book: book)
+        }
+        .sheet(isPresented: $showKBExportSheet) {
+            if let url = kbExportURL { ShareSheet(url: url) }
+        }
+        .alert("Export Failed", isPresented: $showKBExportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(kbExportError ?? "")
+        }
+        .fileImporter(
+            isPresented: $showKBImporter,
+            allowedContentTypes: [UTType(filenameExtension: "ragflow-kb") ?? .json],
+            allowsMultipleSelection: false
+        ) { result in
+            handleKBImport(result: result)
+        }
+        .alert("Import Failed", isPresented: $showKBImportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(kbImportError ?? "")
         }
         .task {
             guard autoImport, !didAutoImport else { return }
@@ -221,6 +250,13 @@ struct LibraryView: View {
             }
         }
         ToolbarItem(placement: .secondaryAction) {
+            Button {
+                exportKB()
+            } label: {
+                Label("Export Knowledge Base", systemImage: "arrow.up.doc")
+            }
+        }
+        ToolbarItem(placement: .secondaryAction) {
             Menu {
                 ForEach(LibraryViewModel.SortOrder.allCases) { order in
                     Button {
@@ -241,6 +277,49 @@ struct LibraryView: View {
                       : "arrow.up.arrow.down.circle.fill")
             }
             .accessibilityLabel("Sort documents — \(vm.sortOrder.rawValue)")
+        }
+    }
+
+    // MARK: - KB Export / Import
+
+    private func exportKB() {
+        do {
+            kbExportURL = try ExportImportService.shared.kbExportURL(for: kb.id, kbName: kb.name)
+            showKBExportSheet = true
+        } catch {
+            kbExportError = error.localizedDescription
+            showKBExportError = true
+        }
+    }
+
+    private func handleKBImport(result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            guard url.startAccessingSecurityScopedResource() else { return }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let tmp = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("ragflow-kb")
+            guard (try? FileManager.default.copyItem(at: url, to: tmp)) != nil else {
+                kbImportError = "Could not read the file."
+                showKBImportError = true
+                return
+            }
+            isImportingKB = true
+            Task {
+                defer { isImportingKB = false }
+                do {
+                    _ = try await ExportImportService.shared.importKB(from: tmp)
+                    vm.reload()
+                } catch {
+                    kbImportError = error.localizedDescription
+                    showKBImportError = true
+                }
+            }
+        case .failure(let error):
+            kbImportError = error.localizedDescription
+            showKBImportError = true
         }
     }
 

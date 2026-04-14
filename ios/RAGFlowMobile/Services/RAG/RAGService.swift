@@ -266,6 +266,15 @@ final class RAGService: ObservableObject {
 
     // MARK: - Embedding
 
+    /// Re-embed all chunks for a KB. Called after KB import to build vector index.
+    /// Keyword search works immediately even before this completes.
+    func embedChunksForKB(kbId: String) async {
+        let books = (try? db.allBooks(kbId: kbId)) ?? []
+        let chunks = books.flatMap { (try? db.chunks(bookId: $0.id)) ?? [] }
+        guard !chunks.isEmpty else { return }
+        await embedChunks(chunks)
+    }
+
     private func embedChunks(_ chunks: [Chunk]) async {
         let settings = SettingsStore.shared
         guard settings.config.provider == .ollama else { return }
