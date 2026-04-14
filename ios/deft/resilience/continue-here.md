@@ -8,50 +8,46 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: UI consistency pass complete — all 12 issues fixed, BUILD SUCCEEDED (2026-04-14)
-**Phase**: Brownfield improvement — UI review → fix cycle
-**Next**: Ship 0.2.1 to TestFlight with UI fixes, OR begin next improvement area (performance, accessibility, deeper workflow UX)
+**Status**: 0.3.0 committed and pushed — ready for TestFlight archive (2026-04-14)
+**Phase**: Brownfield improvement — feature gaps + App Store compliance pass
+**Next**: Archive 0.3.0 in Xcode → upload to TestFlight, then decide next feature area
 
-## What Was Done This Session
+## What Was Done (0.3.0 session)
 
-Full UI review of all SwiftUI views, followed by fixing 12 identified issues:
+### Info.plist
+- `CFBundleShortVersionString` 0.2.0 → 0.3.0, `CFBundleVersion` 1 → 3
+- Added `UIBackgroundModes: [processing]` — required for BGProcessingTask (was silently missing)
+- Improved `NSLocalNetworkUsageDescription` copy for App Store review
 
-### Files Changed
-- `RAGFlowMobile/App/SharedViews.swift` — NEW: `Spacing` tokens, `RenameSheet`, `CreateKBSheet`, `URLImportSheet`
-- `Features/KB/PhoneKBListView.swift` — create/rename alerts → proper Form sheets
-- `Features/KB/KBListView.swift` — create/rename alerts → proper Form sheets
-- `Features/KB/KBDetailView.swift` — wrap LibraryView in NavigationStack; "Chat" tab → "Chats"; add ⋯ menu (iPhone only) for Settings/Workflows access
-- `Features/Chat/ConversationsListView.swift` — rename alert → RenameSheet; empty state button → .borderedProminent
-- `Features/Chat/ChatView.swift` — provider banner hidden when no messages; empty chat shows "AI Provider Required" hero with Open Settings CTA
-- `Features/Library/LibraryView.swift` — rename/URL import alerts → Form sheets; sort icon fills + checkmark when non-default sort active
-- `Features/Workflows/WorkflowListView.swift` — ContentUnavailableView → custom empty state with "New Workflow" .borderedProminent button
-- `Features/Workflows/WorkflowEditorView.swift` — drag handle icon on step rows; improved footer hint text
-- `RAGFlowMobile.xcodeproj/project.pbxproj` — added SharedViews.swift to project
+### Features added
+- **Session auto-naming**: first message content (up to 50 chars) becomes the chat title; `sessionTitle` published property keeps nav bar in sync
+- **Empty KB state in chat**: when primary KB has no documents, shows "No Documents Yet" hero instead of generic prompts
+- **Re-index document**: long-press context menu → "Re-index" re-parses the file with current KB chunking settings; graceful error if original file was a temp copy
+- **Share chat history**: ShareLink toolbar button (appears when conversation has messages) exports as plain text
 
-### Issues Fixed
-1. ✅ KB creation via alert → CreateKBSheet (Form)
-2. ✅ LibraryView wrapped in NavigationStack (proper nav context for search/toolbar)
-3. ✅ Rename + URL import alerts → RenameSheet / URLImportSheet
-4. ✅ No-provider warning prominent in empty chat (hero state replaces thin banner)
-5. ✅ WorkflowListView empty state has action button (matches Library/Chat pattern)
-6. ✅ Add button icons already consistent — no change needed
-7. ✅ Empty state CTAs all use .borderedProminent
-8. ✅ Tab label "Chat" → "Chats" (matches nav title)
-9. ✅ ⋯ menu in KBDetailView (iPhone only) provides Settings/Workflows access
-10. ✅ Spacing design tokens in SharedViews.swift
-11. ✅ Sort menu shows checkmark on active sort; icon fills when non-default
-12. ✅ Drag handle icon always visible on workflow step rows
+### App Store / reliability fixes
+- `UIBackgroundModes` now declares `processing` (was missing, would fail background task registration)
+- All icon-only buttons have `.accessibilityLabel` (send, stop, play/stop workflow, clear, add/remove KB tag, share)
+- Decorative images (chevrons, connector arrows, empty-state icons) have `.accessibilityHidden(true)`
+- Status badges (indexed, not-indexed, done, failed, indexing) have `.accessibilityLabel`
+- Typing indicator has `.accessibilityLabel("AI is typing")`
+
+### What was NOT changed (deliberately)
+- `PrivacyInfo.xcprivacy` — current declaration correct (UserDefaults CA92.1); no new API types needed
+- App icon — only 1024x1024 JPG; App Store accepts this via asset catalog compilation, but ideally should be PNG. Cannot fix without the source image.
+- Cross-KB document search — deferred to later version
+- Workflow undo — deferred
 
 ## Active Context
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: 0.2.0 (in TestFlight) — UI fixes ready for 0.2.1
-- Last shipped: 0.2.0 to TestFlight on 2026-04-03
+- Version: **0.3.0** (build 3) — committed, not yet in TestFlight
+- Last shipped to TestFlight: 0.2.0 on 2026-04-03
 
 ## Notes
 
 - Do NOT modify existing working Swift files without explicit instruction
-- Run `task check` before every commit once Taskfile is set up
-- SharedViews.swift is the new home for shared UI primitives — add to it rather than inlining
-- Spacing enum constants should be used in new code going forward
+- SharedViews.swift is the home for shared UI primitives (RenameSheet, CreateKBSheet, URLImportSheet, Spacing)
+- Spacing enum constants should be used in all new code
+- Re-index requires file to still exist at `book.filePath`; temp-copy imports won't work (documented in error message)
