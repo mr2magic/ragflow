@@ -42,6 +42,15 @@
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* KBRetrievalSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
+		AA0002000000000000000001 /* AppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* AppEntities.swift */; };
+		AA0002000000000000000002 /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000002 /* RAGFlowIntents.swift */; };
+		AA0002000000000000000003 /* FocusFilterIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000003 /* FocusFilterIntent.swift */; };
+		AA0002000000000000000004 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000004 /* SpotlightIndexer.swift */; };
+		AA0002000000000000000005 /* IndexingActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000005 /* IndexingActivityAttributes.swift */; };
+		AA0002000000000000000006 /* WorkflowActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000006 /* WorkflowActivityAttributes.swift */; };
+		AA0002000000000000000007 /* VisionOCRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000007 /* VisionOCRParser.swift */; };
+		AA0002000000000000000008 /* DocumentCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000008 /* DocumentCameraView.swift */; };
+		AA0002000000000000000009 /* SharedGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000009 /* SharedGroupDefaults.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
 		BB49EC71FD454D8B5C593400 /* BackgroundTaskCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */; };
@@ -57,15 +66,6 @@
 		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
-		AA0002000000000000000001 /* AppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* AppEntities.swift */; };
-		AA0002000000000000000002 /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000002 /* RAGFlowIntents.swift */; };
-		AA0002000000000000000003 /* FocusFilterIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000003 /* FocusFilterIntent.swift */; };
-		AA0002000000000000000004 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000004 /* SpotlightIndexer.swift */; };
-		AA0002000000000000000005 /* IndexingActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000005 /* IndexingActivityAttributes.swift */; };
-		AA0002000000000000000006 /* WorkflowActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000006 /* WorkflowActivityAttributes.swift */; };
-		AA0002000000000000000007 /* VisionOCRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000007 /* VisionOCRParser.swift */; };
-		AA0002000000000000000008 /* DocumentCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000008 /* DocumentCameraView.swift */; };
-		AA0002000000000000000009 /* SharedGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000009 /* SharedGroupDefaults.swift */; };
 		EE0001110000000000000001 /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000002 /* ExportBundle.swift */; };
 		EE0001110000000000000003 /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000004 /* ExportImportService.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
@@ -130,6 +130,15 @@
 		9128C8C2964AF5134AA52824 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
+		AA0001000000000000000001 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
+		AA0001000000000000000002 /* RAGFlowIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowIntents.swift; sourceTree = "<group>"; };
+		AA0001000000000000000003 /* FocusFilterIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusFilterIntent.swift; sourceTree = "<group>"; };
+		AA0001000000000000000004 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
+		AA0001000000000000000005 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
+		AA0001000000000000000006 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
+		AA0001000000000000000007 /* VisionOCRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRParser.swift; sourceTree = "<group>"; };
+		AA0001000000000000000008 /* DocumentCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentCameraView.swift; sourceTree = "<group>"; };
+		AA0001000000000000000009 /* SharedGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupDefaults.swift; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
@@ -144,15 +153,6 @@
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
 		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
-		AA0001000000000000000001 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
-		AA0001000000000000000002 /* RAGFlowIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowIntents.swift; sourceTree = "<group>"; };
-		AA0001000000000000000003 /* FocusFilterIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusFilterIntent.swift; sourceTree = "<group>"; };
-		AA0001000000000000000004 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
-		AA0001000000000000000005 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
-		AA0001000000000000000006 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
-		AA0001000000000000000007 /* VisionOCRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRParser.swift; sourceTree = "<group>"; };
-		AA0001000000000000000008 /* DocumentCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentCameraView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000009 /* SharedGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupDefaults.swift; sourceTree = "<group>"; };
 		EE0001110000000000000002 /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
 		EE0001110000000000000004 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -186,33 +186,6 @@
 				439D4390906542F1801126AF /* SharedViews.swift */,
 			);
 			path = App;
-			sourceTree = "<group>";
-		};
-		AA0003000000000000000001 /* Intents */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000001 /* AppEntities.swift */,
-				AA0001000000000000000003 /* FocusFilterIntent.swift */,
-				AA0001000000000000000002 /* RAGFlowIntents.swift */,
-			);
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		AA0003000000000000000002 /* Spotlight */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000004 /* SpotlightIndexer.swift */,
-			);
-			path = Spotlight;
-			sourceTree = "<group>";
-		};
-		AA0003000000000000000003 /* LiveActivity */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000005 /* IndexingActivityAttributes.swift */,
-				AA0001000000000000000006 /* WorkflowActivityAttributes.swift */,
-			);
-			path = LiveActivity;
 			sourceTree = "<group>";
 		};
 		23ABCE1D0A3FA9E6FC7C9F38 /* RAG */ = {
@@ -321,6 +294,33 @@
 				F95BA93CBD769006D0A43843 /* Services */,
 			);
 			path = RAGFlowMobile;
+			sourceTree = "<group>";
+		};
+		AA0003000000000000000001 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001000000000000000001 /* AppEntities.swift */,
+				AA0001000000000000000003 /* FocusFilterIntent.swift */,
+				AA0001000000000000000002 /* RAGFlowIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		AA0003000000000000000002 /* Spotlight */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001000000000000000004 /* SpotlightIndexer.swift */,
+			);
+			path = Spotlight;
+			sourceTree = "<group>";
+		};
+		AA0003000000000000000003 /* LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001000000000000000005 /* IndexingActivityAttributes.swift */,
+				AA0001000000000000000006 /* WorkflowActivityAttributes.swift */,
+			);
+			path = LiveActivity;
 			sourceTree = "<group>";
 		};
 		C171203E89874902CCACD3F1 /* Features */ = {
