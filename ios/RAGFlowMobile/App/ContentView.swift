@@ -1,8 +1,41 @@
 import SwiftUI
 
+// MARK: - OS hard block
+
+private struct UnsupportedOSView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(.orange)
+
+            Text("iOS 17 Required")
+                .font(.title.bold())
+
+            Text("RAGFlow Mobile requires iOS 17 or later. Please update your device in Settings → General → Software Update.")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 32)
+
+            Link("Learn how to update",
+                 destination: URL(string: "https://support.apple.com/en-us/111900")!)
+                .buttonStyle(.borderedProminent)
+        }
+        .padding()
+    }
+}
+
+// MARK: - Content
+
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
+    private var osSupported: Bool {
+        ProcessInfo.processInfo.isOperatingSystemAtLeast(
+            OperatingSystemVersion(majorVersion: 17, minorVersion: 0, patchVersion: 0)
+        )
+    }
 
     // iPad / regular state
     @State private var selectedKB: KnowledgeBase?
@@ -20,8 +53,15 @@ struct ContentView: View {
                 padLayout
             }
         }
+        // Hard block: OS too old — shown before onboarding, not dismissable.
         .fullScreenCover(isPresented: Binding(
-            get: { !hasCompletedOnboarding },
+            get: { !osSupported },
+            set: { _ in }
+        )) {
+            UnsupportedOSView()
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { osSupported && !hasCompletedOnboarding },
             set: { _ in }
         )) {
             OnboardingView()
