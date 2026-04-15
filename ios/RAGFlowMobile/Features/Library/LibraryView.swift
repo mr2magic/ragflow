@@ -99,9 +99,10 @@ struct LibraryView: View {
                     let localURLs: [URL] = urls.compactMap { url in
                         guard url.startAccessingSecurityScopedResource() else { return nil }
                         defer { url.stopAccessingSecurityScopedResource() }
-                        let tmp = FileManager.default.temporaryDirectory
-                            .appendingPathComponent(UUID().uuidString)
-                            .appendingPathExtension(url.pathExtension)
+                        let tmpDir = FileManager.default.temporaryDirectory
+                            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                        try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+                        let tmp = tmpDir.appendingPathComponent(url.lastPathComponent)
                         return (try? FileManager.default.copyItem(at: url, to: tmp)) != nil ? tmp : nil
                     }
                     Task { await vm.ingestURLs(localURLs) }
@@ -227,9 +228,10 @@ struct LibraryView: View {
                 _ = provider.loadObject(ofClass: URL.self) { url, _ in
                     guard let url else { return }
                     let accessed = url.startAccessingSecurityScopedResource()
-                    let tmp = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension(url.pathExtension)
+                    let tmpDir = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                    try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+                    let tmp = tmpDir.appendingPathComponent(url.lastPathComponent)
                     let copied = (try? FileManager.default.copyItem(at: url, to: tmp)) != nil
                     if accessed { url.stopAccessingSecurityScopedResource() }
                     guard copied else { return }
@@ -289,9 +291,10 @@ struct LibraryView: View {
                 _ = provider.loadObject(ofClass: URL.self) { url, _ in
                     guard let url else { return }
                     let accessed = url.startAccessingSecurityScopedResource()
-                    let tmp = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension(url.pathExtension)
+                    let tmpDir = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                    try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+                    let tmp = tmpDir.appendingPathComponent(url.lastPathComponent)
                     let copied = (try? FileManager.default.copyItem(at: url, to: tmp)) != nil
                     if accessed { url.stopAccessingSecurityScopedResource() }
                     guard copied else { return }
