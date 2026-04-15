@@ -37,19 +37,31 @@ struct LibraryView: View {
     @StateObject private var vm: LibraryViewModel
     @ObservedObject private var ragService = RAGService.shared
     @State private var showImportOptions = false
-    @State private var showImporter = false
+    // Single file-importer state — two .fileImporter modifiers on the same view
+    // causes SwiftUI to silently ignore all but the last one.
+    private enum FileImportMode { case documents, kbArchive }
+    @State private var activeImportMode: FileImportMode?
     @State private var selectedBook: Book?
     @State private var didAutoImport = false
     @State private var kbExportURL: URL?
     @State private var showKBExportSheet = false
     @State private var kbExportError: String?
     @State private var showKBExportError = false
-    @State private var showKBImporter = false
     @State private var kbImportError: String?
     @State private var showKBImportError = false
     @State private var isImportingKB = false
     @State private var showCameraScanner = false
     @State private var isDropTargeted = false
+
+    private var fileImporterBinding: Binding<Bool> {
+        Binding(get: { activeImportMode != nil }, set: { if !$0 { activeImportMode = nil } })
+    }
+
+    private var activeImportTypes: [UTType] {
+        activeImportMode == .kbArchive
+            ? [UTType(filenameExtension: "ragflow-kb") ?? .json]
+            : supportedImportTypes
+    }
 
     init(kb: KnowledgeBase, autoImport: Bool = false) {
         self.kb = kb
@@ -69,38 +81,43 @@ struct LibraryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $vm.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search documents")
         .toolbar { toolbarContent }
-        // Apple-standard file importer — handles search, iCloud, presentation context natively.
+        // Single file importer — allowedContentTypes and multi-select toggle based on mode.
         .fileImporter(
-            isPresented: $showImporter,
-            allowedContentTypes: supportedImportTypes,
-            allowsMultipleSelection: true
+            isPresented: fileImporterBinding,
+            allowedContentTypes: activeImportTypes,
+            allowsMultipleSelection: activeImportMode == .documents
         ) { result in
-            switch result {
-            case .success(let urls):
-                // Copy each file to temp while the security scope is active, then release.
-                // This prevents lazy-reading parsers (PDFKit, EPUBKit) from hitting the scope
-                // after it has expired, which would silently produce empty results.
-                let localURLs: [URL] = urls.compactMap { url in
-                    guard url.startAccessingSecurityScopedResource() else { return nil }
-                    defer { url.stopAccessingSecurityScopedResource() }
-                    let tmp = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension(url.pathExtension)
-                    return (try? FileManager.default.copyItem(at: url, to: tmp)) != nil ? tmp : nil
+            switch activeImportMode {
+            case .kbArchive:
+                handleKBImport(result: result)
+            default:
+                switch result {
+                case .success(let urls):
+                    // Copy each file to temp while the security scope is active, then release.
+                    // This prevents lazy-reading parsers (PDFKit, EPUBKit) from hitting the scope
+                    // after it has expired, which would silently produce empty results.
+                    let localURLs: [URL] = urls.compactMap { url in
+                        guard url.startAccessingSecurityScopedResource() else { return nil }
+                        defer { url.stopAccessingSecurityScopedResource() }
+                        let tmp = FileManager.default.temporaryDirectory
+                            .appendingPathComponent(UUID().uuidString)
+                            .appendingPathExtension(url.pathExtension)
+                        return (try? FileManager.default.copyItem(at: url, to: tmp)) != nil ? tmp : nil
+                    }
+                    Task { await vm.ingestURLs(localURLs) }
+                case .failure(let error):
+                    vm.errorMessage = error.localizedDescription
+                    vm.showError = true
                 }
-                Task { await vm.ingestURLs(localURLs) }
-            case .failure(let error):
-                vm.errorMessage = error.localizedDescription
-                vm.showError = true
             }
         }
         .confirmationDialog("Import Documents", isPresented: $showImportOptions, titleVisibility: .visible) {
-            Button("Browse Files (iPhone & iCloud)") { showImporter = true }
+            Button("Browse Files (iPhone & iCloud)") { activeImportMode = .documents }
             Button("Import from URL") { vm.showURLEntry = true }
             if isDocumentScanningAvailable {
                 Button("Scan Document") { showCameraScanner = true }
             }
-            Button("Import Knowledge Base Archive") { showKBImporter = true }
+            Button("Import Knowledge Base Archive") { activeImportMode = .kbArchive }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("Choose from On My iPhone, iCloud Drive, or paste a web link to a supported document.")
@@ -125,13 +142,6 @@ struct LibraryView: View {
         } message: {
             Text(kbExportError ?? "")
         }
-        .fileImporter(
-            isPresented: $showKBImporter,
-            allowedContentTypes: [UTType(filenameExtension: "ragflow-kb") ?? .json],
-            allowsMultipleSelection: false
-        ) { result in
-            handleKBImport(result: result)
-        }
         .alert("Import Failed", isPresented: $showKBImportError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -141,7 +151,7 @@ struct LibraryView: View {
             guard autoImport, !didAutoImport else { return }
             didAutoImport = true
             try? await Task.sleep(nanoseconds: 600_000_000)
-            showImporter = true
+            activeImportMode = .documents
         }
         .alert("Import Error", isPresented: $vm.showError) {
             Button("OK", role: .cancel) {}
