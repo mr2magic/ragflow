@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.6.0 committed + pushed (build 6) — archive failed due to expired Xcode credentials (2026-04-14)
-**Phase**: Brownfield improvement — iOS-native feature wave 1 (0.5.0) shipped; 0.6.0 import/parser fixes committed
-**Next**: Open Xcode → Settings → Accounts → re-sign in → Product → Archive → Distribute to TestFlight
+**Status**: 0.7.0 committed + pushed (build 7) — archive still blocked by expired Xcode credentials (re-auth needed)
+**Phase**: Brownfield improvement — 0.7.0 extension wave committed; embed phase needs one Xcode open to regenerate
+**Next**: (1) Open Xcode → Settings → Accounts → re-sign in; (2) Select RAGFlowMobile target → Build Phases → + → New Copy Files Phase → rename "Embed App Extensions" → drag in RAGFlowShareExtension.appex + RAGFlowWidget.appex; (3) Product → Archive → Distribute to TestFlight
 
 ## What Was Done (0.3.0 session)
 
@@ -127,12 +127,31 @@ The xcodebuild archive command fails with "No Account for Team 5FLM4GQ73L". Step
      --apiKey <key> --apiIssuer <issuer>
    ```
 
-## Pending for Next Wave (0.7.0)
+## What Was Done (0.7.0 session)
 
-- Share Extension target (`RAGFlowShareExtension/ShareViewController.swift`) — App Group entitlement already in place
-- Widget Extension target (Recent Chat, KB Status, Quick Query; Live Activity presentation views)
-- Core ML embeddings (.mlpackage bundle for on-device MiniLM)
-- iCloud sync (CloudKit) — deferred to 0.8.0
+### Features added
+- **Share Extension** (`RAGFlowShareExtension/`): KB picker UI, queues shared files/URLs/text via App Group to main app for import; ShareViewController + SwiftUI ShareView
+- **Widget Extension** (`RAGFlowWidget/`): KBStatusWidget (small/medium), RecentChatWidget (small/medium), QuickQueryWidget (configurable via AppIntent); all read SharedGroupDefaults
+- **Core ML on-device embeddings** (`CoreMLEmbeddingService.swift`): loads MiniLMEmbedder.mlpackage if present; falls back to Ollama EmbeddingService when not available; includes SimpleWordpieceTokenizer scaffold
+- **PendingImportProcessor**: drains App Group pending import queue on app foreground; wired into ContentView.task
+- **URL scheme** `ragflow://kb/{id}`: registered in Info.plist; handled via `.onOpenURL` in ContentView for widget deep-links
+- **iOS < 17 hard block**: UnsupportedOSView shown before onboarding if OS too old
+- **LibraryView**: fixed dual .fileImporter (SwiftUI ignores all but last); fixed temp copy to preserve original filename
+
+### Infrastructure
+- pbxproj: RAGFlowShareExtension + RAGFlowWidget targets added with full build phases and configurations
+- **Embed phase note**: the "Embed App Extensions" CopyFiles phase must be added manually in Xcode (new build system can't resolve extension product GUIDs from raw pbxproj on first build — Xcode regenerates it correctly on open)
+
+### Info.plist changes (0.7.0)
+- Version: 0.7.0 build 7
+- Added `CFBundleURLTypes` for `ragflow://` URL scheme
+
+## Pending for Next Wave (0.8.0)
+
+- Add "Embed App Extensions" build phase in Xcode (30s, see checkpoint Next above)
+- iCloud sync (CloudKit)
+- Full MiniLM tokenizer (replace SimpleWordpieceTokenizer stub with swift-transformers)
+- Add MiniLMEmbedder.mlpackage binary to bundle once converted
 
 ## Notes
 

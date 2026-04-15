@@ -69,6 +69,16 @@ struct ContentView: View {
         .task {
             BackgroundTaskCoordinator.shared.requestNotificationAuthorization()
             SharedGroupDefaults.syncFromApp()
+            await PendingImportProcessor.processPendingImports()
+        }
+        // Deep link — ragflow://kb/{id} from Widget or Share Extension
+        .onOpenURL { url in
+            guard url.scheme == "ragflow",
+                  url.host() == "kb",
+                  let kbId = url.pathComponents.dropFirst().first,
+                  let kb = try? DatabaseService.shared.kb(id: kbId) else { return }
+            selectedKB = kb
+            handoffKB  = kb
         }
         // Handoff — resume a chat started on another Apple device
         .onContinueUserActivity("com.dhorn.ragflowmobile.chat") { activity in
