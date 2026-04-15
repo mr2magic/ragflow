@@ -72,11 +72,6 @@
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
 		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
-		SE0002000000000000000001 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = SE0001000000000000000001 /* ShareViewController.swift */; };
-		WE0002000000000000000001 /* RAGFlowWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = WE0001000000000000000001 /* RAGFlowWidgetBundle.swift */; };
-		WE0002000000000000000002 /* KBStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WE0001000000000000000002 /* KBStatusWidget.swift */; };
-		WE0002000000000000000003 /* RecentChatWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WE0001000000000000000003 /* RecentChatWidget.swift */; };
-		WE0002000000000000000004 /* QuickQueryWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WE0001000000000000000004 /* QuickQueryWidget.swift */; };
 		CM0002000000000000000001 /* CoreMLEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CM0001000000000000000001 /* CoreMLEmbeddingService.swift */; };
 		PI0002000000000000000001 /* PendingImportProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PI0001000000000000000001 /* PendingImportProcessor.swift */; };
 /* End PBXBuildFile section */
@@ -95,20 +90,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = EF1F4525075086C1DC62636B;
 			remoteInfo = RAGFlowMobile;
-		};
-		SE0006000000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = SE0005000000000000000001;
-			remoteInfo = RAGFlowShareExtension;
-		};
-		WE0006000000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = WE0005000000000000000001;
-			remoteInfo = RAGFlowWidget;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -179,17 +160,6 @@
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		SE0001000000000000000001 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
-		SE0001000000000000000002 /* Info.plist (Share) */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		SE0001000000000000000003 /* RAGFlowShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowShareExtension.entitlements; sourceTree = "<group>"; };
-		SE0001000000000000000004 /* RAGFlowShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = RAGFlowShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		WE0001000000000000000001 /* RAGFlowWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowWidgetBundle.swift; sourceTree = "<group>"; };
-		WE0001000000000000000002 /* KBStatusWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBStatusWidget.swift; sourceTree = "<group>"; };
-		WE0001000000000000000003 /* RecentChatWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentChatWidget.swift; sourceTree = "<group>"; };
-		WE0001000000000000000004 /* QuickQueryWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickQueryWidget.swift; sourceTree = "<group>"; };
-		WE0001000000000000000005 /* Info.plist (Widget) */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		WE0001000000000000000006 /* RAGFlowWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowWidget.entitlements; sourceTree = "<group>"; };
-		WE0001000000000000000007 /* RAGFlowWidget.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = RAGFlowWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CM0001000000000000000001 /* CoreMLEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLEmbeddingService.swift; sourceTree = "<group>"; };
 		PI0001000000000000000001 /* PendingImportProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingImportProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -205,18 +175,6 @@
 				AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */,
 				5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		SE0004000000000000000003 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		WE0004000000000000000003 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -298,8 +256,6 @@
 				8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */,
 				45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */,
 				C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */,
-				SE0001000000000000000004 /* RAGFlowShareExtension.appex */,
-				WE0001000000000000000007 /* RAGFlowWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -490,29 +446,6 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		SE0003000000000000000001 /* RAGFlowShareExtension */ = {
-			isa = PBXGroup;
-			children = (
-				SE0001000000000000000001 /* ShareViewController.swift */,
-				SE0001000000000000000002 /* Info.plist */,
-				SE0001000000000000000003 /* RAGFlowShareExtension.entitlements */,
-			);
-			path = RAGFlowShareExtension;
-			sourceTree = "<group>";
-		};
-		WE0003000000000000000001 /* RAGFlowWidget */ = {
-			isa = PBXGroup;
-			children = (
-				WE0001000000000000000001 /* RAGFlowWidgetBundle.swift */,
-				WE0001000000000000000002 /* KBStatusWidget.swift */,
-				WE0001000000000000000003 /* RecentChatWidget.swift */,
-				WE0001000000000000000004 /* QuickQueryWidget.swift */,
-				WE0001000000000000000005 /* Info.plist */,
-				WE0001000000000000000006 /* RAGFlowWidget.entitlements */,
-			);
-			path = RAGFlowWidget;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -561,8 +494,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				SE0007000000000000000001 /* PBXTargetDependency */,
-				WE0007000000000000000001 /* PBXTargetDependency */,
 			);
 			name = RAGFlowMobile;
 			packageProductDependencies = (
@@ -573,36 +504,6 @@
 			productName = RAGFlowMobile;
 			productReference = 8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */;
 			productType = "com.apple.product-type.application";
-		};
-		SE0005000000000000000001 /* RAGFlowShareExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = SE0009000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowShareExtension" */;
-			buildPhases = (
-				SE0004000000000000000001 /* Sources */,
-				SE0004000000000000000002 /* Resources */,
-				SE0004000000000000000003 /* Frameworks */,
-			);
-			buildRules = ();
-			dependencies = ();
-			name = RAGFlowShareExtension;
-			productName = RAGFlowShareExtension;
-			productReference = SE0001000000000000000004 /* RAGFlowShareExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		WE0005000000000000000001 /* RAGFlowWidget */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = WE0009000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowWidget" */;
-			buildPhases = (
-				WE0004000000000000000001 /* Sources */,
-				WE0004000000000000000002 /* Resources */,
-				WE0004000000000000000003 /* Frameworks */,
-			);
-			buildRules = ();
-			dependencies = ();
-			name = RAGFlowWidget;
-			productName = RAGFlowWidget;
-			productReference = WE0001000000000000000007 /* RAGFlowWidget.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -653,18 +554,6 @@
 				E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */,
 				31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		SE0004000000000000000002 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		WE0004000000000000000002 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
@@ -751,23 +640,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		SE0004000000000000000001 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (SE0002000000000000000001 /* ShareViewController.swift in Sources */,);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		WE0004000000000000000001 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				WE0002000000000000000001 /* RAGFlowWidgetBundle.swift in Sources */,
-				WE0002000000000000000002 /* KBStatusWidget.swift in Sources */,
-				WE0002000000000000000003 /* RecentChatWidget.swift in Sources */,
-				WE0002000000000000000004 /* QuickQueryWidget.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -780,16 +652,6 @@
 			isa = PBXTargetDependency;
 			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
 			targetProxy = C1D2E3F4A5B60007C2D3E4F5 /* PBXContainerItemProxy */;
-		};
-		SE0007000000000000000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = SE0005000000000000000001 /* RAGFlowShareExtension */;
-			targetProxy = SE0006000000000000000001 /* PBXContainerItemProxy */;
-		};
-		WE0007000000000000000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = WE0005000000000000000001 /* RAGFlowWidget */;
-			targetProxy = WE0006000000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1039,70 +901,6 @@
 			};
 			name = Release;
 		};
-		SE0008000000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5FLM4GQ73L;
-				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dhorn.ragflowmobile.shareextension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		SE0008000000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5FLM4GQ73L;
-				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dhorn.ragflowmobile.shareextension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		WE0008000000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5FLM4GQ73L;
-				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dhorn.ragflowmobile.widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		WE0008000000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5FLM4GQ73L;
-				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dhorn.ragflowmobile.widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1141,18 +939,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
-		};
-		SE0009000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowShareExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (SE0008000000000000000001 /* Debug */, SE0008000000000000000002 /* Release */,);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		WE0009000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowWidget" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (WE0008000000000000000001 /* Debug */, WE0008000000000000000002 /* Release */,);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
