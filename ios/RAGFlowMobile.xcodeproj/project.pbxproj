@@ -617,13 +617,19 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					354F39B11DDAA7AE3B4BBFAA = {
+						DevelopmentTeam = LVK5C2V4J8;
+					};
 					625B51FB993036D4DE3BA176 = {
+						DevelopmentTeam = LVK5C2V4J8;
 						ProvisioningStyle = Automatic;
 					};
 					BD421E8720D1255E60E73D3B = {
+						DevelopmentTeam = LVK5C2V4J8;
 						ProvisioningStyle = Automatic;
 					};
 					EF1F4525075086C1DC62636B = {
+						DevelopmentTeam = LVK5C2V4J8;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -787,6 +793,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -805,6 +812,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -825,6 +833,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -843,6 +852,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -925,6 +935,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -944,6 +955,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1019,6 +1031,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1039,6 +1052,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

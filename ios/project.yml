@@ -21,6 +21,7 @@ targets:
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: "NO"
         INFOPLIST_FILE: RAGFlowMobile/Resources/Info.plist
         CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: LVK5C2V4J8
     dependencies:
       - package: EPUBKit
       - package: GRDB
@@ -46,6 +47,7 @@ targets:
         INFOPLIST_FILE: RAGFlowShareExtension/Info.plist
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: RAGFlowShareExtension/RAGFlowShareExtension.entitlements
+        DEVELOPMENT_TEAM: LVK5C2V4J8
 
   RAGFlowWidget:
     type: app-extension
@@ -60,6 +62,7 @@ targets:
         INFOPLIST_FILE: RAGFlowWidget/Info.plist
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: RAGFlowWidget/RAGFlowWidget.entitlements
+        DEVELOPMENT_TEAM: LVK5C2V4J8
     dependencies:
       - package: EPUBKit
         embed: false
@@ -73,6 +76,7 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+        DEVELOPMENT_TEAM: LVK5C2V4J8
     dependencies:
       - target: RAGFlowMobile
 

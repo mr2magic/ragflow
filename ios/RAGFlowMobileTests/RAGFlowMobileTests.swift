@@ -1649,3 +1649,87 @@ final class CancellationErrorTests: XCTestCase {
         XCTAssertNil(cancErr as? URLError, "CancellationError must not be a URLError")
     }
 }
+
+// MARK: - GutenbergResolver
+
+final class GutenbergResolverTests: XCTestCase {
+
+    // MARK: isGutenbergBookPage
+
+    func testStandardBookPageRecognised() {
+        let url = URL(string: "https://www.gutenberg.org/ebooks/1342")!
+        XCTAssertTrue(GutenbergResolver.isGutenbergBookPage(url))
+    }
+
+    func testWwwlessHostRecognised() {
+        let url = URL(string: "https://gutenberg.org/ebooks/84")!
+        XCTAssertTrue(GutenbergResolver.isGutenbergBookPage(url))
+    }
+
+    func testHttpSchemeRecognised() {
+        let url = URL(string: "http://www.gutenberg.org/ebooks/11")!
+        XCTAssertTrue(GutenbergResolver.isGutenbergBookPage(url))
+    }
+
+    func testNonGutenbergURLRejected() {
+        XCTAssertFalse(GutenbergResolver.isGutenbergBookPage(URL(string: "https://example.com/ebooks/1342")!))
+    }
+
+    func testGutenbergNonBookPathRejected() {
+        // /browse/ is not a book page
+        XCTAssertFalse(GutenbergResolver.isGutenbergBookPage(URL(string: "https://www.gutenberg.org/browse/recent/last1")!))
+    }
+
+    func testNonNumericIdRejected() {
+        XCTAssertFalse(GutenbergResolver.isGutenbergBookPage(URL(string: "https://www.gutenberg.org/ebooks/abc")!))
+    }
+
+    func testCacheDownloadURLRejected() {
+        // A direct cache file URL is not a book page
+        let url = URL(string: "https://www.gutenberg.org/cache/epub/1342/pg1342.epub")!
+        XCTAssertFalse(GutenbergResolver.isGutenbergBookPage(url))
+    }
+
+    // MARK: resolve — error cases (no network needed)
+
+    func testNonGutenbergURLThrows() async {
+        let url = URL(string: "https://example.com/ebooks/1342")!
+        do {
+            _ = try await GutenbergResolver.resolve(url)
+            XCTFail("Expected notAGutenbergURL error")
+        } catch GutenbergResolver.GutenbergError.notAGutenbergURL {
+            // expected
+        } catch {
+            XCTFail("Wrong error: \(error)")
+        }
+    }
+
+    // MARK: resolve — live network (skipped in CI, manual only)
+
+    func testResolvePrideAndPrejudice() async throws {
+        // Book #1342 = Pride and Prejudice — a stable, always-available Gutenberg title.
+        // Skipped in automated runs; run manually to verify live resolution.
+        try XCTSkipIf(ProcessInfo.processInfo.environment["CI"] != nil,
+                      "Skipping live network test in CI")
+        let url = URL(string: "https://www.gutenberg.org/ebooks/1342")!
+        let book = try await GutenbergResolver.resolve(url)
+        XCTAssertEqual(book.gutenbergID, 1342)
+        XCTAssertTrue(
+            book.downloadURL.absoluteString.contains("gutenberg.org"),
+            "Resolved URL must be on gutenberg.org"
+        )
+        let ext = book.downloadURL.pathExtension.lowercased()
+        XCTAssertTrue(["epub", "txt"].contains(ext),
+                      "Resolved extension must be epub or txt, got: \(ext)")
+    }
+
+    func testResolveAlicesAdventuresInWonderland() async throws {
+        try XCTSkipIf(ProcessInfo.processInfo.environment["CI"] != nil,
+                      "Skipping live network test in CI")
+        let url = URL(string: "https://www.gutenberg.org/ebooks/11")!
+        let book = try await GutenbergResolver.resolve(url)
+        XCTAssertEqual(book.gutenbergID, 11)
+        let ext = book.downloadURL.pathExtension.lowercased()
+        XCTAssertTrue(["epub", "txt"].contains(ext))
+    }
+}
