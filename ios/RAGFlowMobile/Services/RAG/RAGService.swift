@@ -300,27 +300,6 @@ final class RAGService: ObservableObject {
         let total = chunks.count
         embedProgress = 0
 
-        // On-device CoreML embeddings — fully private, no network required.
-        if settings.config.useOnDeviceEmbeddings && CoreMLEmbeddingService.shared.isAvailable {
-            await Task.detached(priority: .utility) { [weak self] in
-                let coreML = CoreMLEmbeddingService.shared
-                var processed = 0
-                for chunk in chunks {
-                    if let vector = try? coreML.embed(text: chunk.content) {
-                        let data = EmbeddingService.floatsToData(vector)
-                        try? db.updateEmbeddingsBatch([(id: chunk.id, embedding: data)])
-                    }
-                    processed += 1
-                    let progress = Double(processed) / Double(total)
-                    let s = self
-                    await MainActor.run { s?.embedProgress = progress }
-                }
-                let s = self
-                await MainActor.run { s?.embedProgress = 1.0 }
-            }.value
-            return
-        }
-
         // Ollama network embeddings — only available when Ollama is the active provider.
         guard settings.config.provider == .ollama else { return }
 

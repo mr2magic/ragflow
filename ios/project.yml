@@ -28,7 +28,6 @@ targets:
       - sdk: PDFKit.framework
       - sdk: Accelerate.framework
       - sdk: CloudKit.framework
-      - sdk: CoreML.framework
 
   RAGFlowMobileTests:
     type: bundle.unit-test

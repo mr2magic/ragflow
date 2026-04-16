@@ -18,8 +18,6 @@ struct SettingsView: View {
                 if store.config.provider == .claude { claudeSection }
                 if store.config.provider == .openAI { openAISection }
                 if store.config.provider == .ollama { ollamaSection }
-                embeddingsSection
-                iCloudSection
                 agentToolsSection
                 aboutSection
                 #if DEBUG
@@ -33,11 +31,7 @@ struct SettingsView: View {
             .onChange(of: store.config.braveSearchApiKey) { _, _ in store.save() }
             .onChange(of: store.config.ollamaHost) { _, _ in store.save() }
             .onChange(of: store.config.ollamaModel) { _, _ in store.save() }
-            .onChange(of: store.config.useOnDeviceEmbeddings) { _, _ in store.save() }
-            .onChange(of: store.config.useCloudKitSync) { _, new in
-                store.save()
-                if new { Task { await CloudKitSyncService.shared.checkAvailability() } }
-            }
+            .onChange(of: store.config.useCloudKitSync) { _, _ in store.save() }
             .task { await loadOllamaModels() }
         }
     }
@@ -140,31 +134,6 @@ struct SettingsView: View {
         } footer: {
             Text("Connect to an Ollama instance on your local network or at localhost.")
                 .font(.footnote)
-        }
-    }
-
-    // MARK: - Embeddings
-
-    private var embeddingsSection: some View {
-        let modelAvailable = CoreMLEmbeddingService.shared.isAvailable
-        return Section {
-            Toggle("On-Device Embeddings", isOn: $store.config.useOnDeviceEmbeddings)
-                .disabled(!modelAvailable)
-                .help("Use the bundled MiniLM Core ML model for fully private, offline vector embeddings.")
-            if !modelAvailable {
-                Label("MiniLMEmbedder.mlpackage not bundled", systemImage: "exclamationmark.triangle")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        } header: {
-            Text("Embeddings")
-        } footer: {
-            Text(
-                modelAvailable && store.config.useOnDeviceEmbeddings
-                ? "Embeddings run entirely on-device using the bundled MiniLM model — fully private, no network required."
-                : "On-device embeddings require MiniLMEmbedder.mlpackage in the app bundle. When disabled, Ollama is used for embeddings (Ollama provider only)."
-            )
-            .font(.footnote)
         }
     }
 

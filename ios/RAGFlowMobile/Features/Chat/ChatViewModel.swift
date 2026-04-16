@@ -193,11 +193,8 @@ final class ChatViewModel: ObservableObject {
 
     /// Returns retrieved chunks and a bookId→title lookup for citation building.
     private func retrieveChunks(for query: String) async throws -> ([Chunk], [String: String]) {
-        // Pre-compute query embedding for vector search.
-        // Priority: on-device CoreML → Ollama (network) → none.
-        if settings.config.useOnDeviceEmbeddings && CoreMLEmbeddingService.shared.isAvailable {
-            rag.currentQueryEmbedding = try? CoreMLEmbeddingService.shared.embed(text: query)
-        } else if settings.config.provider == .ollama {
+        // Pre-compute query embedding for vector search (Ollama only).
+        if settings.config.provider == .ollama {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
             rag.currentQueryEmbedding = try? await embService.embed(text: query)
         }

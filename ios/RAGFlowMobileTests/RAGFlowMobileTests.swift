@@ -1446,102 +1446,13 @@ private extension Data {
     }
 }
 
-// MARK: - CoreMLEmbeddingService
-
-final class CoreMLEmbeddingServiceTests: XCTestCase {
-
-    func testUnavailableWhenNoBundledModel() {
-        // In the test host there is no MiniLMEmbedder.mlpackage bundled,
-        // so isAvailable must be false.
-        XCTAssertFalse(CoreMLEmbeddingService.shared.isAvailable,
-                       "isAvailable should be false when the model file is not bundled")
-    }
-
-    func testEmbedThrowsWhenUnavailable() {
-        XCTAssertThrowsError(try CoreMLEmbeddingService.shared.embed(text: "hello")) { error in
-            guard let e = error as? CoreMLEmbeddingService.CoreMLEmbeddingError else {
-                XCTFail("Expected CoreMLEmbeddingError, got \(error)"); return
-            }
-            XCTAssertEqual(e, .modelUnavailable)
-        }
-    }
-
-    func testL2NormalisationProducesUnitVector() throws {
-        // Verify the Accelerate-based L2 normalisation is correct.
-        // We can test this via EmbeddingService's cosine similarity:
-        // a properly normalised vector dot-producted with itself equals 1.
-        let v: [Float] = [3, 4]        // magnitude = 5
-        let data = EmbeddingService.floatsToData(v)
-        let recovered = EmbeddingService.dataToFloats(data)
-        // Manually normalise
-        let norm = sqrt(recovered.reduce(Float(0)) { $0 + $1 * $1 })
-        let normalised = recovered.map { $0 / norm }
-        let selfSim = EmbeddingService.cosineSimilarity(normalised, normalised)
-        XCTAssertEqual(selfSim, 1.0, accuracy: 1e-5,
-                       "A unit vector's cosine similarity with itself must be 1")
-    }
-
-    func testTokenizerProducesExpectedShape() {
-        // The SimpleWordpieceTokenizer must output exactly maxLength tokens (padded).
-        let tokenizer = SimpleWordpieceTokenizer()
-        let output = tokenizer.tokenize("hello world test", maxLength: 16)
-        XCTAssertEqual(output.inputIds.count, 16, "inputIds must be padded to maxLength")
-        XCTAssertEqual(output.attentionMask.count, 16, "attentionMask must be padded to maxLength")
-        // CLS token at position 0, SEP before padding
-        XCTAssertEqual(output.inputIds[0], 101, "CLS token must be first")
-        // Padding tokens must have mask=0
-        XCTAssertEqual(output.attentionMask[15], 0, "Padded positions must have mask=0")
-    }
-
-    func testTokenizerHandlesEmptyInput() {
-        let tokenizer = SimpleWordpieceTokenizer()
-        let output = tokenizer.tokenize("", maxLength: 8)
-        // Empty input: [CLS] [SEP] + 6 padding tokens
-        XCTAssertEqual(output.inputIds.count, 8)
-        XCTAssertEqual(output.inputIds[0], 101) // CLS
-        XCTAssertEqual(output.inputIds[1], 102) // SEP
-        XCTAssertEqual(output.inputIds[2], 0)   // PAD
-    }
-
-    func testTokenizerTruncatesLongInput() {
-        let tokenizer = SimpleWordpieceTokenizer()
-        // 20 words — should be truncated to maxLength=8
-        let text = Array(repeating: "word", count: 20).joined(separator: " ")
-        let output = tokenizer.tokenize(text, maxLength: 8)
-        XCTAssertEqual(output.inputIds.count, 8)
-        XCTAssertEqual(output.attentionMask.count, 8)
-    }
-}
-
 // MARK: - SettingsStore new fields
 
 final class SettingsStoreNewFieldsTests: XCTestCase {
 
-    func testUseOnDeviceEmbeddingsDefaultIsFalse() {
-        XCTAssertFalse(LLMConfig.default.useOnDeviceEmbeddings,
-                       "On-device embeddings should be off by default")
-    }
-
     func testUseCloudKitSyncDefaultIsFalse() {
         XCTAssertFalse(LLMConfig.default.useCloudKitSync,
                        "CloudKit sync should be off by default")
-    }
-
-    func testOnDeviceEmbeddingsPersistedAndLoaded() {
-        let store = SettingsStore.shared
-        let saved = store.config
-        defer { store.config = saved; store.save() }
-
-        store.config.useOnDeviceEmbeddings = true
-        store.save()
-        // Simulate a fresh load by reading back from UserDefaults directly
-        let storedValue = UserDefaults.standard.bool(forKey: "use_on_device_embeddings")
-        XCTAssertTrue(storedValue, "useOnDeviceEmbeddings must persist to UserDefaults")
-
-        store.config.useOnDeviceEmbeddings = false
-        store.save()
-        let storedFalse = UserDefaults.standard.bool(forKey: "use_on_device_embeddings")
-        XCTAssertFalse(storedFalse)
     }
 
     func testCloudKitSyncPersistedAndLoaded() {

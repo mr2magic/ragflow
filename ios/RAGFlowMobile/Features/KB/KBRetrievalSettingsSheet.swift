@@ -117,16 +117,9 @@ struct KBRetrievalSettingsSheet: View {
     // MARK: - Info
 
     private var infoSection: some View {
-        let settings = SettingsStore.shared
-        let embeddingSource: String = {
-            if settings.config.useOnDeviceEmbeddings && CoreMLEmbeddingService.shared.isAvailable {
-                return "On-Device (MiniLM)"
-            } else if settings.config.provider == .ollama {
-                return "Ollama (network)"
-            } else {
-                return "BM25 keyword only"
-            }
-        }()
+        let embeddingSource = SettingsStore.shared.config.provider == .ollama
+            ? "Ollama (network)"
+            : "BM25 keyword only"
         return Section {
             LabeledContent("Hybrid Retrieval", value: "BM25 + Vector (RRF)")
             LabeledContent("Chunking Engine", value: "Sentence-boundary (NLTokenizer)")

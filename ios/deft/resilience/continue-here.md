@@ -99,33 +99,32 @@ When starting a new session, Claude reads this file to understand where things l
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.6.0** (build 6) — committed + pushed, archive blocked by expired Xcode credentials
+- Version: **0.8.0** (build 8) — committed + pushed, archive working
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
+
+## Team IDs (confirmed working 2026-04-16)
+
+- **Development**: `H3NBT7PUR9` (Apple Development: Dan Horn)
+- **Distribution**: `LVK5C2V4J8` (Apple Distribution: Daniel Horn) ← use this for archives
+
+NOTE: `5FLM4GQ73L` was wrong — ignore any reference to it in older notes.
 
 ## To Archive for TestFlight
 
-The xcodebuild archive command fails with "No Account for Team 5FLM4GQ73L". Steps to fix:
+Run from `/Users/Dans_iMac/Projects/ragflow/ragflow/ios`:
+```bash
+xcodebuild archive \
+  -project RAGFlowMobile.xcodeproj \
+  -scheme RAGFlowMobile \
+  -configuration Release \
+  -destination "generic/platform=iOS" \
+  -archivePath "$HOME/Desktop/RAGFlowMobile-0.8.0.xcarchive" \
+  -allowProvisioningUpdates \
+  CODE_SIGN_STYLE=Automatic \
+  DEVELOPMENT_TEAM=LVK5C2V4J8
+```
 
-1. Open Xcode → Settings (⌘,) → Accounts
-2. Re-sign in with your Apple ID
-3. Then run from `/Users/Dans_iMac/Projects/ragflow/ragflow/ios`:
-   ```bash
-   xcodebuild archive \
-     -project RAGFlowMobile.xcodeproj \
-     -scheme RAGFlowMobile \
-     -configuration Release \
-     -destination "generic/platform=iOS" \
-     -archivePath "$HOME/Library/Developer/Xcode/Archives/RAGFlowMobile-0.6.0.xcarchive" \
-     -allowProvisioningUpdates \
-     CODE_SIGN_STYLE=Automatic \
-     DEVELOPMENT_TEAM=5FLM4GQ73L
-   ```
-4. Then export to TestFlight via Xcode Organizer or:
-   ```bash
-   xcrun altool --upload-app --type ios \
-     --file RAGFlowMobile-0.6.0.ipa \
-     --apiKey <key> --apiIssuer <issuer>
-   ```
+Then upload via Xcode Organizer (open the .xcarchive on Desktop → Distribute App → TestFlight).
 
 ## What Was Done (0.7.0 session)
 
