@@ -2,43 +2,52 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-16",
-  "status": "in_progress",
-  "phase": "brownfield improvement — 0.7.0 builds, archives, and passes App Store Connect validation",
+  "status": "stable",
+  "phase": "brownfield improvement — 0.8.0 builds, archives, all tests passing",
+  "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "Fixed 'Unable to resolve build file' errors: RAGFlowShareExtension + RAGFlowWidget added to PBXProject.targets",
-    "Fixed 'No Account for Team 5FLM4GQ73L': replaced with LVK5C2V4J8 on all 4 extension build configs",
-    "Fixed 'Build input file cannot be found': added PBXGroup entries with correct subdirectory paths for extension sources",
-    "Fixed App Store Connect error 90680: CopyFiles dstSubfolderSpec changed from 7 (Executables) to 13 (PlugIns)",
-    "Project builds and archives cleanly — archive at /tmp/RAGFlowMobile.xcarchive",
-    "mempalace.yaml now tracked in git (committed ab2db2b13)",
-    "All fixes committed and pushed: b0c4b8444, a3c460346, d368030ac, ab2db2b13"
+    "Fixed CloudKitSyncService launch crash: deferred CKContainer init to prevent SIGTRAP in simulator",
+    "Fixed CloudKit fetchAll: API returns named tuple (matchResults, queryCursor) not a dictionary",
+    "Fixed xcodegen wiping extension targets: added RAGFlowShareExtension + RAGFlowWidget to project.yml",
+    "Fixed signing errors: DEVELOPMENT_TEAM=LVK5C2V4J8 baked into all targets in project.yml permanently",
+    "Corrected team ID: 5FLM4GQ73L was wrong; confirmed working ID is LVK5C2V4J8 (Distribution)",
+    "Removed CoreML on-device embeddings: tokenizer was a stub producing garbage vectors — deferred",
+    "Removed useOnDeviceEmbeddings flag from LLMConfig, SettingsStore, RAGService, ChatViewModel, tests",
+    "Hidden iCloud sync toggle: CloudKit container not yet created in Apple Developer portal",
+    "Added GutenbergResolver: detects gutenberg.org/ebooks/{id} URLs, resolves to direct epub/txt download",
+    "Wired GutenbergResolver into LibraryViewModel.importFromURL() — transparent to non-Gutenberg URLs",
+    "GutenbergResolverTests: 10/10 passing including live network tests (Pride & Prejudice, Alice)",
+    "Archive confirmed clean: ARCHIVE SUCCEEDED with extensions embedded",
+    "mempalace mined: 370 drawers, 22 new files indexed"
   ],
 
   "in_progress": [],
 
   "next": [
-    "Re-upload /tmp/RAGFlowMobile.xcarchive to App Store Connect (90680 errors now resolved)",
-    "Or re-archive from Xcode GUI: Product → Archive, then Organizer → Distribute App → TestFlight",
-    "App Group entitlement 'group.com.dhorn.ragflowmobile' — confirm active in Signing & Capabilities for main target",
-    "Core ML embeddings: bundle quantized MiniLM .mlpackage for on-device embeddings",
-    "iCloud sync (CloudKit) — deferred to 0.8.0"
+    "Upload 0.8.0 archive to TestFlight via Xcode Organizer (archive on Desktop)",
+    "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync",
+    "Gutenberg browser UI: in-app search by title/author (Level 3, optional)",
+    "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (deferred)",
+    "iCloud sync re-index prompt when pulling remote KBs"
   ],
 
   "key_facts": {
-    "ollama_host": "http://the-black-pearl:11434",
-    "app_version": "0.7.0",
-    "build_number": "7",
+    "app_version": "0.8.0",
+    "build_number": "8",
     "bundle_id": "com.dhorn.ragflowmobile",
-    "team_id": "LVK5C2V4J8",
+    "team_id_distribution": "LVK5C2V4J8",
+    "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.2.0 build 1 on 2026-04-03",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "ab2db2b13",
-    "archive_path": "/tmp/RAGFlowMobile.xcarchive"
+    "last_commit": "de44ba2da",
+    "tag": "Golden_Child_4_16_26",
+    "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
+    "archive_command": "xcodebuild archive -project RAGFlowMobile.xcodeproj -scheme RAGFlowMobile -configuration Release -destination generic/platform=iOS -archivePath ~/Desktop/RAGFlowMobile-0.8.0.xcarchive -allowProvisioningUpdates CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=LVK5C2V4J8"
   },
 
   "open_questions": [
-    "Has 0.7.0 been successfully uploaded to App Store Connect / TestFlight?",
-    "App Group entitlement confirmed active in Signing & Capabilities?"
+    "Has 0.8.0 been uploaded to App Store Connect / TestFlight?",
+    "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?"
   ]
 }

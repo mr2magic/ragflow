@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.7.0 committed + pushed (build 7) — archive still blocked by expired Xcode credentials (re-auth needed)
-**Phase**: Brownfield improvement — 0.7.0 extension wave committed; embed phase needs one Xcode open to regenerate
-**Next**: (1) Open Xcode → Settings → Accounts → re-sign in; (2) Select RAGFlowMobile target → Build Phases → + → New Copy Files Phase → rename "Embed App Extensions" → drag in RAGFlowShareExtension.appex + RAGFlowWidget.appex; (3) Product → Archive → Distribute to TestFlight
+**Status**: 0.8.0 committed + pushed — tag `Golden_Child_4_16_26` — archive clean, all tests passing
+**Phase**: Brownfield improvement — stable
+**Next**: Upload archive to TestFlight via Xcode Organizer (archive on Desktop at `~/Desktop/RAGFlowMobile-0.8.0.xcarchive`)
 
 ## What Was Done (0.3.0 session)
 
