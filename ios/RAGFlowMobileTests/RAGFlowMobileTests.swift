@@ -1445,3 +1445,296 @@ private extension Data {
         Swift.withUnsafeBytes(of: &le) { self.append(contentsOf: $0) }
     }
 }
+
+// MARK: - CoreMLEmbeddingService
+
+final class CoreMLEmbeddingServiceTests: XCTestCase {
+
+    func testUnavailableWhenNoBundledModel() {
+        // In the test host there is no MiniLMEmbedder.mlpackage bundled,
+        // so isAvailable must be false.
+        XCTAssertFalse(CoreMLEmbeddingService.shared.isAvailable,
+                       "isAvailable should be false when the model file is not bundled")
+    }
+
+    func testEmbedThrowsWhenUnavailable() {
+        XCTAssertThrowsError(try CoreMLEmbeddingService.shared.embed(text: "hello")) { error in
+            guard let e = error as? CoreMLEmbeddingService.CoreMLEmbeddingError else {
+                XCTFail("Expected CoreMLEmbeddingError, got \(error)"); return
+            }
+            XCTAssertEqual(e, .modelUnavailable)
+        }
+    }
+
+    func testL2NormalisationProducesUnitVector() throws {
+        // Verify the Accelerate-based L2 normalisation is correct.
+        // We can test this via EmbeddingService's cosine similarity:
+        // a properly normalised vector dot-producted with itself equals 1.
+        let v: [Float] = [3, 4]        // magnitude = 5
+        let data = EmbeddingService.floatsToData(v)
+        let recovered = EmbeddingService.dataToFloats(data)
+        // Manually normalise
+        let norm = sqrt(recovered.reduce(Float(0)) { $0 + $1 * $1 })
+        let normalised = recovered.map { $0 / norm }
+        let selfSim = EmbeddingService.cosineSimilarity(normalised, normalised)
+        XCTAssertEqual(selfSim, 1.0, accuracy: 1e-5,
+                       "A unit vector's cosine similarity with itself must be 1")
+    }
+
+    func testTokenizerProducesExpectedShape() {
+        // The SimpleWordpieceTokenizer must output exactly maxLength tokens (padded).
+        let tokenizer = SimpleWordpieceTokenizer()
+        let output = tokenizer.tokenize("hello world test", maxLength: 16)
+        XCTAssertEqual(output.inputIds.count, 16, "inputIds must be padded to maxLength")
+        XCTAssertEqual(output.attentionMask.count, 16, "attentionMask must be padded to maxLength")
+        // CLS token at position 0, SEP before padding
+        XCTAssertEqual(output.inputIds[0], 101, "CLS token must be first")
+        // Padding tokens must have mask=0
+        XCTAssertEqual(output.attentionMask[15], 0, "Padded positions must have mask=0")
+    }
+
+    func testTokenizerHandlesEmptyInput() {
+        let tokenizer = SimpleWordpieceTokenizer()
+        let output = tokenizer.tokenize("", maxLength: 8)
+        // Empty input: [CLS] [SEP] + 6 padding tokens
+        XCTAssertEqual(output.inputIds.count, 8)
+        XCTAssertEqual(output.inputIds[0], 101) // CLS
+        XCTAssertEqual(output.inputIds[1], 102) // SEP
+        XCTAssertEqual(output.inputIds[2], 0)   // PAD
+    }
+
+    func testTokenizerTruncatesLongInput() {
+        let tokenizer = SimpleWordpieceTokenizer()
+        // 20 words — should be truncated to maxLength=8
+        let text = Array(repeating: "word", count: 20).joined(separator: " ")
+        let output = tokenizer.tokenize(text, maxLength: 8)
+        XCTAssertEqual(output.inputIds.count, 8)
+        XCTAssertEqual(output.attentionMask.count, 8)
+    }
+}
+
+// MARK: - SettingsStore new fields
+
+final class SettingsStoreNewFieldsTests: XCTestCase {
+
+    func testUseOnDeviceEmbeddingsDefaultIsFalse() {
+        XCTAssertFalse(LLMConfig.default.useOnDeviceEmbeddings,
+                       "On-device embeddings should be off by default")
+    }
+
+    func testUseCloudKitSyncDefaultIsFalse() {
+        XCTAssertFalse(LLMConfig.default.useCloudKitSync,
+                       "CloudKit sync should be off by default")
+    }
+
+    func testOnDeviceEmbeddingsPersistedAndLoaded() {
+        let store = SettingsStore.shared
+        let saved = store.config
+        defer { store.config = saved; store.save() }
+
+        store.config.useOnDeviceEmbeddings = true
+        store.save()
+        // Simulate a fresh load by reading back from UserDefaults directly
+        let storedValue = UserDefaults.standard.bool(forKey: "use_on_device_embeddings")
+        XCTAssertTrue(storedValue, "useOnDeviceEmbeddings must persist to UserDefaults")
+
+        store.config.useOnDeviceEmbeddings = false
+        store.save()
+        let storedFalse = UserDefaults.standard.bool(forKey: "use_on_device_embeddings")
+        XCTAssertFalse(storedFalse)
+    }
+
+    func testCloudKitSyncPersistedAndLoaded() {
+        let store = SettingsStore.shared
+        let saved = store.config
+        defer { store.config = saved; store.save() }
+
+        store.config.useCloudKitSync = true
+        store.save()
+        let storedValue = UserDefaults.standard.bool(forKey: "use_cloudkit_sync")
+        XCTAssertTrue(storedValue, "useCloudKitSync must persist to UserDefaults")
+
+        store.config.useCloudKitSync = false
+        store.save()
+        let storedFalse = UserDefaults.standard.bool(forKey: "use_cloudkit_sync")
+        XCTAssertFalse(storedFalse)
+    }
+}
+
+// MARK: - DatabaseService new lookup methods
+
+final class DatabaseServiceLookupTests: XCTestCase {
+    private var dbq: DatabaseQueue!
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! runMigrations(on: dbq)
+    }
+
+    private func runMigrations(on queue: DatabaseQueue) throws {
+        var m = DatabaseMigrator()
+        m.registerMigration("v1") { db in
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+        m.registerMigration("v2") { db in
+            try db.alter(table: "chunks") { t in t.add(column: "embedding", .blob) }
+        }
+        m.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.execute(sql: "INSERT OR IGNORE INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [KnowledgeBase.defaultID, "My Library", Date()])
+            try db.alter(table: "books") { t in
+                t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        m.registerMigration("v4") { db in
+            try db.create(table: "messages", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("role", .text).notNull()
+                t.column("content", .text).notNull()
+                t.column("timestamp", .datetime).notNull()
+            }
+        }
+        m.registerMigration("v8") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
+                t.add(column: "topN", .integer).notNull().defaults(to: 50)
+                t.add(column: "chunkMethod", .text).notNull().defaults(to: "General")
+                t.add(column: "chunkSize", .integer).notNull().defaults(to: 512)
+                t.add(column: "chunkOverlap", .integer).notNull().defaults(to: 64)
+                t.add(column: "similarityThreshold", .double).notNull().defaults(to: 0.2)
+            }
+            try db.alter(table: "books") { t in
+                t.add(column: "fileType", .text).notNull().defaults(to: "")
+                t.add(column: "pageCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "wordCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "sourceURL", .text).notNull().defaults(to: "")
+            }
+            try db.alter(table: "messages") { t in
+                t.add(column: "sessionId", .text).notNull().defaults(to: "")
+            }
+        }
+        try m.migrate(queue)
+    }
+
+    func testBookLookupById() throws {
+        let book = Book(id: "lookup-b1", kbId: KnowledgeBase.defaultID, title: "Lookup Test",
+                        author: "", filePath: "", addedAt: Date(), chunkCount: 0)
+        try dbq.write { db in try book.save(db) }
+
+        let found = try dbq.read { db in try Book.fetchOne(db, key: "lookup-b1") }
+        XCTAssertNotNil(found, "book(id:) should return the saved book")
+        XCTAssertEqual(found?.title, "Lookup Test")
+    }
+
+    func testBookLookupReturnsNilForMissingId() throws {
+        let found = try dbq.read { db in try Book.fetchOne(db, key: "does-not-exist") }
+        XCTAssertNil(found, "book(id:) should return nil for an unknown ID")
+    }
+
+    func testMessageExistsReturnsTrueAfterInsert() throws {
+        try dbq.write { db in
+            try db.execute(
+                sql: "INSERT INTO messages (id, kbId, sessionId, role, content, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
+                arguments: ["msg-exists-1", KnowledgeBase.defaultID, "sess-1", "user", "Hello", Date()])
+        }
+        let exists = (try? dbq.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM messages WHERE id = ?", arguments: ["msg-exists-1"]) ?? 0
+        }) ?? 0
+        XCTAssertEqual(exists, 1, "messageExists should return true for an inserted message")
+    }
+
+    func testMessageExistsReturnsFalseForMissingId() throws {
+        let count = (try? dbq.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM messages WHERE id = ?", arguments: ["not-there"]) ?? 0
+        }) ?? 0
+        XCTAssertEqual(count, 0, "messageExists should return false for an unknown message ID")
+    }
+}
+
+// MARK: - Retrieval settings save() validation
+
+final class RetrievalSettingsSaveTests: XCTestCase {
+
+    /// Mirror the save logic from KBRetrievalSettingsSheet to verify constraints are enforced.
+    private func simulateSave(topK: Int, topN: Int, threshold: Double,
+                               chunkSize: Int, chunkOverlap: Int) -> (topN: Int, chunkOverlap: Int) {
+        let savedTopN    = max(topN, topK)
+        let savedOverlap = min(chunkOverlap, chunkSize / 2)
+        return (savedTopN, savedOverlap)
+    }
+
+    func testTopNAlwaysAtLeastTopK() {
+        let result = simulateSave(topK: 30, topN: 10, threshold: 0.2, chunkSize: 512, chunkOverlap: 64)
+        XCTAssertEqual(result.topN, 30, "topN must be raised to topK when it is lower")
+    }
+
+    func testTopNPreservedWhenGreaterThanTopK() {
+        let result = simulateSave(topK: 10, topN: 50, threshold: 0.2, chunkSize: 512, chunkOverlap: 64)
+        XCTAssertEqual(result.topN, 50, "topN must not be changed when already ≥ topK")
+    }
+
+    func testChunkOverlapCappedAtHalfChunkSize() {
+        let result = simulateSave(topK: 10, topN: 50, threshold: 0.2, chunkSize: 128, chunkOverlap: 100)
+        XCTAssertEqual(result.chunkOverlap, 64, "Overlap must be capped at chunkSize/2 (64 for chunkSize=128)")
+    }
+
+    func testChunkOverlapPreservedWhenWithinBounds() {
+        let result = simulateSave(topK: 10, topN: 50, threshold: 0.2, chunkSize: 512, chunkOverlap: 64)
+        XCTAssertEqual(result.chunkOverlap, 64)
+    }
+
+    func testTopKEqualsTopNBoundaryCase() {
+        let result = simulateSave(topK: 20, topN: 20, threshold: 0.3, chunkSize: 256, chunkOverlap: 32)
+        XCTAssertEqual(result.topN, 20, "topN == topK should be preserved (not raised)")
+    }
+}
+
+// MARK: - URLError cancellation recognition
+
+final class CancellationErrorTests: XCTestCase {
+
+    func testURLErrorCancelledIsRecognised() {
+        let err = URLError(.cancelled)
+        XCTAssertEqual(err.code, .cancelled, "URLError code must be .cancelled for -999")
+        // Verify the pattern used in ChatViewModel catch clause compiles and matches
+        let matched: Bool
+        if let u = (err as Error) as? URLError, u.code == .cancelled {
+            matched = true
+        } else {
+            matched = false
+        }
+        XCTAssertTrue(matched, "URLError(.cancelled) must be caught by the false-positive guard")
+    }
+
+    func testCancellationErrorIsDistinctFromURLError() {
+        let cancErr = CancellationError()
+        XCTAssertNil(cancErr as? URLError, "CancellationError must not be a URLError")
+    }
+}

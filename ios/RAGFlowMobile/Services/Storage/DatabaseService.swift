@@ -253,6 +253,10 @@ final class DatabaseService {
         }
     }
 
+    func book(id: String) throws -> Book? {
+        try dbQueue.read { db in try Book.fetchOne(db, key: id) }
+    }
+
     func deleteBook(_ id: String) throws {
         try dbQueue.write { db in
             let chunkIds = try String.fetchAll(db, sql: "SELECT id FROM chunks WHERE bookId = ?", arguments: [id])
@@ -356,6 +360,21 @@ final class DatabaseService {
     }
 
     // MARK: - Chat Sessions
+
+    func session(id: String) throws -> ChatSession? {
+        try dbQueue.read { db in
+            let rows = try Row.fetchAll(db, sql: "SELECT * FROM chat_sessions WHERE id = ?", arguments: [id])
+            return rows.first.map { row in
+                ChatSession(id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"])
+            }
+        }
+    }
+
+    func messageExists(id: String) -> Bool {
+        (try? dbQueue.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM messages WHERE id = ?", arguments: [id]) ?? 0
+        }) ?? 0 > 0
+    }
 
     func allSessions(kbId: String) throws -> [ChatSession] {
         try dbQueue.read { db in

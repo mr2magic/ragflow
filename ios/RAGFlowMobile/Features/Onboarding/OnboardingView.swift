@@ -167,11 +167,13 @@ struct OnboardingView: View {
     var body: some View {
         ZStack(alignment: .top) {
             // Paged content
+            // safeAreaInset(edge: .bottom) on the outer ZStack already adjusts the
+            // safe area for the bottom controls, so each page's ScrollView naturally
+            // avoids the overlap without needing a hardcoded magic-number padding.
             TabView(selection: $currentPage) {
                 ForEach(onboardingPages.indices, id: \.self) { i in
                     OnboardingPageView(page: onboardingPages[i])
                         .tag(i)
-                        .padding(.bottom, 140) // clear bottom controls
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))

@@ -10,77 +10,72 @@
 		01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */; };
 		08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */; };
 		09F28133991CEEF0C0B06CE4 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0C19C6F20A9821E0BA0BCF /* GRDB */; };
-		119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439D4390906542F1801126AF /* SharedViews.swift */; };
+		159EBA8AE1B10F091B40A009 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD84034AFBC1CE9BE46AFAB1 /* SpotlightIndexer.swift */; };
 		25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */; };
 		266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */; };
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
 		31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */; };
+		37390FFA35AA3A4A3966C160 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 950FA6A816B52A68ED5B96AB /* CloudKit.framework */; };
 		3ACFADDE3F0308118931DB74 /* RAGFlowMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */; };
 		3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23157B24B0E2E44B3978039A /* OfficeParser.swift */; };
 		3BB4B0D84C8D8D5FB9744A03 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */; };
 		3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2403241BC27588A9D3E14398 /* ConversationsListView.swift */; };
 		40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */; };
+		44BF1741739DCF75E61F62B5 /* FocusFilterIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A12DA7E1E16533C00753133 /* FocusFilterIntent.swift */; };
+		456BAB32937D3EDFA5998A2F /* VisionOCRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35CF9C30EF1F09D4197C4BD9 /* VisionOCRParser.swift */; };
 		47544318EE96330B0C7905E9 /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8308457EC93E4AE662E21429 /* Chunk.swift */; };
+		47E8C7D1D261DF2494958731 /* CoreML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 300EC9F0504FB9A70B114212 /* CoreML.framework */; };
 		4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */; };
 		4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AA166907EB447DD28FB0C6 /* Workflow.swift */; };
+		511D33480BBA054084C3BD18 /* IndexingActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A65A1CE0AD6395FFDF7969 /* IndexingActivityAttributes.swift */; };
+		57AAE3086287F7E7E7423B24 /* CloudKitSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86851C5AAD068FFBE951683A /* CloudKitSyncService.swift */; };
 		58285D7E4CB3772FE727B015 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 0AC8249A1B33591889FEDC98 /* Zip */; };
 		59C9F169117898565EE6A2FB /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */; };
 		5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */; };
+		5CA10CDE2A52B2766A45952F /* AppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972D2FCF7944353E5066F615 /* AppEntities.swift */; };
 		5ECDA6B86E3323BA65006FE9 /* EMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128C8C2964AF5134AA52824 /* EMLParser.swift */; };
 		5FD4846C607EE5C03326953F /* WorkflowRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */; };
 		60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD8061DB27675BF03BF9AE6A /* OllamaService.swift */; };
 		65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */; };
+		6768F5EE80AC1D477757FF12 /* WorkflowActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E345372ED09AECC15C3CCA70 /* WorkflowActivityAttributes.swift */; };
 		69AA751EA0AA6A888F51D90F /* KnowledgeBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */; };
 		6E7131165A087613B0E74BCF /* ToolService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCD7F43E645413DA3A8D513 /* ToolService.swift */; };
 		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
+		74EB4ACE4DD58465CCEE452C /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */; };
 		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
 		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
+		7B4CAF19114DA7822A23BD0D /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */; };
+		7DAEC21CD27489924F183F06 /* CoreMLEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9872806CA4D6E645B636DF75 /* CoreMLEmbeddingService.swift */; };
 		80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */; };
+		88C7CBCA080801E02D4FA3D5 /* DocumentCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A0D3835F9017CA9F6469E7 /* DocumentCameraView.swift */; };
 		891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5320AF4F645CAD74CA8203C8 /* WorkflowTemplate.swift */; };
 		8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */; };
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
-		A2B3C4D5E6F7A8B9C0D1E2F3 /* KBRetrievalSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
-		AA0002000000000000000001 /* AppEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* AppEntities.swift */; };
-		AA0002000000000000000002 /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000002 /* RAGFlowIntents.swift */; };
-		AA0002000000000000000003 /* FocusFilterIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000003 /* FocusFilterIntent.swift */; };
-		AA0002000000000000000004 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000004 /* SpotlightIndexer.swift */; };
-		AA0002000000000000000005 /* IndexingActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000005 /* IndexingActivityAttributes.swift */; };
-		AA0002000000000000000006 /* WorkflowActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000006 /* WorkflowActivityAttributes.swift */; };
-		AA0002000000000000000007 /* VisionOCRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000007 /* VisionOCRParser.swift */; };
-		AA0002000000000000000008 /* DocumentCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000008 /* DocumentCameraView.swift */; };
-		AA0002000000000000000009 /* SharedGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000009 /* SharedGroupDefaults.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
+		AFCEF03F70E19376BD2F510F /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B497537E20C04D181D22A226 /* RAGFlowIntents.swift */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
 		BB49EC71FD454D8B5C593400 /* BackgroundTaskCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */; };
-		C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */; };
 		C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */; };
+		C961322AEF6B7B26F4F21D4F /* PendingImportProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC34DFB63CDDA79C37409BA0 /* PendingImportProcessor.swift */; };
 		CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */; };
 		CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8585645296370F3070DDE58 /* WorkflowStep.swift */; };
 		CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */; };
 		CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */; };
-		CM0002000000000000000001 /* CoreMLEmbeddingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CM0001000000000000000001 /* CoreMLEmbeddingService.swift */; };
 		D11228F73D903065292642F2 /* Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3565928B2FB15DD81AAF0 /* Book.swift */; };
-		D20000000000000000000001 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10000000000000000000001 /* ShareViewController.swift */; };
 		D463F6B5908714F9DE6582F2 /* WorkflowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2155FC378724F13FD87256 /* WorkflowListView.swift */; };
 		D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD98A707C4F55AF2534157A /* PDFParser.swift */; };
 		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
-		DEFB982C2F911920007C8FE7 /* RAGFlowShareExtension.appex in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEFB98292F911825007C8FE7 /* RAGFlowShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DEFB982D2F911920007C8FE7 /* RAGFlowWidget.appex in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEFB982A2F911825007C8FE7 /* RAGFlowWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E20000000000000000000001 /* RAGFlowWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000001 /* RAGFlowWidgetBundle.swift */; };
-		E20000000000000000000002 /* KBStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000002 /* KBStatusWidget.swift */; };
-		E20000000000000000000003 /* RecentChatWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000003 /* RecentChatWidget.swift */; };
-		E20000000000000000000004 /* QuickQueryWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10000000000000000000004 /* QuickQueryWidget.swift */; };
 		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
-		EE0001110000000000000001 /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000002 /* ExportBundle.swift */; };
-		EE0001110000000000000003 /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0001110000000000000004 /* ExportImportService.swift */; };
+		EAE2889CD72E6B880892D299 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0C200AFF79243F9927DF9E /* SharedViews.swift */; };
+		EC8AE51A1EA5904E4213D5ED /* SharedGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE525604A0FFE91815BCEE5D /* SharedGroupDefaults.swift */; };
+		F1983D9F52E47F0AEE4A24E4 /* KBRetrievalSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
 		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
-		PI0002000000000000000001 /* PendingImportProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PI0001000000000000000001 /* PendingImportProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,42 +86,7 @@
 			remoteGlobalIDString = EF1F4525075086C1DC62636B;
 			remoteInfo = RAGFlowMobile;
 		};
-		C1D2E3F4A5B60007C2D3E4F5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = EF1F4525075086C1DC62636B;
-			remoteInfo = RAGFlowMobile;
-		};
-		D60000000000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D50000000000000000000001;
-			remoteInfo = RAGFlowShareExtension;
-		};
-		E60000000000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EE503E073DF6964110FB5CB1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E50000000000000000000001;
-			remoteInfo = RAGFlowWidget;
-		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		DEFB982B2F911874007C8FE7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				DEFB982C2F911920007C8FE7 /* RAGFlowShareExtension.appex in CopyFiles */,
-				DEFB982D2F911920007C8FE7 /* RAGFlowWidget.appex in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		01701B3B31CAAC7EADABC398 /* KnowledgeBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeBase.swift; sourceTree = "<group>"; };
@@ -142,68 +102,63 @@
 		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
 		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		300EC9F0504FB9A70B114212 /* CoreML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreML.framework; path = System/Library/Frameworks/CoreML.framework; sourceTree = SDKROOT; };
 		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
+		35CF9C30EF1F09D4197C4BD9 /* VisionOCRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRParser.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
+		38A0D3835F9017CA9F6469E7 /* DocumentCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentCameraView.swift; sourceTree = "<group>"; };
 		42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
-		439D4390906542F1801126AF /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
-		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RAGFlowMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A27F1610A2ABC62F955AD97 /* WorkflowRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowRunner.swift; sourceTree = "<group>"; };
 		4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		5157791CE99C2D55ABEB8A40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
 		5320AF4F645CAD74CA8203C8 /* WorkflowTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowTemplate.swift; sourceTree = "<group>"; };
 		591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
+		5A12DA7E1E16533C00753133 /* FocusFilterIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusFilterIntent.swift; sourceTree = "<group>"; };
 		6397731B96AE41220DF4ADE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6551831005CFD714D972DFE6 /* RAGFlowMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowMobile.entitlements; sourceTree = "<group>"; };
 		69C03803E49D972603BC3295 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		6B2155FC378724F13FD87256 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
 		6C439D2675FE12994A8429DF /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
 		77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
 		8308457EC93E4AE662E21429 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
 		84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskCoordinator.swift; sourceTree = "<group>"; };
+		86851C5AAD068FFBE951683A /* CloudKitSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitSyncService.swift; sourceTree = "<group>"; };
 		8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneKBListView.swift; sourceTree = "<group>"; };
 		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9128C8C2964AF5134AA52824 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		950FA6A816B52A68ED5B96AB /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		972D2FCF7944353E5066F615 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
+		9872806CA4D6E645B636DF75 /* CoreMLEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLEmbeddingService.swift; sourceTree = "<group>"; };
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000001 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
-		AA0001000000000000000002 /* RAGFlowIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowIntents.swift; sourceTree = "<group>"; };
-		AA0001000000000000000003 /* FocusFilterIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusFilterIntent.swift; sourceTree = "<group>"; };
-		AA0001000000000000000004 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
-		AA0001000000000000000005 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
-		AA0001000000000000000006 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
-		AA0001000000000000000007 /* VisionOCRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRParser.swift; sourceTree = "<group>"; };
-		AA0001000000000000000008 /* DocumentCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentCameraView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000009 /* SharedGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupDefaults.swift; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
-		B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
+		AE525604A0FFE91815BCEE5D /* SharedGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupDefaults.swift; sourceTree = "<group>"; };
+		B497537E20C04D181D22A226 /* RAGFlowIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowIntents.swift; sourceTree = "<group>"; };
+		B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
 		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
-		C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileUITests.swift; sourceTree = "<group>"; };
-		C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RAGFlowMobileUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
 		CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
 		CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
-		CM0001000000000000000001 /* CoreMLEmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLEmbeddingService.swift; sourceTree = "<group>"; };
-		D10000000000000000000001 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
 		DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDetailView.swift; sourceTree = "<group>"; };
+		DC34DFB63CDDA79C37409BA0 /* PendingImportProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingImportProcessor.swift; sourceTree = "<group>"; };
+		DD0C200AFF79243F9927DF9E /* SharedViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedViews.swift; sourceTree = "<group>"; };
 		DD8061DB27675BF03BF9AE6A /* OllamaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaService.swift; sourceTree = "<group>"; };
-		DEFB98292F911825007C8FE7 /* RAGFlowShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RAGFlowShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		DEFB982A2F911825007C8FE7 /* RAGFlowWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RAGFlowWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		E10000000000000000000001 /* RAGFlowWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowWidgetBundle.swift; sourceTree = "<group>"; };
-		E10000000000000000000002 /* KBStatusWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBStatusWidget.swift; sourceTree = "<group>"; };
-		E10000000000000000000003 /* RecentChatWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentChatWidget.swift; sourceTree = "<group>"; };
-		E10000000000000000000004 /* QuickQueryWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickQueryWidget.swift; sourceTree = "<group>"; };
-		EE0001110000000000000002 /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
-		EE0001110000000000000004 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
+		DD84034AFBC1CE9BE46AFAB1 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
+		E345372ED09AECC15C3CCA70 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
+		F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
+		F4A65A1CE0AD6395FFDF7969 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		PI0001000000000000000001 /* PendingImportProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingImportProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,26 +171,33 @@
 				58285D7E4CB3772FE727B015 /* Zip in Frameworks */,
 				AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */,
 				5BFB8E74E8FB00F83AACAF3A /* Accelerate.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D40000000000000000000003 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E40000000000000000000003 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				37390FFA35AA3A4A3966C160 /* CloudKit.framework in Frameworks */,
+				47E8C7D1D261DF2494958731 /* CoreML.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		13F74B3288CE861004AEA4F9 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				972D2FCF7944353E5066F615 /* AppEntities.swift */,
+				5A12DA7E1E16533C00753133 /* FocusFilterIntent.swift */,
+				B497537E20C04D181D22A226 /* RAGFlowIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		16095CB1EC327D1C600843C0 /* ExportImport */ = {
+			isa = PBXGroup;
+			children = (
+				F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */,
+				F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */,
+			);
+			path = ExportImport;
+			sourceTree = "<group>";
+		};
 		21633A9BD385C0B5E100FDD2 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -243,7 +205,7 @@
 				84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */,
 				1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */,
 				361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */,
-				439D4390906542F1801126AF /* SharedViews.swift */,
+				DD0C200AFF79243F9927DF9E /* SharedViews.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -252,15 +214,23 @@
 			isa = PBXGroup;
 			children = (
 				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
+				9872806CA4D6E645B636DF75 /* CoreMLEmbeddingService.swift */,
 				AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */,
 				9128C8C2964AF5134AA52824 /* EMLParser.swift */,
 				23157B24B0E2E44B3978039A /* OfficeParser.swift */,
 				0CD98A707C4F55AF2534157A /* PDFParser.swift */,
 				C8CED5934D63CB02BDF103DA /* RAGService.swift */,
-				AA0001000000000000000007 /* VisionOCRParser.swift */,
-				CM0001000000000000000001 /* CoreMLEmbeddingService.swift */,
+				35CF9C30EF1F09D4197C4BD9 /* VisionOCRParser.swift */,
 			);
 			path = RAG;
+			sourceTree = "<group>";
+		};
+		3670A00B9329B57656694BDF /* Spotlight */ = {
+			isa = PBXGroup;
+			children = (
+				DD84034AFBC1CE9BE46AFAB1 /* SpotlightIndexer.swift */,
+			);
+			path = Spotlight;
 			sourceTree = "<group>";
 		};
 		37A4DB79F7B676E037C923F5 /* Workflows */ = {
@@ -300,8 +270,8 @@
 				DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */,
 				0E4AF3A1B1DD3779B6CD06F4 /* KBListView.swift */,
 				10A987FFDC0D12B0D95E105D /* KBListViewModel.swift */,
+				B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */,
 				8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */,
-				B3C4D5E6F7A8B9C0D1E2F3A4 /* KBRetrievalSettingsSheet.swift */,
 			);
 			path = KB;
 			sourceTree = "<group>";
@@ -311,9 +281,6 @@
 			children = (
 				8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */,
 				45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */,
-				C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */,
-				DEFB98292F911825007C8FE7 /* RAGFlowShareExtension.appex */,
-				DEFB982A2F911825007C8FE7 /* RAGFlowWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -323,9 +290,6 @@
 			children = (
 				90FC790467F4D05481B78B80 /* RAGFlowMobile */,
 				CDEB0C38B1C841D81EB028EF /* RAGFlowMobileTests */,
-				C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */,
-				D00000000000000000000001 /* RAGFlowShareExtension */,
-				E00000000000000000000001 /* RAGFlowWidget */,
 				CF26EB3B52F9ADE4ED6271A9 /* Frameworks */,
 				44D8A205BEA0E8EA70D43C86 /* Products */,
 			);
@@ -334,7 +298,7 @@
 		4F4C99203F3F22E475F4DDB9 /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000008 /* DocumentCameraView.swift */,
+				38A0D3835F9017CA9F6469E7 /* DocumentCameraView.swift */,
 				42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */,
 				9353E6D15D48987663551AC9 /* LibraryViewModel.swift */,
 			);
@@ -352,6 +316,7 @@
 		90FC790467F4D05481B78B80 /* RAGFlowMobile */ = {
 			isa = PBXGroup;
 			children = (
+				6551831005CFD714D972DFE6 /* RAGFlowMobile.entitlements */,
 				21633A9BD385C0B5E100FDD2 /* App */,
 				C171203E89874902CCACD3F1 /* Features */,
 				C8001C6590A69D2E31D56947 /* Models */,
@@ -361,29 +326,11 @@
 			path = RAGFlowMobile;
 			sourceTree = "<group>";
 		};
-		AA0003000000000000000001 /* Intents */ = {
+		B23FD0D4FD825834D4F91AD0 /* LiveActivity */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000001 /* AppEntities.swift */,
-				AA0001000000000000000003 /* FocusFilterIntent.swift */,
-				AA0001000000000000000002 /* RAGFlowIntents.swift */,
-			);
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		AA0003000000000000000002 /* Spotlight */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000004 /* SpotlightIndexer.swift */,
-			);
-			path = Spotlight;
-			sourceTree = "<group>";
-		};
-		AA0003000000000000000003 /* LiveActivity */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000005 /* IndexingActivityAttributes.swift */,
-				AA0001000000000000000006 /* WorkflowActivityAttributes.swift */,
+				F4A65A1CE0AD6395FFDF7969 /* IndexingActivityAttributes.swift */,
+				E345372ED09AECC15C3CCA70 /* WorkflowActivityAttributes.swift */,
 			);
 			path = LiveActivity;
 			sourceTree = "<group>";
@@ -399,14 +346,6 @@
 				37A4DB79F7B676E037C923F5 /* Workflows */,
 			);
 			path = Features;
-			sourceTree = "<group>";
-		};
-		C1D2E3F4A5B60004C2D3E4F5 /* RAGFlowMobileUITests */ = {
-			isa = PBXGroup;
-			children = (
-				C1D2E3F4A5B60001C2D3E4F5 /* RAGFlowMobileUITests.swift */,
-			);
-			path = RAGFlowMobileUITests;
 			sourceTree = "<group>";
 		};
 		C4EFEC20BE53B2EF79FE9A3C /* Settings */ = {
@@ -456,39 +395,30 @@
 			isa = PBXGroup;
 			children = (
 				0F4DCDE93D1BD24EDF48E0C2 /* Accelerate.framework */,
+				950FA6A816B52A68ED5B96AB /* CloudKit.framework */,
+				300EC9F0504FB9A70B114212 /* CoreML.framework */,
 				C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		D00000000000000000000001 /* RAGFlowShareExtension */ = {
-			isa = PBXGroup;
-			children = (
-				D10000000000000000000001 /* ShareViewController.swift */,
-			);
-			path = RAGFlowShareExtension;
 			sourceTree = "<group>";
 		};
 		D3EBF1A3274E654C8B60ABBC /* Storage */ = {
 			isa = PBXGroup;
 			children = (
 				591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */,
+				DC34DFB63CDDA79C37409BA0 /* PendingImportProcessor.swift */,
 				C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */,
-				AA0001000000000000000009 /* SharedGroupDefaults.swift */,
-				PI0001000000000000000001 /* PendingImportProcessor.swift */,
+				AE525604A0FFE91815BCEE5D /* SharedGroupDefaults.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
 		};
-		E00000000000000000000001 /* RAGFlowWidget */ = {
+		DE42EF509D2803F4501F9560 /* Sync */ = {
 			isa = PBXGroup;
 			children = (
-				E10000000000000000000001 /* RAGFlowWidgetBundle.swift */,
-				E10000000000000000000002 /* KBStatusWidget.swift */,
-				E10000000000000000000003 /* RecentChatWidget.swift */,
-				E10000000000000000000004 /* QuickQueryWidget.swift */,
+				86851C5AAD068FFBE951683A /* CloudKitSyncService.swift */,
 			);
-			path = RAGFlowWidget;
+			path = Sync;
 			sourceTree = "<group>";
 		};
 		E0A29533DCA640BB60C1B658 /* Resources */ = {
@@ -501,26 +431,18 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		EE0001110000000000000005 /* ExportImport */ = {
-			isa = PBXGroup;
-			children = (
-				EE0001110000000000000002 /* ExportBundle.swift */,
-				EE0001110000000000000004 /* ExportImportService.swift */,
-			);
-			path = ExportImport;
-			sourceTree = "<group>";
-		};
 		F95BA93CBD769006D0A43843 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				3B19236A7AA25378849B5D61 /* Agent */,
-				EE0001110000000000000005 /* ExportImport */,
-				AA0003000000000000000001 /* Intents */,
-				AA0003000000000000000003 /* LiveActivity */,
+				16095CB1EC327D1C600843C0 /* ExportImport */,
+				13F74B3288CE861004AEA4F9 /* Intents */,
+				B23FD0D4FD825834D4F91AD0 /* LiveActivity */,
 				C7A241C531FB4C21F1691873 /* LLM */,
 				23ABCE1D0A3FA9E6FC7C9F38 /* RAG */,
-				AA0003000000000000000002 /* Spotlight */,
+				3670A00B9329B57656694BDF /* Spotlight */,
 				D3EBF1A3274E654C8B60ABBC /* Storage */,
+				DE42EF509D2803F4501F9560 /* Sync */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -546,56 +468,6 @@
 			productReference = 45DCE92070A4D6223E542571 /* RAGFlowMobileTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */;
-			buildPhases = (
-				C1D2E3F4A5B60005C2D3E4F5 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */,
-			);
-			name = RAGFlowMobileUITests;
-			productName = RAGFlowMobileUITests;
-			productReference = C1D2E3F4A5B60003C2D3E4F5 /* RAGFlowMobileUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
-		D50000000000000000000001 /* RAGFlowShareExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D90000000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowShareExtension" */;
-			buildPhases = (
-				D40000000000000000000001 /* Sources */,
-				D40000000000000000000002 /* Resources */,
-				D40000000000000000000003 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = RAGFlowShareExtension;
-			productName = RAGFlowShareExtension;
-			productReference = DEFB98292F911825007C8FE7 /* RAGFlowShareExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		E50000000000000000000001 /* RAGFlowWidget */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E90000000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowWidget" */;
-			buildPhases = (
-				E40000000000000000000001 /* Sources */,
-				E40000000000000000000002 /* Resources */,
-				E40000000000000000000003 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = RAGFlowWidget;
-			productName = RAGFlowWidget;
-			productReference = DEFB982A2F911825007C8FE7 /* RAGFlowWidget.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		EF1F4525075086C1DC62636B /* RAGFlowMobile */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 48375E911B8F46B7CEAEE239 /* Build configuration list for PBXNativeTarget "RAGFlowMobile" */;
@@ -603,13 +475,10 @@
 				0D2229D2E600C81D1C2745AA /* Sources */,
 				BB1DACC97E7DF34BEA54F903 /* Resources */,
 				1B2C0EEA6ED9D126942376C1 /* Frameworks */,
-				DEFB982B2F911874007C8FE7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D70000000000000000000001 /* PBXTargetDependency */,
-				E70000000000000000000001 /* PBXTargetDependency */,
 			);
 			name = RAGFlowMobile;
 			packageProductDependencies = (
@@ -628,11 +497,10 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					C1D2E3F4A5B60006C2D3E4F5 = {
+					EF1F4525075086C1DC62636B = {
 						ProvisioningStyle = Automatic;
-						TestTargetID = EF1F4525075086C1DC62636B;
 					};
 				};
 			};
@@ -657,9 +525,6 @@
 			targets = (
 				EF1F4525075086C1DC62636B /* RAGFlowMobile */,
 				354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */,
-				C1D2E3F4A5B60006C2D3E4F5 /* RAGFlowMobileUITests */,
-				D50000000000000000000001 /* RAGFlowShareExtension */,
-				E50000000000000000000001 /* RAGFlowWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -674,20 +539,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D40000000000000000000002 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E40000000000000000000002 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -695,6 +546,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CA10CDE2A52B2766A45952F /* AppEntities.swift in Sources */,
 				CC24C77891D3FC7EA980A032 /* AppState.swift in Sources */,
 				BB49EC71FD454D8B5C593400 /* BackgroundTaskCoordinator.swift in Sources */,
 				D11228F73D903065292642F2 /* Book.swift in Sources */,
@@ -704,23 +556,26 @@
 				47544318EE96330B0C7905E9 /* Chunk.swift in Sources */,
 				CBBA4277D917F3253B83E51C /* Chunker.swift in Sources */,
 				01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */,
+				57AAE3086287F7E7E7423B24 /* CloudKitSyncService.swift in Sources */,
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
 				3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */,
+				7DAEC21CD27489924F183F06 /* CoreMLEmbeddingService.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
-				EE0001110000000000000001 /* ExportBundle.swift in Sources */,
-				EE0001110000000000000003 /* ExportImportService.swift in Sources */,
+				88C7CBCA080801E02D4FA3D5 /* DocumentCameraView.swift in Sources */,
 				5ECDA6B86E3323BA65006FE9 /* EMLParser.swift in Sources */,
 				4EC798125207CF2377A04D4A /* EmbeddingService.swift in Sources */,
+				74EB4ACE4DD58465CCEE452C /* ExportBundle.swift in Sources */,
+				7B4CAF19114DA7822A23BD0D /* ExportImportService.swift in Sources */,
+				44BF1741739DCF75E61F62B5 /* FocusFilterIntent.swift in Sources */,
+				511D33480BBA054084C3BD18 /* IndexingActivityAttributes.swift in Sources */,
 				9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */,
 				CF261B46A58F03C818F71F79 /* KBListView.swift in Sources */,
 				08CDF2B20D6A3ACA25B320DE /* KBListViewModel.swift in Sources */,
-				A2B3C4D5E6F7A8B9C0D1E2F3 /* KBRetrievalSettingsSheet.swift in Sources */,
+				F1983D9F52E47F0AEE4A24E4 /* KBRetrievalSettingsSheet.swift in Sources */,
 				69AA751EA0AA6A888F51D90F /* KnowledgeBase.swift in Sources */,
 				8AEFA6098D2002B9B639FE79 /* LLMConfig.swift in Sources */,
 				F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */,
 				FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */,
-				CM0002000000000000000001 /* CoreMLEmbeddingService.swift in Sources */,
-				PI0002000000000000000001 /* PendingImportProcessor.swift in Sources */,
 				F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */,
 				DC995B82EC08C313D958A065 /* Message.swift in Sources */,
 				3B6C0B4AB3EE5F7F8E03032C /* OfficeParser.swift in Sources */,
@@ -729,14 +584,20 @@
 				A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */,
 				59C9F169117898565EE6A2FB /* OpenAIService.swift in Sources */,
 				D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */,
+				C961322AEF6B7B26F4F21D4F /* PendingImportProcessor.swift in Sources */,
 				C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */,
+				AFCEF03F70E19376BD2F510F /* RAGFlowIntents.swift in Sources */,
 				40B691EEB1544F1F4E23B81C /* RAGFlowMobileApp.swift in Sources */,
-				119C9D202A1C4BD4AFE319C0 /* SharedViews.swift in Sources */,
 				98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */,
 				F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */,
 				65CB3EA661ED0B8312B9A10A /* SettingsView.swift in Sources */,
+				EC8AE51A1EA5904E4213D5ED /* SharedGroupDefaults.swift in Sources */,
+				EAE2889CD72E6B880892D299 /* SharedViews.swift in Sources */,
+				159EBA8AE1B10F091B40A009 /* SpotlightIndexer.swift in Sources */,
 				6E7131165A087613B0E74BCF /* ToolService.swift in Sources */,
+				456BAB32937D3EDFA5998A2F /* VisionOCRParser.swift in Sources */,
 				4FD71F2EF5DD0257BD00645A /* Workflow.swift in Sources */,
+				6768F5EE80AC1D477757FF12 /* WorkflowActivityAttributes.swift in Sources */,
 				266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */,
 				80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */,
 				D463F6B5908714F9DE6582F2 /* WorkflowListView.swift in Sources */,
@@ -744,15 +605,6 @@
 				5FD4846C607EE5C03326953F /* WorkflowRunner.swift in Sources */,
 				CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */,
 				891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */,
-				AA0002000000000000000001 /* AppEntities.swift in Sources */,
-				AA0002000000000000000002 /* RAGFlowIntents.swift in Sources */,
-				AA0002000000000000000003 /* FocusFilterIntent.swift in Sources */,
-				AA0002000000000000000004 /* SpotlightIndexer.swift in Sources */,
-				AA0002000000000000000005 /* IndexingActivityAttributes.swift in Sources */,
-				AA0002000000000000000006 /* WorkflowActivityAttributes.swift in Sources */,
-				AA0002000000000000000007 /* VisionOCRParser.swift in Sources */,
-				AA0002000000000000000008 /* DocumentCameraView.swift in Sources */,
-				AA0002000000000000000009 /* SharedGroupDefaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -764,33 +616,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C1D2E3F4A5B60005C2D3E4F5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C1D2E3F4A5B60002C2D3E4F5 /* RAGFlowMobileUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D40000000000000000000001 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D20000000000000000000001 /* ShareViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E40000000000000000000001 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E20000000000000000000001 /* RAGFlowWidgetBundle.swift in Sources */,
-				E20000000000000000000002 /* KBStatusWidget.swift in Sources */,
-				E20000000000000000000003 /* RecentChatWidget.swift in Sources */,
-				E20000000000000000000004 /* QuickQueryWidget.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -799,21 +624,6 @@
 			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
 			targetProxy = 9A76D5BD869BC86746DB7CA1 /* PBXContainerItemProxy */;
 		};
-		C1D2E3F4A5B60008C2D3E4F5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = EF1F4525075086C1DC62636B /* RAGFlowMobile */;
-			targetProxy = C1D2E3F4A5B60007C2D3E4F5 /* PBXContainerItemProxy */;
-		};
-		D70000000000000000000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D50000000000000000000001 /* RAGFlowShareExtension */;
-			targetProxy = D60000000000000000000001 /* PBXContainerItemProxy */;
-		};
-		E70000000000000000000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E50000000000000000000001 /* RAGFlowWidget */;
-			targetProxy = E60000000000000000000001 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -821,8 +631,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZWA58ES627;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -841,8 +649,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = RAGFlowMobile/RAGFlowMobile.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
@@ -852,7 +659,6 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.9;
@@ -864,8 +670,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZWA58ES627;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -884,7 +688,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -918,7 +721,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -939,7 +741,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -950,7 +751,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -984,7 +784,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -998,114 +797,9 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		C1D2E3F4A5B6000AC2D3E4F5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZWA58ES627;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RAGFlowMobile;
-			};
-			name = Debug;
-		};
-		C1D2E3F4A5B6000BC2D3E4F5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = ZWA58ES627;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.RAGFlowMobileUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = RAGFlowMobile;
-			};
-			name = Release;
-		};
-		D80000000000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile.shareextension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D80000000000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowShareExtension/RAGFlowShareExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				INFOPLIST_FILE = RAGFlowShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile.shareextension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		E80000000000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile.widget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E80000000000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = RAGFlowWidget/RAGFlowWidget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = LVK5C2V4J8;
-				INFOPLIST_FILE = RAGFlowWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile.widget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1113,8 +807,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = RAGFlowMobile/RAGFlowMobile.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
@@ -1124,7 +817,6 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.9;
@@ -1153,15 +845,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		C1D2E3F4A5B60009C2D3E4F5 /* Build configuration list for PBXNativeTarget "RAGFlowMobileUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C1D2E3F4A5B6000AC2D3E4F5 /* Debug */,
-				C1D2E3F4A5B6000BC2D3E4F5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
 		C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1170,24 +853,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
-		};
-		D90000000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowShareExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D80000000000000000000001 /* Debug */,
-				D80000000000000000000002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E90000000000000000000001 /* Build configuration list for PBXNativeTarget "RAGFlowWidget" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E80000000000000000000001 /* Debug */,
-				E80000000000000000000002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

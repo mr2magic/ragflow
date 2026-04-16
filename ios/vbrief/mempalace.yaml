@@ -1,0 +1,55 @@
+wing: ios
+rooms:
+- name: ragflowmobileuitests
+  description: Files from RAGFlowMobileUITests/
+  keywords:
+  - ragflowmobileuitests
+  - ragflowmobileuitests
+- name: testdocuments
+  description: Files from TestDocuments/
+  keywords:
+  - testdocuments
+  - testdocuments
+- name: ragflowmobile
+  description: Files from RAGFlowMobile/
+  keywords:
+  - ragflowmobile
+  - ragflowmobile
+- name: ragflowmobile.xcodeproj
+  description: Files from RAGFlowMobile.xcodeproj/
+  keywords:
+  - ragflowmobile.xcodeproj
+  - ragflowmobile.xcodeproj
+- name: vbrief
+  description: Files from vbrief/
+  keywords:
+  - vbrief
+  - vbrief
+- name: ragflowshareextension
+  description: Files from RAGFlowShareExtension/
+  keywords:
+  - ragflowshareextension
+  - ragflowshareextension
+- name: ragflowwidget
+  description: Files from RAGFlowWidget/
+  keywords:
+  - ragflowwidget
+  - ragflowwidget
+- name: ragflowmobiletests
+  description: Files from RAGFlowMobileTests/
+  keywords:
+  - ragflowmobiletests
+  - ragflowmobiletests
+- name: deft
+  description: Files from deft/
+  keywords:
+  - deft
+  - deft
+- name: backend
+  description: Files from Models/
+  keywords:
+  - backend
+  - models
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

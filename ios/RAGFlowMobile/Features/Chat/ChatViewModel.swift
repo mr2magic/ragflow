@@ -165,6 +165,17 @@ final class ChatViewModel: ObservableObject {
                 } else {
                     try? db.saveMessages([assistantMsg], sessionId: session.id, kbId: kb.id)
                 }
+            } catch let urlErr as URLError where urlErr.code == .cancelled {
+                // URLSession throws .cancelled (code -999) when a Swift Task is cancelled
+                // mid-stream (e.g. user taps Stop). Treat identically to CancellationError —
+                // suppress the alert so the user doesn't see a spurious error message.
+                let assistantMsg = messages[assistantIndex]
+                if assistantMsg.content.isEmpty {
+                    messages.removeLast(2)
+                    try? db.deleteMessage(id: userMsg.id.uuidString)
+                } else {
+                    try? db.saveMessages([assistantMsg], sessionId: session.id, kbId: kb.id)
+                }
             } catch {
                 isTyping = false
                 messages[assistantIndex].content = "Error: \(error.localizedDescription)"
@@ -182,8 +193,11 @@ final class ChatViewModel: ObservableObject {
 
     /// Returns retrieved chunks and a bookId→title lookup for citation building.
     private func retrieveChunks(for query: String) async throws -> ([Chunk], [String: String]) {
-        // Pre-compute query embedding for vector search (Ollama only)
-        if settings.config.provider == .ollama {
+        // Pre-compute query embedding for vector search.
+        // Priority: on-device CoreML → Ollama (network) → none.
+        if settings.config.useOnDeviceEmbeddings && CoreMLEmbeddingService.shared.isAvailable {
+            rag.currentQueryEmbedding = try? CoreMLEmbeddingService.shared.embed(text: query)
+        } else if settings.config.provider == .ollama {
             let embService = EmbeddingService(host: settings.config.ollamaHost)
             rag.currentQueryEmbedding = try? await embService.embed(text: query)
         }

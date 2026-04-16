@@ -26,6 +26,8 @@ final class SettingsStore: ObservableObject {
         defaults.set(config.provider.rawValue, forKey: "llm_provider")
         defaults.set(config.ollamaHost, forKey: "ollama_host")
         defaults.set(config.ollamaModel, forKey: "ollama_model")
+        defaults.set(config.useOnDeviceEmbeddings, forKey: "use_on_device_embeddings")
+        defaults.set(config.useCloudKitSync, forKey: "use_cloudkit_sync")
         saveToKeychain(key: "claude_api_key", value: config.claudeApiKey)
         saveToKeychain(key: "openai_api_key", value: config.openAIApiKey)
         saveToKeychain(key: "brave_search_api_key", value: config.braveSearchApiKey)
@@ -38,6 +40,8 @@ final class SettingsStore: ObservableObject {
         let claudeKey = loadFromKeychain(key: "claude_api_key") ?? ""
         let openAIKey = loadFromKeychain(key: "openai_api_key") ?? ""
         let braveKey = loadFromKeychain(key: "brave_search_api_key") ?? ""
+        let useOnDevice = defaults.bool(forKey: "use_on_device_embeddings")
+        let useCKSync = defaults.bool(forKey: "use_cloudkit_sync")
 
         config = LLMConfig(
             provider: provider,
@@ -45,7 +49,9 @@ final class SettingsStore: ObservableObject {
             openAIApiKey: openAIKey,
             braveSearchApiKey: braveKey,
             ollamaHost: ollamaHost,
-            ollamaModel: ollamaModel
+            ollamaModel: ollamaModel,
+            useOnDeviceEmbeddings: useOnDevice,
+            useCloudKitSync: useCKSync
         )
     }
 

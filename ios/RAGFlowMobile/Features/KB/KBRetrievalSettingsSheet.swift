@@ -56,9 +56,16 @@ struct KBRetrievalSettingsSheet: View {
             Stepper(value: $topK, in: 1...100) {
                 labeledValue("Top-K (returned passages)", value: topK)
             }
-            Stepper(value: $topN, in: topK...500, step: 10) {
+            .help("Number of passages actually sent to the AI model. Lower = faster; higher = more context. RAGflow default: 10.")
+            .onChange(of: topK) { _, newK in
+                if topN < newK { topN = newK }
+            }
+
+            Stepper(value: $topN, in: max(topK, 1)...500, step: 10) {
                 labeledValue("Top-N (candidate pool)", value: topN)
             }
+            .help("Wider candidate pool scored before selecting Top-K. Must be ≥ Top-K. RAGflow default: 50.")
+
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Similarity Threshold")
@@ -69,6 +76,7 @@ struct KBRetrievalSettingsSheet: View {
                 }
                 Slider(value: $threshold, in: 0...1, step: 0.05)
                     .accessibilityLabel("Similarity threshold")
+                    .help("Minimum relevance score a passage must reach to be included. 0 = accept all candidates; 1 = exact match only. RAGflow default: 0.2.")
             }
         } header: {
             Text("Retrieval")
@@ -87,12 +95,17 @@ struct KBRetrievalSettingsSheet: View {
                     Text(method.rawValue).tag(method)
                 }
             }
+            .help("Controls how documents are split into passages. General works for most content; other methods are optimised for specific formats.")
+
             Stepper(value: $chunkSize, in: 64...2048, step: 64) {
                 labeledValue("Chunk Size (words)", value: chunkSize)
             }
+            .help("Target word count per chunk. Smaller = more precise retrieval; larger = more context per passage. Default: 512.")
+
             Stepper(value: $chunkOverlap, in: 0...min(chunkSize / 2, 256), step: 16) {
                 labeledValue("Overlap (words)", value: chunkOverlap)
             }
+            .help("Word overlap between adjacent chunks. Prevents context from being split across chunk boundaries. Default: 64.")
         } header: {
             Text("Chunking")
         } footer: {
@@ -104,10 +117,20 @@ struct KBRetrievalSettingsSheet: View {
     // MARK: - Info
 
     private var infoSection: some View {
-        Section {
+        let settings = SettingsStore.shared
+        let embeddingSource: String = {
+            if settings.config.useOnDeviceEmbeddings && CoreMLEmbeddingService.shared.isAvailable {
+                return "On-Device (MiniLM)"
+            } else if settings.config.provider == .ollama {
+                return "Ollama (network)"
+            } else {
+                return "BM25 keyword only"
+            }
+        }()
+        return Section {
             LabeledContent("Hybrid Retrieval", value: "BM25 + Vector (RRF)")
             LabeledContent("Chunking Engine", value: "Sentence-boundary (NLTokenizer)")
-            LabeledContent("Embeddings", value: "Ollama (when configured)")
+            LabeledContent("Embeddings", value: embeddingSource)
         } header: {
             Text("Pipeline")
         } footer: {
