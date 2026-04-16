@@ -107,7 +107,7 @@ When starting a new session, Claude reads this file to understand where things l
 - **Development**: `H3NBT7PUR9` (Apple Development: Dan Horn)
 - **Distribution**: `LVK5C2V4J8` (Apple Distribution: Daniel Horn) ← use this for archives
 
-NOTE: `5FLM4GQ73L` was wrong — ignore any reference to it in older notes.
+NOTE: `LVK5C2V4J8` was wrong — ignore any reference to it in older notes.
 
 ## To Archive for TestFlight
 
@@ -159,4 +159,4 @@ Then upload via Xcode Organizer (open the .xcarchive on Desktop → Distribute A
 - Spacing enum constants should be used in all new code
 - WritingToolsLimitedModifier is in SharedViews.swift (use it instead of .writingToolsBehavior directly)
 - App Group suite name: "group.com.dhorn.ragflowmobile"
-- Xcode team ID: 5FLM4GQ73L
+- Xcode team ID: LVK5C2V4J8
