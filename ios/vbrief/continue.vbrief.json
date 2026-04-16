@@ -1,62 +1,45 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-14",
+  "date": "2026-04-16",
   "status": "in_progress",
-  "phase": "brownfield improvement — 0.5.0 committed + pushed, ready to archive for TestFlight",
+  "phase": "brownfield improvement — 0.7.0 committed + pushed; project builds and archives cleanly",
 
   "completed_this_session": [
-    "Token pricing display: TokenUsage struct, ModelPricing table, ClaudeService/OpenAIService/OllamaService extract usage, Message.tokenUsage, ChatViewModel assigns after stream, ChatView renders cost chip ($0.0023 · 1.4k tokens · model-name)",
-    "iOS-native feature wave 1: 9 new files registered in project.pbxproj",
-    "AppEntities.swift: KBEntity + WorkflowEntity AppEntity types with EntityQuery",
-    "RAGFlowIntents.swift: QueryKBIntent (Siri voice query), QuickQueryIntent (Action Button), RunWorkflowIntent, ImportURLToRAGFlowIntent, RAGFlowAppShortcuts provider",
-    "FocusFilterIntent.swift: SetFocusFilterIntent hides/shows KBs per Focus mode; FocusFilterStore",
-    "SpotlightIndexer.swift: CSSearchableItem indexing for books + chunk snippets; deindex on delete",
-    "IndexingActivityAttributes.swift + IndexingActivityManager: Live Activity for import progress",
-    "WorkflowActivityAttributes.swift + WorkflowActivityManager: Live Activity for workflow step progress",
-    "WorkflowRunner.swift: wired to WorkflowActivityManager start/update/finish",
-    "VisionOCRParser.swift: on-device OCR via VNRecognizeTextRequest for images and PDFs",
-    "DocumentCameraView.swift: VNDocumentCameraViewController wrapper; OCRs pages; ingests to RAGService",
-    "SharedGroupDefaults.swift: App Group 'group.com.dhorn.ragflowmobile' for future Share Extension + Widget",
-    "LibraryView.swift: Scan Document button, drag-and-drop (.onDrop), fullScreenCover for camera",
-    "LibraryViewModel.swift: IndexingActivityManager + SpotlightIndexer + SharedGroupDefaults wired in",
-    "ContentView.swift: .onContinueUserActivity for Handoff, SharedGroupDefaults.syncFromApp in .task",
-    "ChatView.swift: WritingToolsLimitedModifier on query input",
-    "WorkflowDetailView.swift: WritingToolsLimitedModifier on query input",
-    "SharedViews.swift: WritingToolsLimitedModifier (iOS 18+ guarded)",
-    "Info.plist: NSSupportsLiveActivities=true, NSSupportsLiveActivitiesFrequentUpdates=true, NSCameraUsageDescription, UIApplicationSupportsMultipleScenes=true",
-    "OnboardingView.swift: updated to 9 pages — camera scan + drag-drop on Import page; new 'Built for iPhone & iPad' page for Siri/Spotlight/Live Activities/token cost",
-    "Version bumped to 0.5.0 build 5",
-    "Committed as 1a21b157d, pushed to origin/main",
-    "pbxproj reorder committed as 09f2a23ba, pushed"
+    "Fixed 'Unable to resolve build file' errors: RAGFlowShareExtension + RAGFlowWidget were missing from PBXProject.targets array — added both",
+    "Fixed 'No Account for Team 5FLM4GQ73L': replaced unknown team ID with LVK5C2V4J8 on all 4 extension build configs (ShareExtension Debug/Release, Widget Debug/Release)",
+    "Fixed 'Build input file cannot be found' for ShareViewController.swift + 4 widget files: added PBXGroup entries (D00000000000000000000001 RAGFlowShareExtension, E00000000000000000000001 RAGFlowWidget) with correct subdirectory paths so source refs resolve correctly",
+    "Verified: xcodebuild build SUCCEEDED for Release/generic iOS",
+    "Verified: xcodebuild archive SUCCEEDED — archive at /tmp/RAGFlowMobile.xcarchive",
+    "Committed as b0c4b8444, pushed to origin/main (mr2magic/ragflow)"
   ],
 
-  "in_progress": [
-    "TestFlight archive for 0.5.0 not yet created — must be done from Xcode GUI"
-  ],
+  "in_progress": [],
 
   "next": [
-    "Open Xcode → Product → Archive, then Window → Organizer (⌘⇧O) → Distribute App to TestFlight",
-    "Add App Group entitlement 'group.com.dhorn.ragflowmobile' in Xcode Signing & Capabilities (needed before Share Extension + Widget targets)",
-    "Share Extension target: RAGFlowShareExtension/ShareViewController.swift — reads pending imports queue from SharedGroupDefaults, KB picker, triggers ingest in main app",
-    "Widget Extension target: Recent Chat + KB Status + Quick Query widgets; Live Activity presentation views (Dynamic Island + lock screen SwiftUI)",
-    "Core ML embeddings: bundle quantized MiniLM .mlpackage for on-device embeddings (no API key needed)",
+    "Submit 0.7.0 to TestFlight: open /tmp/RAGFlowMobile.xcarchive in Xcode Organizer (⌘⇧O) → Distribute App → App Store Connect",
+    "Or re-archive from Xcode GUI: Product → Archive, then Organizer → Distribute",
+    "Two non-fatal warnings remain: extensions embedded in Executables dir instead of PlugIns — fix CopyFiles dstSubfolderSpec from 7 to 13 if App Store validation rejects it",
+    "App Group entitlement 'group.com.dhorn.ragflowmobile' — confirm it's active in Signing & Capabilities for main target before Share Extension reads SharedGroupDefaults",
+    "Core ML embeddings: bundle quantized MiniLM .mlpackage for on-device embeddings",
     "iCloud sync (CloudKit) — deferred to 0.8.0"
   ],
 
   "key_facts": {
     "ollama_host": "http://the-black-pearl:11434",
-    "app_version": "0.5.0",
-    "build_number": "5",
+    "app_version": "0.7.0",
+    "build_number": "7",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id": "LVK5C2V4J8",
     "last_testflight": "0.2.0 build 1 on 2026-04-03",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "09f2a23ba"
+    "last_commit": "b0c4b8444",
+    "archive_path": "/tmp/RAGFlowMobile.xcarchive"
   },
 
   "open_questions": [
-    "App Group entitlement added in Xcode Signing & Capabilities? (required for Share Extension and Widget to share data)",
-    "Has the 0.5.0 archive been submitted to TestFlight via Xcode Organizer?"
+    "App Group entitlement confirmed active in Signing & Capabilities for main app target?",
+    "Has 0.7.0 archive been submitted to TestFlight?",
+    "Will App Store Connect validation reject the PlugIns directory warning (extensions in Executables dir)?"
   ]
 }
