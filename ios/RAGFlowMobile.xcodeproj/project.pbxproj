@@ -119,7 +119,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 7;
+			dstSubfolderSpec = 13;
 			files = (
 				DEFB982C2F911920007C8FE7 /* RAGFlowShareExtension.appex in CopyFiles */,
 				DEFB982D2F911920007C8FE7 /* RAGFlowWidget.appex in CopyFiles */,
