@@ -28,6 +28,41 @@ targets:
       - sdk: PDFKit.framework
       - sdk: Accelerate.framework
       - sdk: CloudKit.framework
+      - target: RAGFlowShareExtension
+        embed: true
+      - target: RAGFlowWidget
+        embed: true
+
+  RAGFlowShareExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - RAGFlowShareExtension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dhorn.ragflowmobile.shareextension
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: RAGFlowShareExtension/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: RAGFlowShareExtension/RAGFlowShareExtension.entitlements
+
+  RAGFlowWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - RAGFlowWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dhorn.ragflowmobile.widget
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: RAGFlowWidget/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: RAGFlowWidget/RAGFlowWidget.entitlements
+    dependencies:
+      - package: EPUBKit
+        embed: false
 
   RAGFlowMobileTests:
     type: bundle.unit-test
