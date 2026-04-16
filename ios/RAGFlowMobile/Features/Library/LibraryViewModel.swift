@@ -162,10 +162,19 @@ final class LibraryViewModel: ObservableObject {
         }
         isIngesting = true
         defer { isIngesting = false; ingestProgress = "" }
-        ingestProgress = "Downloading…"
+        ingestProgress = "Resolving…"
         do {
-            let (tmpURL, _) = try await URLSession.shared.download(from: url)
-            let ext = url.pathExtension.lowercased().isEmpty ? "pdf" : url.pathExtension.lowercased()
+            // Resolve Gutenberg book page URLs to a direct file download.
+            let resolvedURL: URL
+            if GutenbergResolver.isGutenbergBookPage(url) {
+                let book = try await GutenbergResolver.resolve(url)
+                resolvedURL = book.downloadURL
+            } else {
+                resolvedURL = url
+            }
+            ingestProgress = "Downloading…"
+            let (tmpURL, _) = try await URLSession.shared.download(from: resolvedURL)
+            let ext = resolvedURL.pathExtension.lowercased().isEmpty ? "pdf" : resolvedURL.pathExtension.lowercased()
             let destURL = FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)
                 .appendingPathExtension(ext)
