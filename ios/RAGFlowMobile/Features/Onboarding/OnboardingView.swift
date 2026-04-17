@@ -15,6 +15,8 @@ import SwiftUI
 //            workflow export/import, KB export/import
 //   0.5.0 — iOS-native features: Siri shortcuts, Spotlight search, token cost display,
 //            document scanning, drag-and-drop import, Live Activities, Handoff
+//   0.8.0 — Import page: added GEDCOM (.ged) and ZIP archive; updated subtitle to 30+;
+//            KB page: added export/import bullet; Chat page: New Chat button in-chat
 // ─────────────────────────────────────────────────────────────────────────────
 
 // MARK: - Data model
@@ -56,7 +58,7 @@ private let onboardingPages: [OnboardingPage] = [
             ("plus.circle",                       "Tap + to create a new Knowledge Base — the file importer opens automatically"),
             ("rectangle.3.group",                 "Separate KBs keep chats focused: one for research, one for contracts, one per project"),
             ("slider.horizontal.3",               "Long-press any KB → Retrieval Settings to tune Top-K passages, chunk size, and chunking method"),
-            ("pencil",                            "Long-press any KB to rename or delete it"),
+            ("square.and.arrow.up",               "Long-press any KB → Export to back it up or share; import a .ragflow-kb file to restore on any device"),
         ]
     ),
 
@@ -65,12 +67,12 @@ private let onboardingPages: [OnboardingPage] = [
         systemImage: "doc.badge.plus",
         tint: .green,
         title: "Import Documents",
-        subtitle: "20+ file types — any way you like",
+        subtitle: "30+ file types — any way you like",
         bullets: [
-            ("doc.on.doc",                        "Documents: PDF · ePub · Word · Excel · PowerPoint · LibreOffice · TXT · RTF · Markdown · HTML · Email · and more"),
+            ("doc.on.doc",                        "Documents: PDF · ePub · Word · Excel · PowerPoint · ODT · TXT · RTF · Markdown · HTML · Email · GEDCOM · and more"),
             ("camera.viewfinder",                 "Scan physical pages with your camera — Vision OCR converts them to searchable text instantly"),
+            ("doc.zipper",                        "Import a ZIP archive — every supported document inside is extracted and indexed automatically"),
             ("arrow.down.doc",                    "Drag a PDF or document from Files.app directly onto the document list (iPad)"),
-            ("arrow.clockwise",                   "Long-press any document → Re-index to re-parse it with updated chunk settings"),
         ]
     ),
 
@@ -97,7 +99,7 @@ private let onboardingPages: [OnboardingPage] = [
         bullets: [
             ("doc.text.magnifyingglass",          "Tap 'N passages used' under any reply to read the exact chunks the AI retrieved"),
             ("plus.circle",                       "Search across multiple KBs in one chat — tap + in the scope bar to add another KB"),
-            ("square.and.arrow.up",               "Tap the share button (top-right) to export the full conversation as plain text"),
+            ("square.and.pencil",                 "Tap the compose icon (top-right) inside any chat to start a new one instantly — no need to go back"),
             ("pencil",                            "Sessions are auto-named from your first message — long-press to rename or delete"),
         ]
     ),
