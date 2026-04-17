@@ -3,7 +3,7 @@
   "project": "RAGFlowMobile",
   "date": "2026-04-16",
   "status": "stable",
-  "phase": "brownfield improvement — 0.8.0 builds, archives, all tests passing",
+  "phase": "brownfield improvement — 0.8.0 shipped to TestFlight",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
@@ -19,13 +19,18 @@
     "Wired GutenbergResolver into LibraryViewModel.importFromURL() — transparent to non-Gutenberg URLs",
     "GutenbergResolverTests: 10/10 passing including live network tests (Pride & Prejudice, Alice)",
     "Archive confirmed clean: ARCHIVE SUCCEEDED with extensions embedded",
-    "mempalace mined: 370 drawers, 22 new files indexed"
+    "Improved LLM error surfacing: ClaudeService.post() and OpenAIService now throw serverError with real HTTP status + API message instead of generic badResponse",
+    "ClaudeService: non-JSON 200 response shows first 200 chars of raw body for diagnosis",
+    "0.8.0 uploaded to TestFlight via Xcode Organizer (2026-04-16)",
+    "Added GEDCOM (.ged) import: new GEDCOMParser.swift parses individuals + families into text sections; routed through RAGService.ingestGED()",
+    "Added ZIP (.zip) import: RAGService.ingestZIP() unzips and ingests each contained supported file as a separate Book",
+    "Registered GEDCOMParser.swift in project.pbxproj",
+    "Added ged + zip to LibraryView supported import types, empty-state description, and LibraryViewModel scanDocumentsFolder auto-scan"
   ],
 
   "in_progress": [],
 
   "next": [
-    "Upload 0.8.0 archive to TestFlight via Xcode Organizer (archive on Desktop)",
     "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync",
     "Gutenberg browser UI: in-app search by title/author (Level 3, optional)",
     "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (deferred)",
@@ -38,16 +43,15 @@
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
-    "last_testflight": "0.2.0 build 1 on 2026-04-03",
+    "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "de44ba2da",
+    "last_commit": "cfd836bdc",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
-    "archive_command": "xcodebuild archive -project RAGFlowMobile.xcodeproj -scheme RAGFlowMobile -configuration Release -destination generic/platform=iOS -archivePath ~/Desktop/RAGFlowMobile-0.8.0.xcarchive -allowProvisioningUpdates CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM=LVK5C2V4J8"
+    "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive"
   },
 
   "open_questions": [
-    "Has 0.8.0 been uploaded to App Store Connect / TestFlight?",
     "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?"
   ]
 }

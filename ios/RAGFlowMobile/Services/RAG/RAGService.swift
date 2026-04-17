@@ -14,6 +14,7 @@ final class RAGService: ObservableObject {
     private let pdfParser = PDFParser()
     private let officeParser = OfficeParser()
     private let emlParser = EMLParser()
+    private let gedcomParser = GEDCOMParser()
 
     // MARK: - Ingest
 
@@ -56,6 +57,10 @@ final class RAGService: ObservableObject {
             return try await ingestEML(url: url, kbId: kbId, chunker: c)
         case "odt":
             return try await ingestODT(url: url, kbId: kbId, chunker: c)
+        case "ged":
+            return try await ingestGED(url: url, kbId: kbId, chunker: c)
+        case "zip":
+            return try await ingestZIP(url: url, kbId: kbId)
         default:
             throw IngestError.unsupportedFormat
         }
@@ -283,6 +288,80 @@ final class RAGService: ObservableObject {
         return book
     }
 
+    private func ingestGED(url: URL, kbId: String, chunker c: Chunker) async throws -> Book {
+        ingestPhase = "Parsing GEDCOM…"
+        let sections: [GEDCOMParser.Section] = try await Task.detached(priority: .utility) { [gedcomParser] in
+            try gedcomParser.parse(url: url)
+        }.value
+        guard !sections.isEmpty else { throw IngestError.parseFailure }
+
+        let bookId = UUID().uuidString
+        let allChunks: [Chunk] = await Task.detached(priority: .utility) {
+            sections.flatMap { c.chunk(text: $0.text, bookId: bookId, chapterTitle: $0.title) }
+        }.value
+        guard !allChunks.isEmpty else { throw IngestError.parseFailure }
+
+        let wordCount = allChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
+        var book = Book(id: bookId, kbId: kbId,
+                        title: url.deletingPathExtension().lastPathComponent, author: "",
+                        filePath: url.path, addedAt: Date(), chunkCount: allChunks.count)
+        book.fileType = "ged"
+        book.pageCount = sections.count
+        book.wordCount = wordCount
+        ingestPhase = "Saving chunks…"
+        try db.save(book)
+        try db.saveChunks(allChunks)
+        ingestPhase = "Embedding…"
+        await embedChunks(allChunks)
+        ingestPhase = ""
+        return book
+    }
+
+    private func ingestZIP(url: URL, kbId: String) async throws -> Book {
+        ingestPhase = "Expanding ZIP…"
+
+        let (tmpDir, fileURLs): (URL, [URL]) = try await Task.detached(priority: .utility) {
+            let dest = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true)
+            try Zip.unzipFile(url, destination: dest, overwrite: true, password: nil)
+
+            let supported: Set<String> = [
+                "epub", "pdf", "docx", "xlsx", "pptx", "eml", "emlx", "odt", "ged",
+                "txt", "md", "mdx", "markdown", "csv", "tsv",
+                "json", "jsonl", "ldjson", "htm", "html", "rtf",
+                "py", "js", "ts", "swift", "java", "c", "cpp", "h", "go", "sh", "sql",
+                "yaml", "yml", "xml"
+            ]
+
+            var found: [URL] = []
+            let enumerator = FileManager.default.enumerator(
+                at: dest,
+                includingPropertiesForKeys: [.isRegularFileKey]
+            )
+            while let fileURL = enumerator?.nextObject() as? URL {
+                let isRegular = (try? fileURL.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile ?? false
+                guard isRegular, !fileURL.lastPathComponent.hasPrefix(".") else { continue }
+                guard supported.contains(fileURL.pathExtension.lowercased()) else { continue }
+                found.append(fileURL)
+            }
+            return (dest, found.sorted { $0.lastPathComponent < $1.lastPathComponent })
+        }.value
+
+        guard !fileURLs.isEmpty else { throw IngestError.parseFailure }
+
+        var lastBook: Book?
+        for (i, fileURL) in fileURLs.enumerated() {
+            ingestPhase = "Importing \(i + 1) of \(fileURLs.count) from ZIP…"
+            if let book = try? await ingest(url: fileURL, kbId: kbId) {
+                lastBook = book
+            }
+        }
+        _ = tmpDir  // keep reference until all ingests complete; OS reclaims temp dir
+        guard let book = lastBook else { throw IngestError.parseFailure }
+        return book
+    }
+
     // MARK: - Embedding
 
     /// Re-embed all chunks for a KB. Called after KB import to build vector index.
@@ -433,7 +512,7 @@ final class RAGService: ObservableObject {
 
         var errorDescription: String? {
             switch self {
-            case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, and common code files."
+            case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, GED (GEDCOM), ZIP, and common code files."
             case .parseFailure: return "Could not parse the document."
             }
         }

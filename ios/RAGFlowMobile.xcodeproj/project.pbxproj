@@ -74,6 +74,7 @@
 		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		E0F407F2E95C6372C6990C84 /* GutenbergResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67C7938EE3F91AC974F318D /* GutenbergResolver.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* GEDCOMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */; };
 		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
 		EAE2889CD72E6B880892D299 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0C200AFF79243F9927DF9E /* SharedViews.swift */; };
 		EC0FAD7B89BCEBE9D953E64F /* KBStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8096B55B1F04C0A4BC6A8354 /* KBStatusWidget.swift */; };
@@ -184,6 +185,7 @@
 		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
 		BBC6D9264B466C0103061572 /* RAGFlowWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowWidget.entitlements; sourceTree = "<group>"; };
 		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
+		AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEDCOMParser.swift; sourceTree = "<group>"; };
 		C67C7938EE3F91AC974F318D /* GutenbergResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutenbergResolver.swift; sourceTree = "<group>"; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */,
 				AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */,
 				9128C8C2964AF5134AA52824 /* EMLParser.swift */,
+				AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */,
 				C67C7938EE3F91AC974F318D /* GutenbergResolver.swift */,
 				23157B24B0E2E44B3978039A /* OfficeParser.swift */,
 				0CD98A707C4F55AF2534157A /* PDFParser.swift */,
@@ -698,6 +701,7 @@
 				74EB4ACE4DD58465CCEE452C /* ExportBundle.swift in Sources */,
 				7B4CAF19114DA7822A23BD0D /* ExportImportService.swift in Sources */,
 				44BF1741739DCF75E61F62B5 /* FocusFilterIntent.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* GEDCOMParser.swift in Sources */,
 				E0F407F2E95C6372C6990C84 /* GutenbergResolver.swift in Sources */,
 				511D33480BBA054084C3BD18 /* IndexingActivityAttributes.swift in Sources */,
 				9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */,

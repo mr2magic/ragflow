@@ -27,7 +27,14 @@ final class OpenAIService: LLMService {
                           let first = choices.first,
                           let message = first["message"] as? [String: Any],
                           let text = message["content"] as? String else {
-                        throw LLMError.badResponse
+                        // Surface any API-level error embedded in the response
+                        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let errObj = json["error"] as? [String: Any],
+                           let msg = errObj["message"] as? String {
+                            throw LLMError.serverError(msg)
+                        }
+                        let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
+                        throw LLMError.serverError("OpenAI returned unexpected response: \(preview)")
                     }
 
                     // Capture token usage

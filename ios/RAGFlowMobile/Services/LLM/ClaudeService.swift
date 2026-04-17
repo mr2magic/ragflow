@@ -32,7 +32,8 @@ final class ClaudeService: LLMService {
                         let body = buildBody(system: system, messages: currentMessages, tools: tools, stream: false)
                         let data = try await post(body: body)
                         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                            throw LLMError.badResponse
+                            let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
+                            throw LLMError.serverError("Claude returned non-JSON: \(preview)")
                         }
 
                         let stopReason = json["stop_reason"] as? String
@@ -117,8 +118,15 @@ final class ClaudeService: LLMService {
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            throw LLMError.badResponse
+        guard let http = response as? HTTPURLResponse else { throw LLMError.badResponse }
+        guard http.statusCode == 200 else {
+            // Try to surface the API's own error message
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let error = json["error"] as? [String: Any],
+               let msg = error["message"] as? String {
+                throw LLMError.serverError("Claude API error (\(http.statusCode)): \(msg)")
+            }
+            throw LLMError.serverError("Claude API returned HTTP \(http.statusCode).")
         }
         return data
     }

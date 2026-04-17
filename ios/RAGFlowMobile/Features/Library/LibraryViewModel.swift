@@ -66,7 +66,7 @@ final class LibraryViewModel: ObservableObject {
         let existing = Set(books.map { $0.filePath })
         guard let files = try? FileManager.default.contentsOfDirectory(at: docs, includingPropertiesForKeys: nil) else { return }
         let supported = files.filter {
-            ["epub", "pdf", "docx", "xlsx", "pptx", "eml"].contains($0.pathExtension.lowercased()) && !existing.contains($0.path)
+            ["epub", "pdf", "docx", "xlsx", "pptx", "eml", "ged", "zip"].contains($0.pathExtension.lowercased()) && !existing.contains($0.path)
         }
         guard !supported.isEmpty else { return }
         await ingest(urls: supported)
