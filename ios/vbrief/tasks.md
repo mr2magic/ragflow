@@ -15,14 +15,15 @@ Last updated: 2026-04-17
 | 11 | **Import from scan not working** — Fixed: single-step temp file write (no more UUID+rename); posts `.scanImportComplete` notification; LibraryView reloads on receipt | done |
 | 12 | **KB tap does nothing on iPhone** — Fixed: replaced three competing `navigationDestination` registrations for `KnowledgeBase` (undefined SwiftUI behavior) with a single `KBNavDest` wrapper + `navigationDestination(item:)`; row taps now use `Button` that sets `navDest` directly | done |
 | 13 | **Simulator regression suite — iPhone 17 Pro (landscape + portrait)** — Run full app flow in iPhone 17 Pro simulator: KB create/tap/delete, import files, scan (if camera stub available), chat, workflows, settings; capture any layout breaks in landscape | pending |
-| 19 | **All tooltips must be multiline and fit the tooltip area properly** — Audit every SettingHelpButton popover in KBRetrievalSettingsSheet and any other tooltip popovers; ensure text wraps correctly and doesn't clip on any device size | pending |
+| 19 | **All tooltips must be multiline and fit the tooltip area properly** — Fixed: SettingHelpButton popover now uses fixedSize(horizontal:false,vertical:true) + multilineTextAlignment(.leading) + minWidth:220; text wraps correctly on all devices | done |
+| 20 | **Cap files per KB at 50** — Done: LibraryViewModel enforces 50-doc limit on all ingest paths (file import, URL, scan); shows count badge "X of 50" in LibraryView list (orange when ≤5 slots remain); DocumentCameraView checks cap before OCR | done |
 
 ## New Features
 
 | # | Task | Status |
 |---|------|--------|
 | 14 | **Splash screen** — Done: SplashView.swift with app icon, title, version, animated entrance; "Get Started" → OnboardingView (first run) or "Open" → ContentView (returning); wired into RAGFlowMobileApp.swift | done |
-| 16 | **Import and export workflows** — Full end-to-end: (1) verify WorkflowDetailView toolbar export button calls ExportImportService and ShareSheet correctly; (2) add "Export" swipe action + context menu to WorkflowListView rows; (3) add "Import Workflow" toolbar button to WorkflowListView that opens .fileImporter for .ragflow-workflow files and calls ExportImportService.importWorkflow(); (4) save imported workflow to DB and reload list | pending |
+| 16 | **Import and export workflows** — Done: export via context menu + leading swipe on each row; import via toolbar secondaryAction (.ragflow-workflow file); WorkflowDetailView toolbar export already existed; all paths wired to ExportImportService + ShareSheet | done |
 | 17 | **Update Onboarding with all new features and file types** — Audit all 9 pages; update Import Documents page (GEDCOM, ZIP); update Agent Workflows page; update iOS features page; add any new capabilities added since 0.5.0 | done |
 | 18 | **"Where is New Chat?"** — Fixed: added `square.and.pencil` toolbar button to ChatView; tapping it calls `onNewChat` closure passed from ConversationsListView, which creates a session and navigates to it — no need to back out of a chat to start a new one | done |
 

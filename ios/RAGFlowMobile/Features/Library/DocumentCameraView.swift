@@ -57,6 +57,10 @@ struct DocumentCameraView: UIViewControllerRepresentable {
 
         @MainActor
         private func ingest(images: [UIImage]) async {
+            // Enforce per-KB document cap before spending time on OCR
+            let currentCount = (try? DatabaseService.shared.allBooks(kbId: kbId).count) ?? 0
+            guard currentCount < LibraryViewModel.maxDocuments else { return }
+
             let parser = VisionOCRParser()
             var allText = ""
             for image in images {

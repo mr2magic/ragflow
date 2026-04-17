@@ -201,6 +201,23 @@ struct LibraryView: View {
                     .foregroundStyle(.tint)
             }
 
+            Section {
+                let total = vm.books.count
+                let cap = LibraryViewModel.maxDocuments
+                let nearCap = total >= cap - 5
+                HStack {
+                    Image(systemName: nearCap ? "exclamationmark.circle" : "doc.text")
+                        .foregroundStyle(nearCap ? .orange : .secondary)
+                        .imageScale(.small)
+                    Text("\(total) of \(cap) documents")
+                        .font(.footnote)
+                        .foregroundStyle(nearCap ? .orange : .secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 2)
+                .listRowBackground(Color.clear)
+            }
+
             ForEach(vm.filteredBooks) { book in
                 Button(action: { selectedBook = book }) {
                     BookRow(book: book, isIndexing: vm.ingestingFilePaths.contains(book.filePath))

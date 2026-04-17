@@ -3,6 +3,8 @@ import UniformTypeIdentifiers
 
 @MainActor
 final class LibraryViewModel: ObservableObject {
+    static let maxDocuments = 50
+
     @Published var books: [Book] = []
     @Published var searchText = ""
     @Published var sortOrder: SortOrder = .dateAdded
@@ -153,6 +155,11 @@ final class LibraryViewModel: ObservableObject {
     }
 
     func importFromURL() async {
+        guard availableSlots > 0 else {
+            show(error: "This knowledge base has reached its \(LibraryViewModel.maxDocuments)-document limit. Delete some documents before importing more.")
+            urlInput = ""
+            return
+        }
         let urlString = urlInput.trimmingCharacters(in: .whitespacesAndNewlines)
         urlInput = ""
         guard let url = URL(string: urlString),
@@ -191,7 +198,21 @@ final class LibraryViewModel: ObservableObject {
         }
     }
 
-    private func ingest(urls: [URL]) async {
+    var availableSlots: Int { max(0, LibraryViewModel.maxDocuments - books.count) }
+
+    private func ingest(urls allURLs: [URL]) async {
+        let slots = availableSlots
+        guard slots > 0 else {
+            show(error: "This knowledge base has reached its \(LibraryViewModel.maxDocuments)-document limit. Delete some documents before importing more.")
+            return
+        }
+        let urls: [URL]
+        if allURLs.count > slots {
+            show(error: "Only \(slots) slot\(slots == 1 ? "" : "s") remaining — importing the first \(slots) of \(allURLs.count) files.")
+            urls = Array(allURLs.prefix(slots))
+        } else {
+            urls = allURLs
+        }
         isIngesting = true
         let coordinator = BackgroundTaskCoordinator.shared
         coordinator.beginImport(fileCount: urls.count)

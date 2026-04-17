@@ -184,8 +184,10 @@ private struct SettingHelpButton: View {
         .popover(isPresented: $isPresented, arrowEdge: .top) {
             Text(text)
                 .font(.footnote)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(16)
-                .frame(maxWidth: 280, alignment: .leading)
+                .frame(minWidth: 220, maxWidth: 280, alignment: .leading)
                 .presentationCompactAdaptation(.popover)
         }
         .accessibilityLabel("Help for this setting")

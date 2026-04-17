@@ -8,6 +8,10 @@ struct WorkflowListView: View {
     @State private var showImportError = false
 
     @State private var selectedWorkflow: Workflow?
+    @State private var exportURL: URL?
+    @State private var showExportSheet = false
+    @State private var exportError: String?
+    @State private var showExportError = false
 
     var body: some View {
         Group {
@@ -24,6 +28,26 @@ struct WorkflowListView: View {
                         }
                         .buttonStyle(.plain)
                         .contentShape(Rectangle())
+                        .contextMenu {
+                            Button {
+                                exportWorkflow(workflow)
+                            } label: {
+                                Label("Export", systemImage: "square.and.arrow.up")
+                            }
+                            Divider()
+                            Button("Delete", role: .destructive) {
+                                vm.delete(workflow)
+                                vm.reload()
+                            }
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button {
+                                exportWorkflow(workflow)
+                            } label: {
+                                Label("Export", systemImage: "square.and.arrow.up")
+                            }
+                            .tint(.blue)
+                        }
                     }
                     .onDelete { offsets in
                         for i in offsets { vm.delete(vm.workflows[i]) }
@@ -66,10 +90,28 @@ struct WorkflowListView: View {
         } message: {
             Text(importError ?? "Unknown error")
         }
+        .sheet(isPresented: $showExportSheet) {
+            if let url = exportURL { ShareSheet(url: url) }
+        }
+        .alert("Export Failed", isPresented: $showExportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportError ?? "Unknown error")
+        }
         .alert("Error", isPresented: $vm.showError) {
             Button("OK") {}
         } message: {
             Text(vm.errorMessage)
+        }
+    }
+
+    private func exportWorkflow(_ workflow: Workflow) {
+        do {
+            exportURL = try ExportImportService.shared.workflowExportURL(for: workflow)
+            showExportSheet = true
+        } catch {
+            exportError = error.localizedDescription
+            showExportError = true
         }
     }
 
