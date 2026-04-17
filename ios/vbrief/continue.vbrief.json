@@ -25,7 +25,8 @@
     "Added GEDCOM (.ged) import: new GEDCOMParser.swift parses individuals + families into text sections; routed through RAGService.ingestGED()",
     "Added ZIP (.zip) import: RAGService.ingestZIP() unzips and ingests each contained supported file as a separate Book",
     "Registered GEDCOMParser.swift in project.pbxproj",
-    "Added ged + zip to LibraryView supported import types, empty-state description, and LibraryViewModel scanDocumentsFolder auto-scan"
+    "Added ged + zip to LibraryView supported import types, empty-state description, and LibraryViewModel scanDocumentsFolder auto-scan",
+    "GEDCOMParserTests: 17/17 passing — names, dates, places, family sections, notes, sex labels, CRLF/CR endings, file-based parse"
   ],
 
   "in_progress": [],
@@ -45,7 +46,7 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "cfd836bdc",
+    "last_commit": "5e3baf248",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive"
