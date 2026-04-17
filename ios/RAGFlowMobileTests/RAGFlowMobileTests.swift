@@ -1650,6 +1650,170 @@ final class CancellationErrorTests: XCTestCase {
     }
 }
 
+// MARK: - GEDCOMParser
+
+final class GEDCOMParserTests: XCTestCase {
+
+    private let parser = GEDCOMParser()
+
+    /// Minimal GEDCOM with 3 individuals and 1 family.
+    private let sampleGED = """
+    0 HEAD
+    1 SOUR TestApp
+    0 @I1@ INDI
+    1 NAME John /Smith/
+    1 SEX M
+    1 BIRT
+    2 DATE 15 MAR 1850
+    2 PLAC Boston, MA
+    1 DEAT
+    2 DATE 22 JUN 1920
+    2 PLAC Chicago, IL
+    1 OCCU Farmer
+    0 @I2@ INDI
+    1 NAME Jane /Doe/
+    1 SEX F
+    1 BIRT
+    2 DATE 3 APR 1855
+    2 PLAC New York, NY
+    0 @I3@ INDI
+    1 NAME William /Smith/
+    1 SEX M
+    1 BIRT
+    2 DATE 5 JAN 1877
+    0 @F1@ FAM
+    1 HUSB @I1@
+    1 WIFE @I2@
+    1 CHIL @I3@
+    1 MARR
+    2 DATE 10 JUN 1875
+    2 PLAC Springfield, IL
+    0 TRLR
+    """
+
+    func testSectionCountMatchesIndividualsPlusFamilies() {
+        let sections = parser.parse(text: sampleGED)
+        // 3 individuals + 1 family = 4 sections
+        XCTAssertEqual(sections.count, 4, "Expected 3 individual + 1 family section; got \(sections.count)")
+    }
+
+    func testIndividualNameExtracted() {
+        let sections = parser.parse(text: sampleGED)
+        let titles = sections.map(\.title)
+        XCTAssertTrue(titles.contains("John Smith"), "John Smith not found in titles: \(titles)")
+        XCTAssertTrue(titles.contains("Jane Doe"),   "Jane Doe not found in titles: \(titles)")
+        XCTAssertTrue(titles.contains("William Smith"), "William Smith not found: \(titles)")
+    }
+
+    func testSlashSurnameStripped() {
+        // "/Smith/" notation must be converted to plain "Smith"
+        let sections = parser.parse(text: sampleGED)
+        XCTAssertFalse(sections.contains { $0.title.contains("/") },
+                       "Slash characters should be removed from names")
+    }
+
+    func testBirthDateExtracted() {
+        let sections = parser.parse(text: sampleGED)
+        let john = sections.first { $0.title == "John Smith" }
+        XCTAssertNotNil(john, "John Smith section missing")
+        XCTAssertTrue(john!.text.contains("15 MAR 1850"), "Birth date not found: \(john!.text)")
+    }
+
+    func testBirthPlaceExtracted() {
+        let sections = parser.parse(text: sampleGED)
+        let john = sections.first { $0.title == "John Smith" }!
+        XCTAssertTrue(john.text.contains("Boston, MA"), "Birth place not found: \(john.text)")
+    }
+
+    func testDeathDateAndPlaceExtracted() {
+        let sections = parser.parse(text: sampleGED)
+        let john = sections.first { $0.title == "John Smith" }!
+        XCTAssertTrue(john.text.contains("22 JUN 1920"),  "Death date not found")
+        XCTAssertTrue(john.text.contains("Chicago, IL"),  "Death place not found")
+    }
+
+    func testOccupationExtracted() {
+        let sections = parser.parse(text: sampleGED)
+        let john = sections.first { $0.title == "John Smith" }!
+        XCTAssertTrue(john.text.contains("Farmer"), "Occupation not found: \(john.text)")
+    }
+
+    func testSexLabelExpanded() {
+        let sections = parser.parse(text: sampleGED)
+        let john = sections.first { $0.title == "John Smith" }!
+        let jane = sections.first { $0.title == "Jane Doe" }!
+        XCTAssertTrue(john.text.contains("Male"),   "Sex: Male not found for John")
+        XCTAssertTrue(jane.text.contains("Female"), "Sex: Female not found for Jane")
+    }
+
+    func testFamilySectionProduced() {
+        let sections = parser.parse(text: sampleGED)
+        let family = sections.first { $0.title.contains("Family") }
+        XCTAssertNotNil(family, "No family section produced")
+        XCTAssertTrue(family!.title.contains("John Smith"), "Husband name missing from family title")
+        XCTAssertTrue(family!.title.contains("Jane Doe"),   "Wife name missing from family title")
+    }
+
+    func testMarriageDateAndPlaceInFamily() {
+        let sections = parser.parse(text: sampleGED)
+        let family = sections.first { $0.title.contains("Family") }!
+        XCTAssertTrue(family.text.contains("10 JUN 1875"),    "Marriage date not found")
+        XCTAssertTrue(family.text.contains("Springfield, IL"), "Marriage place not found")
+    }
+
+    func testChildListedInFamily() {
+        let sections = parser.parse(text: sampleGED)
+        let family = sections.first { $0.title.contains("Family") }!
+        XCTAssertTrue(family.text.contains("William Smith"), "Child not listed in family section: \(family.text)")
+    }
+
+    func testEmptyInputReturnsNoSections() {
+        XCTAssertTrue(parser.parse(text: "").isEmpty)
+        XCTAssertTrue(parser.parse(text: "0 HEAD\n0 TRLR").isEmpty)
+    }
+
+    func testCRLFLineEndingsHandled() {
+        let crlf = sampleGED.replacingOccurrences(of: "\n", with: "\r\n")
+        let sections = parser.parse(text: crlf)
+        XCTAssertEqual(sections.count, 4, "CRLF line endings should parse identically to LF")
+    }
+
+    func testCRLineEndingsHandled() {
+        let cr = sampleGED.replacingOccurrences(of: "\n", with: "\r")
+        let sections = parser.parse(text: cr)
+        XCTAssertEqual(sections.count, 4, "CR-only line endings should parse identically to LF")
+    }
+
+    func testParseFromFile() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ragflow_test_sample.ged")
+        try sampleGED.write(to: url, atomically: true, encoding: .utf8)
+        let sections = try parser.parse(url: url)
+        XCTAssertEqual(sections.count, 4, "File-based parse should produce same result as text-based")
+        XCTAssertTrue(sections.contains { $0.title == "John Smith" })
+    }
+
+    func testNoteExtracted() {
+        let ged = """
+        0 @I1@ INDI
+        1 NAME Ada /Lovelace/
+        1 NOTE First programmer in history
+        0 TRLR
+        """
+        let sections = parser.parse(text: ged)
+        let ada = sections.first { $0.title == "Ada Lovelace" }
+        XCTAssertNotNil(ada)
+        XCTAssertTrue(ada!.text.contains("First programmer"), "Note not extracted: \(ada!.text)")
+    }
+
+    func testIndividualWithNoEventsStillProducesSection() {
+        let ged = "0 @I1@ INDI\n1 NAME Mystery /Person/\n0 TRLR"
+        let sections = parser.parse(text: ged)
+        XCTAssertEqual(sections.count, 1)
+        XCTAssertEqual(sections[0].title, "Mystery Person")
+    }
+}
+
 // MARK: - GutenbergResolver
 
 final class GutenbergResolverTests: XCTestCase {
