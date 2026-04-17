@@ -204,11 +204,17 @@ final class ChatViewModel: ObservableObject {
         var docTitles: [String: String] = [:]
 
         for activeKB in activeKBs {
+            // Re-fetch KB from DB so retrieval always uses current settings
+            // (topK, topN, threshold). Without this, changes made in Retrieval
+            // Settings after navigation are ignored because activeKBs holds a
+            // value-type snapshot from init time.
+            let liveKB = (try? db.kb(id: activeKB.id)) ?? activeKB
+
             // Build title lookup for all documents in this KB
             let docs = (try? db.allBooks(kbId: activeKB.id)) ?? []
             for doc in docs { docTitles[doc.id] = doc.title }
 
-            let chunks = try rag.retrieve(query: query, kb: activeKB)
+            let chunks = try rag.retrieve(query: query, kb: liveKB)
             results.append(contentsOf: chunks)
         }
         return (results, docTitles)
