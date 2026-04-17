@@ -3,15 +3,20 @@ import SwiftUI
 struct ChatView: View {
     let kb: KnowledgeBase
     let session: ChatSession
+    /// Called when the user taps "New Chat" from within this view.
+    /// The parent (ConversationsListView) creates the session and navigates to it.
+    var onNewChat: (() -> Void)? = nil
+
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
     @ObservedObject private var settings = SettingsStore.shared
     @State private var showSettings = false
     @State private var showClearConfirm = false
 
-    init(kb: KnowledgeBase, session: ChatSession) {
+    init(kb: KnowledgeBase, session: ChatSession, onNewChat: (() -> Void)? = nil) {
         self.kb = kb
         self.session = session
+        self.onNewChat = onNewChat
         _vm = StateObject(wrappedValue: ChatViewModel(kb: kb, session: session))
     }
 
@@ -33,9 +38,9 @@ struct ChatView: View {
         .navigationTitle(vm.sessionTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            // Share chat history when conversation has content
-            if !vm.messages.isEmpty {
-                ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                // Share — only when there are messages to export
+                if !vm.messages.isEmpty {
                     ShareLink(
                         item: vm.conversationExport,
                         subject: Text(vm.sessionTitle),
@@ -44,6 +49,13 @@ struct ChatView: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .accessibilityLabel("Share conversation")
+                }
+                // New Chat — always visible so users can start fresh without going back
+                if let onNewChat {
+                    Button(action: onNewChat) {
+                        Image(systemName: "square.and.pencil")
+                    }
+                    .accessibilityLabel("New Chat")
                 }
             }
         }

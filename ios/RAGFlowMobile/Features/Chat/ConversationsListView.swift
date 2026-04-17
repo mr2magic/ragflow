@@ -25,7 +25,7 @@ struct ConversationsListView: View {
         .navigationTitle("Chats")
         .navigationBarTitleDisplayMode(.large)
         .navigationDestination(item: $selectedSession) { session in
-            ChatView(kb: kb, session: session)
+            ChatView(kb: kb, session: session, onNewChat: createNewSession)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
