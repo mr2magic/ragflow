@@ -70,14 +70,16 @@ final class OpenAIService: LLMService {
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            if let _ = response as? HTTPURLResponse,
-               let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+        guard let http = response as? HTTPURLResponse else {
+            throw LLMError.serverError("OpenAI: unexpected network response. Check your internet connection.")
+        }
+        guard http.statusCode == 200 else {
+            if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let errorObj = errorJson["error"] as? [String: Any],
                let message = errorObj["message"] as? String {
-                throw LLMError.serverError(message)
+                throw LLMError.serverError("OpenAI error (\(http.statusCode)): \(message)")
             }
-            throw LLMError.badResponse
+            throw LLMError.serverError("OpenAI returned HTTP \(http.statusCode).")
         }
         return data
     }

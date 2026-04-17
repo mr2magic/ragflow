@@ -54,21 +54,22 @@ struct KBRetrievalSettingsSheet: View {
     private var retrievalSection: some View {
         Section {
             Stepper(value: $topK, in: 1...100) {
-                labeledValue("Top-K (returned passages)", value: topK)
+                labeledValue("Top-K (returned passages)", value: topK,
+                             help: "Number of passages actually sent to the AI model. Lower = faster; higher = more context. RAGflow default: 10.")
             }
-            .help("Number of passages actually sent to the AI model. Lower = faster; higher = more context. RAGflow default: 10.")
             .onChange(of: topK) { _, newK in
                 if topN < newK { topN = newK }
             }
 
             Stepper(value: $topN, in: max(topK, 1)...500, step: 10) {
-                labeledValue("Top-N (candidate pool)", value: topN)
+                labeledValue("Top-N (candidate pool)", value: topN,
+                             help: "Wider candidate pool scored before selecting Top-K. Must be ≥ Top-K. RAGflow default: 50.")
             }
-            .help("Wider candidate pool scored before selecting Top-K. Must be ≥ Top-K. RAGflow default: 50.")
 
             VStack(alignment: .leading, spacing: 6) {
-                HStack {
+                HStack(spacing: 4) {
                     Text("Similarity Threshold")
+                    SettingHelpButton(text: "Minimum relevance score a passage must reach to be included. 0 = accept all candidates; 1 = exact match only. RAGflow default: 0.2.")
                     Spacer()
                     Text(String(format: "%.2f", threshold))
                         .foregroundStyle(.secondary)
@@ -76,7 +77,6 @@ struct KBRetrievalSettingsSheet: View {
                 }
                 Slider(value: $threshold, in: 0...1, step: 0.05)
                     .accessibilityLabel("Similarity threshold")
-                    .help("Minimum relevance score a passage must reach to be included. 0 = accept all candidates; 1 = exact match only. RAGflow default: 0.2.")
             }
         } header: {
             Text("Retrieval")
@@ -90,22 +90,26 @@ struct KBRetrievalSettingsSheet: View {
 
     private var chunkingSection: some View {
         Section {
-            Picker("Method", selection: $chunkMethod) {
+            Picker(selection: $chunkMethod) {
                 ForEach(ChunkMethod.allCases) { method in
                     Text(method.rawValue).tag(method)
                 }
+            } label: {
+                HStack(spacing: 4) {
+                    Text("Method")
+                    SettingHelpButton(text: "Controls how documents are split into passages. General works for most content; other methods are optimised for specific formats.")
+                }
             }
-            .help("Controls how documents are split into passages. General works for most content; other methods are optimised for specific formats.")
 
             Stepper(value: $chunkSize, in: 64...2048, step: 64) {
-                labeledValue("Chunk Size (words)", value: chunkSize)
+                labeledValue("Chunk Size (words)", value: chunkSize,
+                             help: "Target word count per chunk. Smaller = more precise retrieval; larger = more context per passage. Default: 512.")
             }
-            .help("Target word count per chunk. Smaller = more precise retrieval; larger = more context per passage. Default: 512.")
 
             Stepper(value: $chunkOverlap, in: 0...min(chunkSize / 2, 256), step: 16) {
-                labeledValue("Overlap (words)", value: chunkOverlap)
+                labeledValue("Overlap (words)", value: chunkOverlap,
+                             help: "Word overlap between adjacent chunks. Prevents context from being split across chunk boundaries. Default: 64.")
             }
-            .help("Word overlap between adjacent chunks. Prevents context from being split across chunk boundaries. Default: 64.")
         } header: {
             Text("Chunking")
         } footer: {
@@ -134,9 +138,12 @@ struct KBRetrievalSettingsSheet: View {
 
     // MARK: - Helpers
 
-    private func labeledValue(_ label: String, value: Int) -> some View {
-        HStack {
+    private func labeledValue(_ label: String, value: Int, help: String? = nil) -> some View {
+        HStack(spacing: 4) {
             Text(label)
+            if let help {
+                SettingHelpButton(text: help)
+            }
             Spacer()
             Text("\(value)")
                 .foregroundStyle(.secondary)
@@ -154,5 +161,33 @@ struct KBRetrievalSettingsSheet: View {
         updated.chunkOverlap = min(chunkOverlap, chunkSize / 2)
         onSave(updated)
         dismiss()
+    }
+}
+
+// MARK: - Inline help button
+
+/// Small ⓘ button that shows a brief explanation popover when tapped.
+/// On iPhone the popover adapts to a compact floating card.
+private struct SettingHelpButton: View {
+    let text: String
+    @State private var isPresented = false
+
+    var body: some View {
+        Button {
+            isPresented = true
+        } label: {
+            Image(systemName: "info.circle")
+                .imageScale(.small)
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $isPresented, arrowEdge: .top) {
+            Text(text)
+                .font(.footnote)
+                .padding(16)
+                .frame(maxWidth: 280, alignment: .leading)
+                .presentationCompactAdaptation(.popover)
+        }
+        .accessibilityLabel("Help for this setting")
     }
 }

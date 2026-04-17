@@ -1,18 +1,27 @@
 import SwiftUI
 
-/// Compact (iPhone) KB list. Uses NavigationLink → KBDetailView.
-/// Reuses KBListViewModel for all CRUD logic.
+/// Compact (iPhone) KB list. Uses a single navigationDestination to avoid
+/// multiple competing destinations for the same KnowledgeBase type.
 struct PhoneKBListView: View {
     @Binding var handoffKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
-    @State private var newKBDestination: KnowledgeBase?
+
+    /// Unified nav destination — one state drives all navigation paths:
+    /// row taps, new-KB creation (with autoImport), and Handoff resumption.
+    @State private var navDest: KBNavDest?
 
     var body: some View {
         List {
             ForEach(vm.kbs) { kb in
-                NavigationLink(value: kb) {
+                Button {
+                    navDest = KBNavDest(kb: kb)
+                } label: {
                     Label(kb.name, systemImage: "square.stack.3d.up")
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .buttonStyle(.plain)
+                .contentShape(Rectangle())
                 .contextMenu {
                     Button("Rename") {
                         vm.renameText = kb.name
@@ -29,14 +38,8 @@ struct PhoneKBListView: View {
             .onDelete { vm.requestDelete(at: $0) }
         }
         .navigationTitle("Knowledge Bases")
-        .navigationDestination(for: KnowledgeBase.self) { kb in
-            KBDetailView(kb: kb)
-        }
-        .navigationDestination(item: $newKBDestination) { kb in
-            KBDetailView(kb: kb, initialTab: 1, autoImport: true)
-        }
-        .navigationDestination(item: $handoffKB) { kb in
-            KBDetailView(kb: kb)
+        .navigationDestination(item: $navDest) { dest in
+            KBDetailView(kb: dest.kb, initialTab: dest.initialTab, autoImport: dest.autoImport)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -48,7 +51,9 @@ struct PhoneKBListView: View {
         // MARK: - Create KB
         .sheet(isPresented: $vm.showCreateAlert) {
             CreateKBSheet(name: $vm.newKBName) {
-                newKBDestination = vm.createKB()
+                if let created = vm.createKB() {
+                    navDest = KBNavDest(kb: created, initialTab: 1, autoImport: true)
+                }
             }
         }
         // MARK: - Rename KB
@@ -63,6 +68,9 @@ struct PhoneKBListView: View {
             }
         }
         .onAppear { vm.reload() }
+        .onChange(of: handoffKB) { _, kb in
+            if let kb { navDest = KBNavDest(kb: kb) }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .focusFilterChanged)) { _ in
             vm.reload()
         }
@@ -80,4 +88,21 @@ struct PhoneKBListView: View {
             Text("All documents and chat history in this knowledge base will be permanently deleted.")
         }
     }
+}
+
+// MARK: - Navigation destination wrapper
+
+/// Wraps a KnowledgeBase with the context needed to open the correct detail tab.
+/// Using a distinct Identifiable type ensures SwiftUI has a single, unambiguous
+/// navigationDestination registration — avoiding the undefined behaviour that
+/// arises from registering multiple destinations for the same KnowledgeBase type.
+private struct KBNavDest: Identifiable, Hashable {
+    let kb: KnowledgeBase
+    var initialTab: Int = 0
+    var autoImport: Bool = false
+
+    var id: String { kb.id }
+
+    func hash(into hasher: inout Hasher) { hasher.combine(kb.id) }
+    static func == (lhs: KBNavDest, rhs: KBNavDest) -> Bool { lhs.kb.id == rhs.kb.id }
 }

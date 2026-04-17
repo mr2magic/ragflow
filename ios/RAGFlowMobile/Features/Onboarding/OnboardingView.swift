@@ -244,49 +244,58 @@ struct OnboardingView: View {
 private struct OnboardingPageView: View {
     let page: OnboardingPage
     @State private var appeared = false
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    // True when running in landscape on iPhone (very limited vertical space).
+    private var isCompactHeight: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                Spacer(minLength: 60)
+                // Flexible top spacer: collapses on small screens, expands on large ones.
+                Spacer(minLength: 0)
+                    .frame(minHeight: isCompactHeight ? 8 : 20, maxHeight: isCompactHeight ? 16 : 60)
 
-                // Icon
+                // Icon — smaller in landscape to preserve vertical space.
                 Image(systemName: page.systemImage)
-                    .font(.system(size: 88))
+                    .font(.system(size: isCompactHeight ? 48 : 72))
                     .foregroundStyle(page.tint)
-                    .padding(.bottom, 36)
+                    .padding(.bottom, isCompactHeight ? 16 : 28)
                     .scaleEffect(appeared ? 1 : 0.6)
                     .opacity(appeared ? 1 : 0)
 
                 // Title
                 Text(page.title)
-                    .font(.largeTitle.bold())
+                    .font(isCompactHeight ? .title2.bold() : .largeTitle.bold())
                     .multilineTextAlignment(.center)
-                    .padding(.bottom, 10)
+                    .minimumScaleFactor(0.85)
+                    .padding(.bottom, 8)
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 12)
 
-                // Subtitle
-                Text(page.subtitle)
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared ? 0 : 10)
+                // Subtitle — hidden in compact height to save space.
+                if !isCompactHeight {
+                    Text(page.subtitle)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 28)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 10)
+                }
 
                 // Bullet points
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: isCompactHeight ? 10 : 16) {
                     ForEach(page.bullets.indices, id: \.self) { i in
-                        HStack(alignment: .top, spacing: 14) {
+                        HStack(alignment: .top, spacing: 12) {
                             Image(systemName: page.bullets[i].icon)
                                 .font(.body.weight(.semibold))
                                 .foregroundStyle(page.tint)
-                                .frame(width: 24, alignment: .center)
+                                .frame(width: 22, alignment: .center)
 
                             Text(page.bullets[i].text)
-                                .font(.body)
+                                .font(isCompactHeight ? .footnote : .body)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .opacity(appeared ? 1 : 0)
@@ -297,9 +306,11 @@ private struct OnboardingPageView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 36)
+                .padding(.horizontal, 32)
 
-                Spacer(minLength: 40)
+                // Flexible bottom spacer — provides breathing room without forcing overflow.
+                Spacer(minLength: 0)
+                    .frame(minHeight: isCompactHeight ? 8 : 20, maxHeight: isCompactHeight ? 16 : 40)
             }
         }
         .scrollBounceBehavior(.basedOnSize)

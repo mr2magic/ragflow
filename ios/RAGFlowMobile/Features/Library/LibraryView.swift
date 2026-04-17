@@ -163,6 +163,10 @@ struct LibraryView: View {
         } message: {
             Text(vm.errorMessage)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .scanImportComplete)) { note in
+            guard (note.object as? String) == kb.id else { return }
+            vm.reload()
+        }
         .sheet(item: $vm.bookToRename) { _ in
             RenameSheet(title: "Rename Document", text: $vm.renameText) {
                 vm.commitRename()

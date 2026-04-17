@@ -67,18 +67,25 @@ struct DocumentCameraView: UIViewControllerRepresentable {
             }
             guard !allText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
 
-            // Write the combined text to a temp file and ingest as plain text
-            let filename = "Scan \(Date().formatted(date: .abbreviated, time: .shortened)).txt"
-            let tmpURL = FileManager.default.temporaryDirectory
-                .appendingPathComponent(UUID().uuidString)
-                .appendingPathExtension("txt")
-            guard (try? allText.write(to: tmpURL, atomically: true, encoding: .utf8)) != nil else { return }
+            // Write directly to a named file in a unique temp directory.
+            // The previous two-step approach (write to a UUID file, then rename) failed
+            // silently when the rename threw — leaving ingest() pointed at a nonexistent path.
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withYear, .withMonth, .withDay, .withDashSeparatorInDate]
+            let dateStr = formatter.string(from: Date())
+            let tmpDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString, isDirectory: true)
+            try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+            let fileURL = tmpDir.appendingPathComponent("Scan \(dateStr).txt")
+            do {
+                try allText.write(to: fileURL, atomically: true, encoding: .utf8)
+            } catch {
+                return
+            }
 
-            // Rename so the title is readable
-            let namedURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
-            try? FileManager.default.moveItem(at: tmpURL, to: namedURL)
-
-            _ = try? await RAGService.shared.ingest(url: namedURL, kbId: kbId)
+            if (try? await RAGService.shared.ingest(url: fileURL, kbId: kbId)) != nil {
+                NotificationCenter.default.post(name: .scanImportComplete, object: kbId)
+            }
         }
     }
 }
@@ -88,4 +95,12 @@ struct DocumentCameraView: UIViewControllerRepresentable {
 /// Returns true when the device has a camera capable of document scanning.
 var isDocumentScanningAvailable: Bool {
     VNDocumentCameraViewController.isSupported
+}
+
+// MARK: - Notifications
+
+extension Notification.Name {
+    /// Posted by DocumentCameraView after a scan is successfully ingested.
+    /// `object` is the kbId (String) the scan was imported into.
+    static let scanImportComplete = Notification.Name("com.dhorn.ragflowmobile.scanImportComplete")
 }

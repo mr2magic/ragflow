@@ -54,6 +54,7 @@
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
+		B3E1A2C4D5F67890AB12CD34 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B9012345678901 /* SplashView.swift */; };
 		A628BA1D90A7198A9316FED0 /* RAGFlowWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CD4B49D1A3196EC708948B6D /* RAGFlowWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		AFCEF03F70E19376BD2F510F /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B497537E20C04D181D22A226 /* RAGFlowIntents.swift */; };
@@ -201,6 +202,7 @@
 		DD84034AFBC1CE9BE46AFAB1 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
 		E345372ED09AECC15C3CCA70 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		C4D5E6F7A8B9012345678901 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
 		F4A65A1CE0AD6395FFDF7969 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 			isa = PBXGroup;
 			children = (
 				F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */,
+					C4D5E6F7A8B9012345678901 /* SplashView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -718,6 +721,7 @@
 				B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */,
 				60420D2E8AAFD5B3CB6C7B8F /* OllamaService.swift in Sources */,
 				A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */,
+				B3E1A2C4D5F67890AB12CD34 /* SplashView.swift in Sources */,
 				59C9F169117898565EE6A2FB /* OpenAIService.swift in Sources */,
 				D493E389BCA77736EEE59D45 /* PDFParser.swift in Sources */,
 				C961322AEF6B7B26F4F21D4F /* PendingImportProcessor.swift in Sources */,

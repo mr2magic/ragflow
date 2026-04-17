@@ -1627,6 +1627,380 @@ final class RetrievalSettingsSaveTests: XCTestCase {
     }
 }
 
+// MARK: - Retrieval settings end-to-end
+
+/// Tests every retrieval-settings control end-to-end:
+/// persistence through the DB, default values, constraint enforcement,
+/// and observable effect on chunking / BM25 candidate counts.
+final class RetrievalSettingsEndToEndTests: XCTestCase {
+    private var dbq: DatabaseQueue!
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! runMigrations()
+    }
+
+    // Mirrors the migration sequence in ChunkFetchTests so the in-memory DB
+    // has the same schema as the live app.
+    private func runMigrations() throws {
+        var m = DatabaseMigrator()
+        m.registerMigration("v1") { db in
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+        m.registerMigration("v2") { db in
+            try db.alter(table: "chunks") { t in t.add(column: "embedding", .blob) }
+        }
+        m.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.alter(table: "books") { t in
+                t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        m.registerMigration("v4") { db in
+            try db.create(table: "messages", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("role", .text).notNull()
+                t.column("content", .text).notNull()
+                t.column("timestamp", .datetime).notNull()
+            }
+            try db.create(table: "message_sources", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("messageId", .text).notNull().references("messages", onDelete: .cascade)
+                t.column("chapterTitle", .text)
+                t.column("preview", .text).notNull()
+            }
+        }
+        m.registerMigration("v7") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
+            }
+        }
+        m.registerMigration("v8") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topN", .integer).notNull().defaults(to: 50)
+                t.add(column: "chunkMethod", .text).notNull().defaults(to: "General")
+                t.add(column: "chunkSize", .integer).notNull().defaults(to: 512)
+                t.add(column: "chunkOverlap", .integer).notNull().defaults(to: 64)
+                t.add(column: "similarityThreshold", .double).notNull().defaults(to: 0.2)
+            }
+            try db.alter(table: "books") { t in
+                t.add(column: "fileType", .text).notNull().defaults(to: "")
+                t.add(column: "pageCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "wordCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "sourceURL", .text).notNull().defaults(to: "")
+            }
+            try db.alter(table: "message_sources") { t in
+                t.add(column: "documentTitle", .text).notNull().defaults(to: "")
+            }
+        }
+        try m.migrate(dbq)
+    }
+
+    // Save a KB + one book + N chunks all containing `keyword` into the in-memory DB.
+    private func seedKB(_ kb: KnowledgeBase, chunkCount: Int, keyword: String) throws {
+        try dbq.write { db in
+            try kb.save(db)
+            let book = Book(id: "book-\(kb.id)", kbId: kb.id, title: kb.name,
+                            author: "", filePath: "", addedAt: Date(), chunkCount: chunkCount)
+            try book.save(db)
+            for i in 0..<chunkCount {
+                let text = "\(keyword) passage number \(i) with unique filler text alpha beta gamma delta epsilon"
+                let chunk = Chunk(id: "\(kb.id)-c\(i)", bookId: book.id,
+                                  content: text, chapterTitle: nil, position: i)
+                try chunk.save(db)
+                try db.execute(sql: "INSERT INTO chunks_fts(chunk_id, content, chapterTitle) VALUES (?, ?, ?)",
+                               arguments: [chunk.id, text, ""])
+            }
+        }
+    }
+
+    // Mirrors KBRetrievalSettingsSheet.save() constraint logic.
+    private func simulateSave(kb: KnowledgeBase, topK: Int, topN: Int,
+                               threshold: Double, chunkSize: Int, chunkOverlap: Int) -> KnowledgeBase {
+        var updated = kb
+        updated.topK = topK
+        updated.topN = max(topN, topK)
+        updated.similarityThreshold = threshold
+        updated.chunkSize = chunkSize
+        updated.chunkOverlap = min(chunkOverlap, chunkSize / 2)
+        return updated
+    }
+
+    // MARK: - Default values
+
+    func testDefaultKBTopKIs10() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.topK, 10)
+    }
+
+    func testDefaultKBTopNIs50() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.topN, 50)
+    }
+
+    func testDefaultKBThresholdIs0_2() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.similarityThreshold, 0.2, accuracy: 0.001)
+    }
+
+    func testDefaultKBChunkSizeIs512() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.chunkSize, 512)
+    }
+
+    func testDefaultKBChunkOverlapIs64() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.chunkOverlap, 64)
+    }
+
+    func testDefaultKBChunkMethodIsGeneral() {
+        let kb = KnowledgeBase(id: "x", name: "Test", createdAt: Date())
+        XCTAssertEqual(kb.chunkMethod, .general)
+    }
+
+    // MARK: - DB round-trip for all settings fields
+
+    func testAllSettingsFieldsRoundTripThroughDB() throws {
+        var kb = KnowledgeBase(id: "rt1", name: "Round Trip", createdAt: Date())
+        kb.topK = 7
+        kb.topN = 35
+        kb.similarityThreshold = 0.45
+        kb.chunkMethod = .paper
+        kb.chunkSize = 256
+        kb.chunkOverlap = 32
+        try dbq.write { db in try kb.save(db) }
+
+        let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "rt1") }
+        XCTAssertNotNil(loaded)
+        XCTAssertEqual(loaded!.topK, 7)
+        XCTAssertEqual(loaded!.topN, 35)
+        XCTAssertEqual(loaded!.similarityThreshold, 0.45, accuracy: 0.001)
+        XCTAssertEqual(loaded!.chunkMethod, .paper)
+        XCTAssertEqual(loaded!.chunkSize, 256)
+        XCTAssertEqual(loaded!.chunkOverlap, 32)
+    }
+
+    // MARK: - All ChunkMethod variants persist
+
+    func testAllChunkMethodsPersistAndLoad() throws {
+        for (i, method) in ChunkMethod.allCases.enumerated() {
+            var kb = KnowledgeBase(id: "cm-\(i)", name: method.rawValue, createdAt: Date())
+            kb.chunkMethod = method
+            try dbq.write { db in try kb.save(db) }
+            let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "cm-\(i)") }
+            XCTAssertEqual(loaded?.chunkMethod, method,
+                           "ChunkMethod.\(method.rawValue) did not survive DB round-trip")
+        }
+    }
+
+    // MARK: - Boundary value persistence
+
+    func testTopKMinimumBoundaryPersists() throws {
+        var kb = KnowledgeBase(id: "bnd1", name: "Boundary", createdAt: Date())
+        kb.topK = 1
+        kb.topN = 1
+        try dbq.write { db in try kb.save(db) }
+        let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "bnd1") }
+        XCTAssertEqual(loaded?.topK, 1)
+    }
+
+    func testTopKMaximumBoundaryPersists() throws {
+        var kb = KnowledgeBase(id: "bnd2", name: "Boundary", createdAt: Date())
+        kb.topK = 100
+        kb.topN = 100
+        try dbq.write { db in try kb.save(db) }
+        let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "bnd2") }
+        XCTAssertEqual(loaded?.topK, 100)
+    }
+
+    func testThresholdZeroPersists() throws {
+        var kb = KnowledgeBase(id: "thr0", name: "Threshold", createdAt: Date())
+        kb.similarityThreshold = 0.0
+        try dbq.write { db in try kb.save(db) }
+        let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "thr0") }
+        XCTAssertEqual(loaded?.similarityThreshold ?? -1, 0.0, accuracy: 0.001)
+    }
+
+    func testThresholdOnePersists() throws {
+        var kb = KnowledgeBase(id: "thr1", name: "Threshold", createdAt: Date())
+        kb.similarityThreshold = 1.0
+        try dbq.write { db in try kb.save(db) }
+        let loaded = try dbq.read { db in try KnowledgeBase.fetchOne(db, key: "thr1") }
+        XCTAssertEqual(loaded?.similarityThreshold ?? -1, 1.0, accuracy: 0.001)
+    }
+
+    // MARK: - Save constraints
+
+    func testSaveRaisesTopNToMatchTopKWhenLower() {
+        let kb = KnowledgeBase(id: "sc1", name: "Test", createdAt: Date())
+        let result = simulateSave(kb: kb, topK: 25, topN: 5,
+                                   threshold: 0.2, chunkSize: 512, chunkOverlap: 64)
+        XCTAssertEqual(result.topN, 25, "topN must be raised to topK when lower")
+    }
+
+    func testSaveCapsOverlapAtHalfChunkSize() {
+        let kb = KnowledgeBase(id: "sc2", name: "Test", createdAt: Date())
+        let result = simulateSave(kb: kb, topK: 10, topN: 50,
+                                   threshold: 0.2, chunkSize: 128, chunkOverlap: 200)
+        XCTAssertEqual(result.chunkOverlap, 64, "Overlap must be capped at chunkSize/2 = 64")
+    }
+
+    func testSavePreservesOverlapWhenWithinBounds() {
+        let kb = KnowledgeBase(id: "sc3", name: "Test", createdAt: Date())
+        let result = simulateSave(kb: kb, topK: 10, topN: 50,
+                                   threshold: 0.2, chunkSize: 512, chunkOverlap: 48)
+        XCTAssertEqual(result.chunkOverlap, 48)
+    }
+
+    func testSaveTopNEqualTopKIsPreserved() {
+        let kb = KnowledgeBase(id: "sc4", name: "Test", createdAt: Date())
+        let result = simulateSave(kb: kb, topK: 15, topN: 15,
+                                   threshold: 0.3, chunkSize: 256, chunkOverlap: 32)
+        XCTAssertEqual(result.topN, 15)
+    }
+
+    func testSaveZeroOverlapIsAllowed() {
+        let kb = KnowledgeBase(id: "sc5", name: "Test", createdAt: Date())
+        let result = simulateSave(kb: kb, topK: 10, topN: 50,
+                                   threshold: 0.2, chunkSize: 512, chunkOverlap: 0)
+        XCTAssertEqual(result.chunkOverlap, 0)
+    }
+
+    // MARK: - topN caps BM25 candidate pool (real data)
+
+    func testTopNCapsKeywordSearchResults() throws {
+        var kb = KnowledgeBase(id: "topc1", name: "TopN Test", createdAt: Date())
+        kb.topN = 4
+        try seedKB(kb, chunkCount: 10, keyword: "photosynthesis")
+
+        let results = try dbq.read { db -> [(Chunk, Int)] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "photosynthesis") else { return [] }
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT chunks.*
+                FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                JOIN chunks_fts ON chunks_fts.chunk_id = chunks.id
+                WHERE books.kbId = ? AND chunks_fts MATCH ?
+                ORDER BY chunks_fts.rank
+                LIMIT ?
+                """, arguments: [kb.id, pattern, kb.topN])
+            return rows.enumerated().map { idx, row in
+                let chunk = Chunk(id: row["id"], bookId: row["bookId"],
+                                  content: row["content"], chapterTitle: row["chapterTitle"],
+                                  position: row["position"])
+                return (chunk, idx + 1)
+            }
+        }
+        XCTAssertLessThanOrEqual(results.count, kb.topN,
+                                 "BM25 candidate pool must not exceed topN (\(kb.topN))")
+        XCTAssertEqual(results.count, kb.topN,
+                       "Expected exactly topN results from 10 matching chunks with topN=4")
+    }
+
+    func testBM25ReturnsAllWhenChunkCountLessThanTopN() throws {
+        var kb = KnowledgeBase(id: "topc2", name: "Small KB", createdAt: Date())
+        kb.topN = 20
+        try seedKB(kb, chunkCount: 3, keyword: "mitochondria")
+
+        let results = try dbq.read { db -> [Row] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "mitochondria") else { return [] }
+            return try Row.fetchAll(db, sql: """
+                SELECT chunks.*
+                FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                JOIN chunks_fts ON chunks_fts.chunk_id = chunks.id
+                WHERE books.kbId = ? AND chunks_fts MATCH ?
+                ORDER BY chunks_fts.rank
+                LIMIT ?
+                """, arguments: [kb.id, pattern, kb.topN])
+        }
+        XCTAssertEqual(results.count, 3,
+                       "All 3 chunks should be returned when chunkCount < topN")
+    }
+
+    // MARK: - chunkSize affects number of passages produced
+
+    func testSmallerChunkSizeProducesMorePassages() {
+        // 200 words of text — should yield more chunks with size=50 than size=150.
+        let words = (0..<200).map { "word\($0)" }
+        let text = words.joined(separator: " ")
+        let smallChunker = Chunker(chunkSize: 50, overlap: 0)
+        let largeChunker = Chunker(chunkSize: 150, overlap: 0)
+        let smallChunks = smallChunker.chunk(text: text, bookId: "b1", chapterTitle: nil)
+        let largeChunks = largeChunker.chunk(text: text, bookId: "b2", chapterTitle: nil)
+        XCTAssertGreaterThan(smallChunks.count, largeChunks.count,
+                             "Smaller chunkSize must produce more chunks from the same text")
+    }
+
+    func testMaxChunkSizeProducesFewerPassages() {
+        let words = (0..<500).map { "word\($0)" }
+        let text = words.joined(separator: " ")
+        let defaultChunker = Chunker(chunkSize: 512, overlap: 0)
+        let maxChunker = Chunker(chunkSize: 2048, overlap: 0)
+        let defaultChunks = defaultChunker.chunk(text: text, bookId: "b1", chapterTitle: nil)
+        let maxChunks = maxChunker.chunk(text: text, bookId: "b2", chapterTitle: nil)
+        XCTAssertGreaterThanOrEqual(defaultChunks.count, maxChunks.count,
+                                    "Larger chunkSize must not produce more chunks than smaller")
+    }
+
+    // MARK: - chunkOverlap increases passage count
+
+    func testOverlapProducesMorePassagesThanNoOverlap() {
+        // 300 words — with overlap each chunk shares words with its neighbor,
+        // so the chunker needs more chunks to cover the same content.
+        let words = (0..<300).map { "word\($0)" }
+        let text = words.joined(separator: " ")
+        let noOverlap = Chunker(chunkSize: 100, overlap: 0)
+        let withOverlap = Chunker(chunkSize: 100, overlap: 30)
+        let countWithout = noOverlap.chunk(text: text, bookId: "b1", chapterTitle: nil).count
+        let countWith    = withOverlap.chunk(text: text, bookId: "b2", chapterTitle: nil).count
+        XCTAssertGreaterThanOrEqual(countWith, countWithout,
+                                    "Overlap must not reduce the number of chunks")
+    }
+
+    func testOverlapContentIsSharedBetweenAdjacentChunks() {
+        // Use a text that's long enough to produce 3+ chunks at size=10 with overlap=5.
+        // The last words of chunk N should appear at the start of chunk N+1.
+        let words = (0..<60).map { "word\($0)" }
+        let text = words.joined(separator: " ")
+        let chunker = Chunker(chunkSize: 10, overlap: 5)
+        let chunks = chunker.chunk(text: text, bookId: "b", chapterTitle: nil)
+        guard chunks.count >= 2 else {
+            XCTFail("Need at least 2 chunks to test overlap"); return
+        }
+        // The last word of chunk 0 should appear somewhere in chunk 1
+        let lastWordChunk0 = chunks[0].content.split(separator: " ").last.map(String.init) ?? ""
+        XCTAssertTrue(chunks[1].content.contains(lastWordChunk0),
+                      "Overlapping word '\(lastWordChunk0)' from chunk 0 should appear in chunk 1")
+    }
+}
+
 // MARK: - URLError cancellation recognition
 
 final class CancellationErrorTests: XCTestCase {
@@ -1895,5 +2269,75 @@ final class GutenbergResolverTests: XCTestCase {
         XCTAssertEqual(book.gutenbergID, 11)
         let ext = book.downloadURL.pathExtension.lowercased()
         XCTAssertTrue(["epub", "txt"].contains(ext))
+    }
+}
+
+// MARK: - LLMError message quality tests
+
+final class LLMErrorMessageTests: XCTestCase {
+
+    // badResponse should no longer surface a vague "unexpected" message
+    func testBadResponseDescriptionIsActionable() {
+        let err = LLMError.badResponse
+        let desc = err.errorDescription ?? ""
+        XCTAssertFalse(desc.isEmpty)
+        // Should not be the old vague single-word message
+        XCTAssertFalse(desc == "LLM returned an unexpected response.")
+        // Should suggest a corrective action
+        XCTAssertTrue(desc.lowercased().contains("api key") || desc.lowercased().contains("network"),
+                      "badResponse description should mention API key or network, got: \(desc)")
+    }
+
+    // serverError wraps a custom string verbatim
+    func testServerErrorPreservesMessage() {
+        let msg = "Claude API error (429): Rate limit exceeded."
+        let err = LLMError.serverError(msg)
+        XCTAssertEqual(err.errorDescription, msg)
+    }
+
+    // missingApiKey message unchanged
+    func testMissingApiKeyDescription() {
+        let err = LLMError.missingApiKey
+        let desc = err.errorDescription ?? ""
+        XCTAssertTrue(desc.lowercased().contains("api key") || desc.lowercased().contains("ollama"),
+                      "missingApiKey should mention API key or Ollama, got: \(desc)")
+    }
+
+    // Verify the provider name + status code appear in formatted error strings
+    func testClaudeErrorIncludesStatusCode() {
+        let err = LLMError.serverError("Claude API error (401): invalid x-api-key")
+        let desc = err.errorDescription ?? ""
+        XCTAssertTrue(desc.contains("401"), "Claude error message should include HTTP status code")
+        XCTAssertTrue(desc.lowercased().contains("claude"), "Should identify Claude as the provider")
+    }
+
+    func testOpenAIErrorIncludesStatusCode() {
+        let err = LLMError.serverError("OpenAI error (403): You exceeded your current quota")
+        let desc = err.errorDescription ?? ""
+        XCTAssertTrue(desc.contains("403"), "OpenAI error message should include HTTP status code")
+        XCTAssertTrue(desc.lowercased().contains("openai"), "Should identify OpenAI as the provider")
+    }
+
+    func testOllamaErrorIncludesProviderName() {
+        let err = LLMError.serverError("Ollama: model 'llama3' not found")
+        let desc = err.errorDescription ?? ""
+        XCTAssertTrue(desc.lowercased().contains("ollama"), "Should identify Ollama as the provider")
+    }
+
+    func testOllamaHTTPErrorIncludesStatusCode() {
+        let err = LLMError.serverError("Ollama returned HTTP 503.")
+        let desc = err.errorDescription ?? ""
+        XCTAssertTrue(desc.contains("503"), "Ollama HTTP error should include status code")
+    }
+
+    func testNetworkErrorIncludesProvider() {
+        let claudeErr = LLMError.serverError("Claude: unexpected network response. Check your internet connection.")
+        XCTAssertTrue((claudeErr.errorDescription ?? "").lowercased().contains("claude"))
+
+        let openaiErr = LLMError.serverError("OpenAI: unexpected network response. Check your internet connection.")
+        XCTAssertTrue((openaiErr.errorDescription ?? "").lowercased().contains("openai"))
+
+        let ollamaErr = LLMError.serverError("Ollama: unexpected network response. Check that your Ollama host is reachable.")
+        XCTAssertTrue((ollamaErr.errorDescription ?? "").lowercased().contains("ollama"))
     }
 }

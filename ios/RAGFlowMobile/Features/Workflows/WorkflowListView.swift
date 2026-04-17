@@ -7,6 +7,8 @@ struct WorkflowListView: View {
     @State private var importError: String?
     @State private var showImportError = false
 
+    @State private var selectedWorkflow: Workflow?
+
     var body: some View {
         Group {
             if vm.workflows.isEmpty {
@@ -14,11 +16,14 @@ struct WorkflowListView: View {
             } else {
                 List {
                     ForEach(vm.workflows) { workflow in
-                        NavigationLink {
-                            WorkflowDetailView(workflow: workflow)
+                        Button {
+                            selectedWorkflow = workflow
                         } label: {
                             workflowRow(workflow)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                     }
                     .onDelete { offsets in
                         for i in offsets { vm.delete(vm.workflows[i]) }
@@ -27,6 +32,9 @@ struct WorkflowListView: View {
             }
         }
         .navigationTitle("Workflows")
+        .navigationDestination(item: $selectedWorkflow) { workflow in
+            WorkflowDetailView(workflow: workflow)
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { vm.showNewWorkflow = true } label: {

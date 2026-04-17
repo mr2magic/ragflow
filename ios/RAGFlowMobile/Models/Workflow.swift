@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-struct Workflow: Codable, Identifiable, FetchableRecord, MutablePersistableRecord {
+struct Workflow: Codable, Identifiable, Hashable, FetchableRecord, MutablePersistableRecord {
     var id: String
     var name: String
     var templateId: String

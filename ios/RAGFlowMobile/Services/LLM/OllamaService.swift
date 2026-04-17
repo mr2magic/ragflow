@@ -43,7 +43,9 @@ final class OllamaService: LLMService {
 
         let (bytes, response) = try await OllamaService.session.bytes(for: request)
 
-        guard let http = response as? HTTPURLResponse else { throw LLMError.badResponse }
+        guard let http = response as? HTTPURLResponse else {
+            throw LLMError.serverError("Ollama: unexpected network response. Check that your Ollama host is reachable.")
+        }
         if http.statusCode != 200 {
             // Read the error body so we can surface Ollama's actual message (e.g. "model not found").
             var body = ""
@@ -53,7 +55,7 @@ final class OllamaService: LLMService {
                let msg = json["error"] as? String {
                 throw LLMError.serverError("Ollama: \(msg)")
             }
-            throw LLMError.badResponse
+            throw LLMError.serverError("Ollama returned HTTP \(http.statusCode).")
         }
 
         return AsyncThrowingStream { continuation in

@@ -118,7 +118,9 @@ final class ClaudeService: LLMService {
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else { throw LLMError.badResponse }
+        guard let http = response as? HTTPURLResponse else {
+            throw LLMError.serverError("Claude: unexpected network response. Check your internet connection.")
+        }
         guard http.statusCode == 200 else {
             // Try to surface the API's own error message
             if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -155,7 +157,7 @@ enum LLMError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .badResponse:     return "LLM returned an unexpected response."
+        case .badResponse:     return "The AI provider returned an unrecognised response. Check your API key and network connection."
         case .missingApiKey:   return "No AI provider configured. Open Settings and add your Claude API key, ChatGPT API key, or Ollama host."
         case .serverError(let msg): return msg
         }

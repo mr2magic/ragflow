@@ -4,6 +4,8 @@ import BackgroundTasks
 @main
 struct RAGFlowMobileApp: App {
 
+    @State private var splashDismissed = false
+
     init() {
         // BGTaskScheduler handlers must be registered before the first scene connects.
         guard #available(iOS 26, *) else { return }
@@ -33,7 +35,11 @@ struct RAGFlowMobileApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if splashDismissed {
+                ContentView()
+            } else {
+                SplashView { splashDismissed = true }
+            }
         }
     }
 }
