@@ -22,6 +22,8 @@ Last updated: 2026-04-17
 |---|------|--------|
 | 14 | **Splash screen** — Done: SplashView.swift with app icon, title, version, animated entrance; "Get Started" → OnboardingView (first run) or "Open" → ContentView (returning); wired into RAGFlowMobileApp.swift | done |
 | 16 | **Import and export workflows** — Full end-to-end: (1) verify WorkflowDetailView toolbar export button calls ExportImportService and ShareSheet correctly; (2) add "Export" swipe action + context menu to WorkflowListView rows; (3) add "Import Workflow" toolbar button to WorkflowListView that opens .fileImporter for .ragflow-workflow files and calls ExportImportService.importWorkflow(); (4) save imported workflow to DB and reload list | pending |
+| 17 | **Update Onboarding with all new features and file types** — Audit all 9 pages; update Import Documents page (GEDCOM, ZIP); update Agent Workflows page; update iOS features page; add any new capabilities added since 0.5.0 | pending |
+| 18 | **"Where is New Chat?"** — Investigate and fix discoverability of new chat creation; may need UI affordance in chat list or KB detail | pending |
 
 ## Core ML Embeddings (0.7.x)
 

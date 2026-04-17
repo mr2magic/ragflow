@@ -13,9 +13,23 @@ struct OfficeParser {
     // MARK: - DOCX
 
     func parseDOCX(url: URL) throws -> [Section] {
-        let dest = try unzip(url)
-        defer { try? FileManager.default.removeItem(at: dest) }
-        return try parseDOCXContent(dir: dest, fileName: url.deletingPathExtension().lastPathComponent)
+        // Legacy .doc files (OLE Compound Document) start with magic bytes D0 CF 11 E0.
+        // The Zip library throws a cryptic ZipError.unzipFail (code 0) for these — catch
+        // it early and surface a clear message.
+        if let header = try? FileHandle(forReadingFrom: url).readData(ofLength: 8),
+           header.prefix(4).elementsEqual([0xD0, 0xCF, 0x11, 0xE0]) {
+            throw OfficeError.legacyDocFormat
+        }
+        do {
+            let dest = try unzip(url)
+            defer { try? FileManager.default.removeItem(at: dest) }
+            return try parseDOCXContent(dir: dest, fileName: url.deletingPathExtension().lastPathComponent)
+        } catch let e as OfficeError {
+            throw e
+        } catch {
+            // Zip failed — file may be encrypted, corrupted, or not a real OOXML file
+            throw OfficeError.unzipFailed(url.lastPathComponent)
+        }
     }
 
     /// Visible for testing — parse an already-unzipped DOCX directory.
@@ -152,7 +166,7 @@ struct OfficeParser {
             if !paraText.isEmpty { result += paraText + "\n" }
         }
         return result
-            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "[ \\t]+", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
@@ -203,12 +217,16 @@ struct OfficeParser {
     }
 
     enum OfficeError: LocalizedError {
-        case missingPart(String), emptyContent
+        case missingPart(String), emptyContent, legacyDocFormat, unzipFailed(String)
 
         var errorDescription: String? {
             switch self {
             case .missingPart(let p): return "Missing Office XML part: \(p)"
             case .emptyContent: return "Document contained no extractable text."
+            case .legacyDocFormat:
+                return "This file is in the legacy .doc format, which is not supported. Please open it in Word or Pages and resave as .docx, then import again."
+            case .unzipFailed(let name):
+                return "\"\(name)\" could not be opened. The file may be encrypted, password-protected, or corrupted. Try resaving it from the original application."
             }
         }
     }

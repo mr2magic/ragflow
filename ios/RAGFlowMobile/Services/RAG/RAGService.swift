@@ -47,6 +47,9 @@ final class RAGService: ObservableObject {
             return try await ingestHTML(url: url, kbId: kbId, chunker: c)
         case "rtf":
             return try await ingestRTF(url: url, kbId: kbId, chunker: c)
+        case "doc":
+            // Legacy binary Word format — not supported. Guide the user to resave as .docx.
+            throw IngestError.unsupportedLegacyDoc
         case "docx":
             return try await ingestDOCX(url: url, kbId: kbId, chunker: c)
         case "xlsx":
@@ -508,12 +511,13 @@ final class RAGService: ObservableObject {
     }
 
     enum IngestError: LocalizedError {
-        case unsupportedFormat, parseFailure
+        case unsupportedFormat, parseFailure, unsupportedLegacyDoc
 
         var errorDescription: String? {
             switch self {
             case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, GED (GEDCOM), ZIP, and common code files."
             case .parseFailure: return "Could not parse the document."
+            case .unsupportedLegacyDoc: return "Legacy .doc files are not supported. Open the file in Word or Pages and resave as .docx, then import again."
             }
         }
     }

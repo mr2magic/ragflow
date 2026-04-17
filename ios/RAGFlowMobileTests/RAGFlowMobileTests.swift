@@ -2341,3 +2341,225 @@ final class LLMErrorMessageTests: XCTestCase {
         XCTAssertTrue((ollamaErr.errorDescription ?? "").lowercased().contains("ollama"))
     }
 }
+
+// MARK: - DOCX import tests
+
+final class DOCXParserTests: XCTestCase {
+
+    private let parser = OfficeParser()
+    private var tmpDir: URL!
+
+    // Minimal but valid Word XML skeleton
+    private func makeDocumentXML(paragraphs: [String]) -> String {
+        let paras = paragraphs.map { text -> String in
+            "<w:p><w:r><w:t>\(text)</w:t></w:r></w:p>"
+        }.joined()
+        return """
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body>\(paras)</w:body>
+        </w:document>
+        """
+    }
+
+    // Write word/document.xml inside a temp dir, return the dir URL
+    private func makeDocxDir(xml: String) throws -> URL {
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let wordDir = dir.appendingPathComponent("word", isDirectory: true)
+        try FileManager.default.createDirectory(at: wordDir, withIntermediateDirectories: true)
+        try xml.write(to: wordDir.appendingPathComponent("document.xml"),
+                      atomically: true, encoding: .utf8)
+        return dir
+    }
+
+    override func tearDown() {
+        if let d = tmpDir { try? FileManager.default.removeItem(at: d) }
+        tmpDir = nil
+    }
+
+    // ── Basic extraction ──────────────────────────────────────────────────────
+
+    func testSingleParagraphExtracted() throws {
+        tmpDir = try makeDocxDir(xml: makeDocumentXML(paragraphs: ["Hello world"]))
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "test")
+        XCTAssertEqual(sections.count, 1)
+        XCTAssertTrue(sections[0].text.contains("Hello world"))
+    }
+
+    func testMultipleParagraphsExtracted() throws {
+        tmpDir = try makeDocxDir(xml: makeDocumentXML(paragraphs: ["First paragraph", "Second paragraph", "Third paragraph"]))
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "doc")
+        XCTAssertEqual(sections.count, 1)
+        let text = sections[0].text
+        XCTAssertTrue(text.contains("First paragraph"))
+        XCTAssertTrue(text.contains("Second paragraph"))
+        XCTAssertTrue(text.contains("Third paragraph"))
+    }
+
+    func testFileNameBecomesTitle() throws {
+        tmpDir = try makeDocxDir(xml: makeDocumentXML(paragraphs: ["content"]))
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "MyReport")
+        XCTAssertEqual(sections[0].title, "MyReport")
+    }
+
+    // ── Multiple <w:t> runs in one paragraph (bold, italic spans) ──────────
+
+    func testMultipleRunsInParagraph() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body>
+          <w:p>
+            <w:r><w:t>Hello </w:t></w:r>
+            <w:r><w:rPr><w:b/></w:rPr><w:t>bold</w:t></w:r>
+            <w:r><w:t> world</w:t></w:r>
+          </w:p>
+        </w:body>
+        </w:document>
+        """
+        tmpDir = try makeDocxDir(xml: xml)
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "f")
+        XCTAssertTrue(sections[0].text.contains("Hello"))
+        XCTAssertTrue(sections[0].text.contains("bold"))
+        XCTAssertTrue(sections[0].text.contains("world"))
+    }
+
+    // ── Whitespace normalisation ───────────────────────────────────────────
+
+    func testExcessiveWhitespaceCollapsed() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body><w:p><w:r><w:t>  lots   of   spaces  </w:t></w:r></w:p></w:body>
+        </w:document>
+        """
+        tmpDir = try makeDocxDir(xml: xml)
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "f")
+        // After normalisation, multiple spaces collapse to one
+        XCTAssertFalse(sections[0].text.contains("  "), "Extra whitespace should be collapsed")
+    }
+
+    // ── Error paths ───────────────────────────────────────────────────────
+
+    func testMissingDocumentXMLThrows() throws {
+        tmpDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        // word/ dir exists but document.xml is absent
+        try FileManager.default.createDirectory(
+            at: tmpDir.appendingPathComponent("word"), withIntermediateDirectories: true)
+
+        XCTAssertThrowsError(try parser.parseDOCXContent(dir: tmpDir, fileName: "f")) { error in
+            XCTAssertTrue("\(error)".lowercased().contains("document.xml") ||
+                          "\(error)".lowercased().contains("missing"),
+                          "Should report missing document.xml, got: \(error)")
+        }
+    }
+
+    func testEmptyDocumentThrows() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body></w:body>
+        </w:document>
+        """
+        tmpDir = try makeDocxDir(xml: xml)
+        XCTAssertThrowsError(try parser.parseDOCXContent(dir: tmpDir, fileName: "empty")) { error in
+            XCTAssertTrue("\(error)".lowercased().contains("empty") ||
+                          "\(error)".lowercased().contains("no") ||
+                          "\(error)".lowercased().contains("text"),
+                          "Should report empty content, got: \(error)")
+        }
+    }
+
+    func testWhitespaceOnlyBodyThrows() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body><w:p><w:r><w:t>   </w:t></w:r></w:p></w:body>
+        </w:document>
+        """
+        tmpDir = try makeDocxDir(xml: xml)
+        XCTAssertThrowsError(try parser.parseDOCXContent(dir: tmpDir, fileName: "blank"))
+    }
+
+    // ── Paragraph separators ──────────────────────────────────────────────
+
+    func testParagraphsAreSeparatedByNewlines() throws {
+        tmpDir = try makeDocxDir(xml: makeDocumentXML(paragraphs: ["Line one", "Line two"]))
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "f")
+        // Paragraphs should be on separate lines
+        let lines = sections[0].text.components(separatedBy: "\n").filter { !$0.isEmpty }
+        XCTAssertGreaterThanOrEqual(lines.count, 2,
+            "Each paragraph should produce a separate line")
+    }
+
+    // ── Legacy .doc binary format detection ───────────────────────────────
+
+    func testLegacyDocMagicBytesThrowsDescriptiveError() throws {
+        // OLE Compound Document magic: D0 CF 11 E0 ...
+        let legacyHeader = Data([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let fakeDoc = dir.appendingPathComponent("thesis.docx")
+        try legacyHeader.write(to: fakeDoc)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        XCTAssertThrowsError(try parser.parseDOCX(url: fakeDoc)) { error in
+            let desc = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            XCTAssertTrue(desc.lowercased().contains("legacy") || desc.lowercased().contains("doc"),
+                          "Should explain legacy format issue, got: \(desc)")
+            XCTAssertTrue(desc.lowercased().contains("docx") || desc.lowercased().contains("resave"),
+                          "Should guide user to resave as .docx, got: \(desc)")
+        }
+    }
+
+    func testNonZipFileThrowsDescriptiveError() throws {
+        // A plain text file masquerading as .docx
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let fakeDocx = dir.appendingPathComponent("fake.docx")
+        try "This is just plain text, not a ZIP".write(to: fakeDocx, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        XCTAssertThrowsError(try parser.parseDOCX(url: fakeDocx)) { error in
+            let desc = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            // Should NOT be the raw ZipError — must be a human-readable message
+            XCTAssertFalse(desc.contains("ZipError") || desc.contains("error 0"),
+                           "Raw ZipError must not reach the user, got: \(desc)")
+            XCTAssertTrue(desc.count > 20, "Error should have a meaningful description")
+        }
+    }
+
+    // ── Typical document structure ────────────────────────────────────────
+
+    func testRealisticDocument() throws {
+        let xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body>
+          <w:p><w:r><w:t>Project Alpha — Q1 Report</w:t></w:r></w:p>
+          <w:p><w:r><w:t></w:t></w:r></w:p>
+          <w:p><w:r><w:t>Executive Summary</w:t></w:r></w:p>
+          <w:p><w:r><w:t>Revenue increased 12% year over year driven by new enterprise contracts.</w:t></w:r></w:p>
+          <w:p><w:r><w:t>Key Metrics</w:t></w:r></w:p>
+          <w:p><w:r><w:t>MRR: $480,000</w:t></w:r></w:p>
+          <w:p><w:r><w:t>Churn: 2.1%</w:t></w:r></w:p>
+        </w:body>
+        </w:document>
+        """
+        tmpDir = try makeDocxDir(xml: xml)
+        let sections = try parser.parseDOCXContent(dir: tmpDir, fileName: "Q1Report")
+        XCTAssertEqual(sections.count, 1)
+        let text = sections[0].text
+        XCTAssertTrue(text.contains("Project Alpha"))
+        XCTAssertTrue(text.contains("Executive Summary"))
+        XCTAssertTrue(text.contains("Revenue increased 12%"))
+        XCTAssertTrue(text.contains("MRR"))
+        XCTAssertTrue(text.contains("Churn"))
+        XCTAssertGreaterThan(text.count, 50)
+    }
+}
