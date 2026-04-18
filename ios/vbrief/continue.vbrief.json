@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-17",
+  "date": "2026-04-18",
   "status": "stable",
   "phase": "brownfield improvement — 0.8.0 live on TestFlight, post-ship polish",
   "tag": "Golden_Child_4_16_26",
@@ -24,7 +24,8 @@
     "Added 50-doc cap per KB (task 20): LibraryViewModel enforces cap on all ingest paths; count badge in LibraryView turns orange ≤5 slots",
     "Added DocumentCameraView cap check before OCR",
     "Added workflow export/import (task 16): context menu + leading swipe on WorkflowListView rows",
-    "Fixed stale KB snapshot in retrieveChunks (task — topK always 10): re-fetches live KB from DB at query time via db.kb(id:)"
+    "Fixed stale KB snapshot in retrieveChunks (task — topK always 10): re-fetches live KB from DB at query time via db.kb(id:)",
+    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers (raw session transcript noise); wrote diary entry; palace now 444 clean drawers"
   ],
 
   "in_progress": [],
@@ -44,7 +45,7 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "10ff1e3ee",
+    "last_commit": "e4f07be99",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",

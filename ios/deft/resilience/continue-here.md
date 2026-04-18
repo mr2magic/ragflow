@@ -8,9 +8,9 @@ When starting a new session, Claude reads this file to understand where things l
 
 ## Last Checkpoint
 
-**Status**: 0.8.0 live on TestFlight — post-ship polish committed + pushed (2026-04-17) — all tests passing
+**Status**: 0.8.0 live on TestFlight — post-ship polish + mempalace cleanup committed + pushed (2026-04-18) — all tests passing
 **Phase**: Brownfield improvement — stable
-**Last commit**: `10ff1e3ee` Fix(iOS): always fetch live KB settings in retrieveChunks — fixes topK always 10
+**Last commit**: `e4f07be99` Chore(ios): cleaned mempalace — pruned 202 stale vbrief drawers, updated checkpoint
 **Next**: Task 13 (simulator regression iPhone 17 Pro), then iCloud sync (tasks 4-6)
 
 ## What Was Done (0.3.0 session)
