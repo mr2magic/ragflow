@@ -1,40 +1,38 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-16",
+  "date": "2026-04-17",
   "status": "stable",
-  "phase": "brownfield improvement — 0.8.0 shipped to TestFlight",
+  "phase": "brownfield improvement — 0.8.0 live on TestFlight, post-ship polish",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "Fixed CloudKitSyncService launch crash: deferred CKContainer init to prevent SIGTRAP in simulator",
-    "Fixed CloudKit fetchAll: API returns named tuple (matchResults, queryCursor) not a dictionary",
-    "Fixed xcodegen wiping extension targets: added RAGFlowShareExtension + RAGFlowWidget to project.yml",
-    "Fixed signing errors: DEVELOPMENT_TEAM=LVK5C2V4J8 baked into all targets in project.yml permanently",
-    "Corrected team ID: 5FLM4GQ73L was wrong; confirmed working ID is LVK5C2V4J8 (Distribution)",
-    "Removed CoreML on-device embeddings: tokenizer was a stub producing garbage vectors — deferred",
-    "Removed useOnDeviceEmbeddings flag from LLMConfig, SettingsStore, RAGService, ChatViewModel, tests",
-    "Hidden iCloud sync toggle: CloudKit container not yet created in Apple Developer portal",
-    "Added GutenbergResolver: detects gutenberg.org/ebooks/{id} URLs, resolves to direct epub/txt download",
-    "Wired GutenbergResolver into LibraryViewModel.importFromURL() — transparent to non-Gutenberg URLs",
-    "GutenbergResolverTests: 10/10 passing including live network tests (Pride & Prejudice, Alice)",
-    "Archive confirmed clean: ARCHIVE SUCCEEDED with extensions embedded",
-    "Improved LLM error surfacing: ClaudeService.post() and OpenAIService now throw serverError with real HTTP status + API message instead of generic badResponse",
-    "ClaudeService: non-JSON 200 response shows first 200 chars of raw body for diagnosis",
-    "0.8.0 uploaded to TestFlight via Xcode Organizer (2026-04-16)",
-    "Added GEDCOM (.ged) import: new GEDCOMParser.swift parses individuals + families into text sections; routed through RAGService.ingestGED()",
-    "Added ZIP (.zip) import: RAGService.ingestZIP() unzips and ingests each contained supported file as a separate Book",
-    "Registered GEDCOMParser.swift in project.pbxproj",
-    "Added ged + zip to LibraryView supported import types, empty-state description, and LibraryViewModel scanDocumentsFolder auto-scan",
-    "GEDCOMParserTests: 17/17 passing — names, dates, places, family sections, notes, sex labels, CRLF/CR endings, file-based parse"
+    "Fixed LLM error surfacing: OpenAIService + OllamaService split non-HTTP / non-200 guards with descriptive serverError messages",
+    "Fixed ClaudeService.badResponse description: now says 'unrecognised response — check API key and network'",
+    "Fixed KB tap on iPhone (task 12): replaced 3 competing navigationDestination registrations with single KBNavDest wrapper + navigationDestination(item:)",
+    "Fixed Skip / workflow tap not working on SplashView: added onChange(of: hasCompletedOnboarding) to dismiss fullScreenCover and call onDismiss()",
+    "Fixed WorkflowListView navigation: Button + navigationDestination(item: $selectedWorkflow) replaces broken NavigationLink",
+    "Added Hashable to Workflow model (required by navigationDestination(item:))",
+    "Fixed widget/share extension version mismatch: both Info.plist files bumped to 0.8.0 / build 8",
+    "Added shared Xcode schemes to xcshareddata/xcschemes/ (RAGFlowMobile, RAGFlowShareExtension, RAGFlowWidget)",
+    "Fixed DOCX import ZIPError 0: added OLE magic byte check (0xD0 0xCF 0x11 0xE0) for legacy .doc detection; wrapped all ZipError in descriptive OfficeError.unzipFailed",
+    "Added .doc extension routing in RAGService → IngestError.unsupportedLegacyDoc with helpful user message",
+    "Fixed OfficeParser extractWText: regex '\\\\s+' → '[ \\\\t]+' to preserve paragraph newlines",
+    "Added New Chat button (task 18): square.and.pencil toolbar item in ChatView calls onNewChat closure",
+    "Updated OnboardingView to 0.8.0 (task 17): GEDCOM/ZIP on import page, New Chat on Chat page, 30+ formats, KB export/import bullet",
+    "Fixed all tooltips multiline (task 19): SettingHelpButton popover uses fixedSize + multilineTextAlignment + minWidth:220",
+    "Added 50-doc cap per KB (task 20): LibraryViewModel enforces cap on all ingest paths; count badge in LibraryView turns orange ≤5 slots",
+    "Added DocumentCameraView cap check before OCR",
+    "Added workflow export/import (task 16): context menu + leading swipe on WorkflowListView rows",
+    "Fixed stale KB snapshot in retrieveChunks (task — topK always 10): re-fetches live KB from DB at query time via db.kb(id:)"
   ],
 
   "in_progress": [],
 
   "next": [
-    "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync",
-    "Gutenberg browser UI: in-app search by title/author (Level 3, optional)",
-    "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (deferred)",
+    "Task 13: Simulator regression — iPhone 17 Pro landscape + portrait (manual UI test)",
+    "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync (tasks 4-6)",
+    "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (tasks 1-3, deferred)",
     "iCloud sync re-index prompt when pulling remote KBs"
   ],
 
@@ -46,13 +44,15 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "5e3baf248",
+    "last_commit": "10ff1e3ee",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
-    "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive"
+    "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",
+    "retrieval_fix_note": "ChatViewModel.retrieveChunks now calls db.kb(id:) to get live KB settings — fixes topK/topN/threshold always showing init-time defaults"
   },
 
   "open_questions": [
-    "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?"
+    "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?",
+    "User reported: 'Claude results are not updating the screen properly' — needs clarification (iOS app or Claude Code UI?)"
   ]
 }
