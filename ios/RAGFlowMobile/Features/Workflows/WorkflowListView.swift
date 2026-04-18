@@ -80,7 +80,7 @@ struct WorkflowListView: View {
         }
         .fileImporter(
             isPresented: $showWorkflowImporter,
-            allowedContentTypes: [UTType(filenameExtension: "ragflow-workflow") ?? .json],
+            allowedContentTypes: [UTType("com.dhorn.ragflowmobile.ragflow-workflow") ?? UTType(filenameExtension: "ragflow-workflow") ?? .json],
             allowsMultipleSelection: false
         ) { result in
             handleWorkflowImport(result: result)

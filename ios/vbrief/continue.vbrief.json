@@ -3,10 +3,17 @@
   "project": "RAGFlowMobile",
   "date": "2026-04-18",
   "status": "stable",
-  "phase": "brownfield improvement — 0.8.0 live on TestFlight, post-ship polish",
+  "phase": "brownfield improvement — 0.8.0 live on TestFlight, post-ship planning",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
+    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md (High/Medium/Low + feature gaps by category)",
+    "Saved realsave shorthand command to auto-memory: mempalace mine → save → /deft:checkpoint → commit all → push remote",
+    "Saved project_backlog.md to auto-memory with full backlog summary",
+    "FEATURE_COMPARISON.md note: stamped iOS 0.3.0 but current is 0.8.0 — Categorize, Switch, Variable Assigner, DuckDuckGo/Wikipedia, Workflow export already done and excluded from backlog"
+  ],
+
+  "prior_session_completed": [
     "Fixed LLM error surfacing: OpenAIService + OllamaService split non-HTTP / non-200 guards with descriptive serverError messages",
     "Fixed ClaudeService.badResponse description: now says 'unrecognised response — check API key and network'",
     "Fixed KB tap on iPhone (task 12): replaced 3 competing navigationDestination registrations with single KBNavDest wrapper + navigationDestination(item:)",
@@ -34,7 +41,8 @@
     "Task 13: Simulator regression — iPhone 17 Pro landscape + portrait (manual UI test)",
     "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync (tasks 4-6)",
     "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (tasks 1-3, deferred)",
-    "iCloud sync re-index prompt when pulling remote KBs"
+    "iCloud sync re-index prompt when pulling remote KBs",
+    "Update FEATURE_COMPARISON.md to reflect 0.8.0 actual state (many ❌ items are now ✅)"
   ],
 
   "key_facts": {
@@ -45,7 +53,7 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "e4f07be99",
+    "last_commit": "9c98a4070",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",

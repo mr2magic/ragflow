@@ -83,5 +83,76 @@
         <string>com.dhorn.ragflowmobile.import</string>
         <string>com.dhorn.ragflowmobile.workflow</string>
     </array>
+    <!-- Custom document types owned by this app -->
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.dhorn.ragflowmobile.ragflow-workflow</string>
+            <key>UTTypeDescription</key>
+            <string>RAGFlow Workflow</string>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+                <string>public.json</string>
+            </array>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>ragflow-workflow</string>
+                </array>
+                <key>public.mime-type</key>
+                <string>application/json</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.dhorn.ragflowmobile.ragflow-kb</string>
+            <key>UTTypeDescription</key>
+            <string>RAGFlow Knowledge Base</string>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+                <string>public.json</string>
+            </array>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>ragflow-kb</string>
+                </array>
+                <key>public.mime-type</key>
+                <string>application/json</string>
+            </dict>
+        </dict>
+    </array>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>RAGFlow Workflow</string>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.dhorn.ragflowmobile.ragflow-workflow</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>RAGFlow Knowledge Base</string>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.dhorn.ragflowmobile.ragflow-kb</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

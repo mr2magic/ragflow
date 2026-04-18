@@ -63,7 +63,7 @@ struct LibraryView: View {
 
     private var activeImportTypes: [UTType] {
         activeImportMode == .kbArchive
-            ? [UTType(filenameExtension: "ragflow-kb") ?? .json]
+            ? [UTType("com.dhorn.ragflowmobile.ragflow-kb") ?? UTType(filenameExtension: "ragflow-kb") ?? .json]
             : supportedImportTypes
     }
 

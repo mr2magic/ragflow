@@ -54,11 +54,12 @@
 		98D5EF50BD89CA677095E7D0 /* RAGService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CED5934D63CB02BDF103DA /* RAGService.swift */; };
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
-		B3E1A2C4D5F67890AB12CD34 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B9012345678901 /* SplashView.swift */; };
 		A628BA1D90A7198A9316FED0 /* RAGFlowWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CD4B49D1A3196EC708948B6D /* RAGFlowWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA11BB22CC33DD44EE55FF66 /* GEDCOMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		AFCEF03F70E19376BD2F510F /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B497537E20C04D181D22A226 /* RAGFlowIntents.swift */; };
 		B13CF3A9BA509CD7D27B73C9 /* OllamaModelsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */; };
+		B3E1A2C4D5F67890AB12CD34 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B9012345678901 /* SplashView.swift */; };
 		BB49EC71FD454D8B5C593400 /* BackgroundTaskCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */; };
 		C57E779C4B457B0DDE02B007 /* QuickQueryWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11411F4DD50485E0826DFB2B /* QuickQueryWidget.swift */; };
 		C83177798E9BB2ABBF273269 /* PhoneKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */; };
@@ -75,7 +76,6 @@
 		D9DA61517D17EB9E490B4350 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C439D2675FE12994A8429DF /* ChatSession.swift */; };
 		DC995B82EC08C313D958A065 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3FB9B60DDBCFA44A0D4D39 /* Message.swift */; };
 		E0F407F2E95C6372C6990C84 /* GutenbergResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67C7938EE3F91AC974F318D /* GutenbergResolver.swift */; };
-		AA11BB22CC33DD44EE55FF66 /* GEDCOMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */; };
 		E31D4048224E2C72D93D5373 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5157791CE99C2D55ABEB8A40 /* Assets.xcassets */; };
 		EAE2889CD72E6B880892D299 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0C200AFF79243F9927DF9E /* SharedViews.swift */; };
 		EC0FAD7B89BCEBE9D953E64F /* KBStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8096B55B1F04C0A4BC6A8354 /* KBStatusWidget.swift */; };
@@ -170,13 +170,14 @@
 		86851C5AAD068FFBE951683A /* CloudKitSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitSyncService.swift; sourceTree = "<group>"; };
 		8E01E0F6C6CF1AE68AC68793 /* PhoneKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneKBListView.swift; sourceTree = "<group>"; };
 		8F95A11974F1C8EBC8DD6E66 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8FF8FAEAE609E94920491AF2 /* RAGFlowMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RAGFlowMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9128C8C2964AF5134AA52824 /* EMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EMLParser.swift; sourceTree = "<group>"; };
 		9353E6D15D48987663551AC9 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
 		950FA6A816B52A68ED5B96AB /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		972D2FCF7944353E5066F615 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEDCOMParser.swift; sourceTree = "<group>"; };
 		AAB6D85843B9B8C8B01EE27E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
 		ADCD7F43E645413DA3A8D513 /* ToolService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolService.swift; sourceTree = "<group>"; };
@@ -185,8 +186,8 @@
 		B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
 		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
 		BBC6D9264B466C0103061572 /* RAGFlowWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowWidget.entitlements; sourceTree = "<group>"; };
+		C4D5E6F7A8B9012345678901 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
-		AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEDCOMParser.swift; sourceTree = "<group>"; };
 		C67C7938EE3F91AC974F318D /* GutenbergResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GutenbergResolver.swift; sourceTree = "<group>"; };
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
@@ -202,7 +203,6 @@
 		DD84034AFBC1CE9BE46AFAB1 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
 		E345372ED09AECC15C3CCA70 /* WorkflowActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowActivityAttributes.swift; sourceTree = "<group>"; };
 		F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		C4D5E6F7A8B9012345678901 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportService.swift; sourceTree = "<group>"; };
 		F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportBundle.swift; sourceTree = "<group>"; };
 		F4A65A1CE0AD6395FFDF7969 /* IndexingActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexingActivityAttributes.swift; sourceTree = "<group>"; };
@@ -371,7 +371,7 @@
 			isa = PBXGroup;
 			children = (
 				F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */,
-					C4D5E6F7A8B9012345678901 /* SplashView.swift */,
+				C4D5E6F7A8B9012345678901 /* SplashView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -634,10 +634,6 @@
 						DevelopmentTeam = LVK5C2V4J8;
 						ProvisioningStyle = Automatic;
 					};
-					EF1F4525075086C1DC62636B = {
-						DevelopmentTeam = LVK5C2V4J8;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = C911F5D5135BC17B21EEA3F2 /* Build configuration list for PBXProject "RAGFlowMobile" */;
@@ -651,7 +647,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F95D7EADFEF16A373766C60B /* XCRemoteSwiftPackageReference "EPUBKit" */,
-				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */,
 				2D427263B7DD77A57C5D4338 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -839,7 +835,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
@@ -849,6 +845,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.9;
@@ -1058,7 +1055,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LVK5C2V4J8;
 				INFOPLIST_FILE = RAGFlowMobile/Resources/Info.plist;
@@ -1068,6 +1065,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dhorn.ragflowmobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.9;
@@ -1134,7 +1132,7 @@
 				minimumVersion = 2.1.0;
 			};
 		};
-		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
@@ -1160,7 +1158,7 @@
 		};
 		2C0C19C6F20A9821E0BA0BCF /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 5261B6DED8BD261B389BFBBE /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 		7C656411F0EC6BEC984A8B73 /* EPUBKit */ = {
