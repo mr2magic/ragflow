@@ -3,24 +3,22 @@
   "project": "RAGFlowMobile",
   "date": "2026-04-19",
   "status": "stable",
-  "phase": "brownfield improvement — Ragion branding propagated to all .md docs",
+  "phase": "brownfield improvement — KB retrieval fix + tooling setup",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "Updated all .md files with new app name 'Ragion' (replacing 'RAGFlow Mobile' and heading-level 'RAGFlowMobile')",
-    "Files updated: README.md, ARCHITECTURE.md, CONTRIBUTING.md, DEVELOPMENT.md, submission_requirements.md, deft/core/project.md, deft/resilience/continue-here.md, vbrief/tasks.md, vbrief/README.md, vbrief/ARCHITECTURE.md, vbrief/CONTRIBUTING.md, vbrief/DEVELOPMENT.md, vbrief/submission_requirements.md",
-    "Technical names left intact: RAGFlowMobile.xcodeproj, scheme names, target names, directory names, file names"
+    "WorkflowRunner.swift: fixed multi-hop KB retrieval bug — sentinel message injected when retrieve step returns 0 chunks (was silently writing empty string, causing LLM to answer from training data only)",
+    "Sentinel: '[No relevant content found in the knowledge base for this query. The knowledge base may be empty, or no documents match the search terms.]'",
+    "Log upgraded: '⚠ 0 chunks retrieved — check KB assignment and document indexing. <slot> will signal no-context to the LLM.'",
+    "ECC configure-ecc run: 35 core skills + 10 common rules installed to ~/.claude/ (user-level)",
+    "~/.claude/settings.json updated: model=sonnet, MAX_THINKING_TOKENS=10000, CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50"
   ],
 
   "prior_session_completed": [
+    "Updated all .md files with new app name 'Ragion' (replacing 'RAGFlow Mobile' and heading-level 'RAGFlowMobile')",
     "App renamed from RAGFlowMobile / RAGFlow to Ragion across all targets (main app, widget, share extension)",
     "Tagline 'Where retrieval meets reason' added to SplashView and OnboardingView",
-    "Updated CFBundleDisplayName in all three Info.plist files (RAGFlowMobile, RAGFlowWidget, RAGFlowShareExtension)",
-    "Updated display strings in KBStatusWidget.swift, RecentChatWidget.swift, ShareViewController.swift, ContentView.swift",
-    "Updated SplashView.swift: app name 'Ragion' + tagline 'Where retrieval meets reason'",
-    "Updated OnboardingView.swift: title/headers updated to Ragion branding + tagline on welcome page",
     "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md (High/Medium/Low + feature gaps by category)",
-    "Saved realsave shorthand command to auto-memory: mempalace mine → save → /deft:checkpoint → commit all → push remote",
     "Fixed LLM error surfacing: OpenAIService + OllamaService split non-HTTP / non-200 guards with descriptive serverError messages",
     "Fixed KB tap on iPhone (task 12): replaced 3 competing navigationDestination registrations with single KBNavDest wrapper",
     "Fixed stale KB snapshot in retrieveChunks: re-fetches live KB from DB at query time via db.kb(id:)",
@@ -49,13 +47,14 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "ab92d8b17",
+    "last_commit": "9198b1d38",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",
-    "retrieval_fix_note": "ChatViewModel.retrieveChunks now calls db.kb(id:) to get live KB settings — fixes topK/topN/threshold always showing init-time defaults",
+    "retrieval_fix_note": "WorkflowRunner retrieve step now injects sentinel when 0 chunks — prevents LLM hallucination on empty KB",
     "rename_note": "Display name is Ragion everywhere; internal code/bundle IDs remain com.dhorn.ragflowmobile / RAGFlowMobile — no bundle ID change needed",
-    "md_rename_note": "All .md files updated 2026-04-19: user-facing name is Ragion; Xcode project/target/scheme/dir names unchanged"
+    "md_rename_note": "All .md files updated 2026-04-19: user-facing name is Ragion; Xcode project/target/scheme/dir names unchanged",
+    "ecc_note": "ECC 35 core skills + 10 common rules installed to ~/.claude/ (user-level) on 2026-04-19"
   },
 
   "open_questions": [

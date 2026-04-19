@@ -82,13 +82,17 @@ final class WorkflowRunner: ObservableObject {
                         chunks = try rag.retrieve(query: query, kbId: kbId, topK: step.topK)
                     }
 
-                    let contextText = chunks.map { c -> String in
-                        if let t = c.chapterTitle { return "[\(t)] \(c.content)" }
-                        return c.content
-                    }.joined(separator: "\n\n")
-
-                    ctx[step.outputSlot] = contextText
-                    log(into: &entries, "  Retrieved \(chunks.count) chunks")
+                    if chunks.isEmpty {
+                        ctx[step.outputSlot] = "[No relevant content found in the knowledge base for this query. The knowledge base may be empty, or no documents match the search terms.]"
+                        log(into: &entries, "  ⚠ 0 chunks retrieved — check KB assignment and document indexing. '\(step.outputSlot)' will signal no-context to the LLM.")
+                    } else {
+                        let contextText = chunks.map { c -> String in
+                            if let t = c.chapterTitle { return "[\(t)] \(c.content)" }
+                            return c.content
+                        }.joined(separator: "\n\n")
+                        ctx[step.outputSlot] = contextText
+                        log(into: &entries, "  Retrieved \(chunks.count) chunks → '\(step.outputSlot)'")
+                    }
 
                 case .rewrite:
                     let query = ctx[step.querySlot] ?? input
