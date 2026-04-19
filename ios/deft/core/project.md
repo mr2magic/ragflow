@@ -1,4 +1,4 @@
-# RAGFlowMobile Project Guidelines
+# Ragion Project Guidelines
 
 Legend (from RFC2119): !=MUST, ~=SHOULD, ≉=SHOULD NOT, ⊗=MUST NOT, ?=MAY.
 

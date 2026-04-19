@@ -1,6 +1,6 @@
 # Development Guide
 
-Everything you need to build, run, test, and debug RAGFlow Mobile.
+Everything you need to build, run, test, and debug Ragion.
 
 ---
 

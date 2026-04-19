@@ -2,7 +2,7 @@
 
 ## Description (App Store → App Information → English)
 
-RAGFlow Mobile turns your documents into a searchable knowledge base you can chat with using AI.
+Ragion turns your documents into a searchable knowledge base you can chat with using AI.
 
 Import PDFs, ePubs, Word, Excel, PowerPoint, emails, Markdown, code files, and more — from Files, iCloud, or a URL. The app chunks and embeds your documents locally, then lets you ask questions and get cited answers.
 

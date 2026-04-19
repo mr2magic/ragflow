@@ -1,6 +1,6 @@
 # Architecture Reference
 
-This document describes the design of RAGFlow Mobile — its layers, data flow, key services, and database schema — intended for engineers joining the project.
+This document describes the design of Ragion — its layers, data flow, key services, and database schema — intended for engineers joining the project.
 
 ---
 

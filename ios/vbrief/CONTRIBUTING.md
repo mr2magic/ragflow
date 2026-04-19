@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Guidelines for the team taking over RAGFlow Mobile development.
+Guidelines for the team taking over Ragion development.
 
 ---
 

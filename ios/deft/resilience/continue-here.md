@@ -1,6 +1,6 @@
 # Continue Here
 
-This file is the deft resilience checkpoint for RAGFlowMobile.
+This file is the deft resilience checkpoint for Ragion.
 
 ## How to Resume
 

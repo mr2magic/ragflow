@@ -1,8 +1,8 @@
-# RAGFlow Mobile — iOS App
+# Ragion — iOS App
 
 > **Chat with your documents using Claude, OpenAI, or local Ollama models.**
 
-RAGFlow Mobile is an iOS application (iOS 17+) that lets you build private knowledge bases from your documents, then ask questions about them using any LLM. Documents are parsed, chunked, embedded, and stored locally on your device. No data leaves your device unless you're calling an external LLM API.
+Ragion is an iOS application (iOS 17+) that lets you build private knowledge bases from your documents, then ask questions about them using any LLM. Documents are parsed, chunked, embedded, and stored locally on your device. No data leaves your device unless you're calling an external LLM API.
 
 ---
 
