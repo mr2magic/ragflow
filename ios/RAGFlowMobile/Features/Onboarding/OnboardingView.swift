@@ -38,7 +38,7 @@ private let onboardingPages: [OnboardingPage] = [
     .init(
         systemImage: "books.vertical.fill",
         tint: .purple,
-        title: "Welcome to RAGFlow",
+        title: "Welcome to Ragion",
         subtitle: "Your AI-powered reading companion",
         bullets: [
             ("bubble.left.and.text.bubble.right", "Chat with any document using AI — and get cited answers"),
@@ -114,7 +114,7 @@ private let onboardingPages: [OnboardingPage] = [
             ("wand.and.stars",                    "Choose from templates: RAG Q&A, Deep Summarizer, Keyword Expander, or Custom"),
             ("arrow.triangle.branch",             "Add Switch or Categorize steps to route between branches based on conditions or AI classification"),
             ("globe.americas.fill",               "Web Search supports DuckDuckGo and Wikipedia (free) plus Brave Search (API key in Settings)"),
-            ("square.and.arrow.up",               "Export any workflow to share or back up — import on any device running RAGFlow Mobile"),
+            ("square.and.arrow.up",               "Export any workflow to share or back up — import on any device running Ragion"),
         ]
     ),
 

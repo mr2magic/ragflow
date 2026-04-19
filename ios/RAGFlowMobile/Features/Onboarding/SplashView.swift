@@ -28,12 +28,20 @@ struct SplashView: View {
                 .opacity(appeared ? 1 : 0)
                 .animation(.spring(duration: 0.55), value: appeared)
 
-            Text("RAGFlow Mobile")
+            Text("Ragion")
                 .font(.largeTitle.bold())
-                .padding(.bottom, 8)
+                .padding(.bottom, 4)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 14)
                 .animation(.spring(duration: 0.45).delay(0.1), value: appeared)
+
+            Text("Where retrieval meets reason")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.bottom, 8)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 10)
+                .animation(.spring(duration: 0.4).delay(0.18), value: appeared)
 
             if !versionString.isEmpty {
                 Text("Version \(versionString)")

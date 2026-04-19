@@ -12,7 +12,7 @@ private struct UnsupportedOSView: View {
             Text("iOS 17 Required")
                 .font(.title.bold())
 
-            Text("RAGFlow Mobile requires iOS 17 or later. Please update your device in Settings → General → Software Update.")
+            Text("Ragion requires iOS 17 or later. Please update your device in Settings → General → Software Update.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 32)

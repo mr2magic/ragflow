@@ -85,7 +85,7 @@ struct RecentChatWidget: Widget {
             RecentChatWidgetView(entry: entry)
         }
         .configurationDisplayName("Recent Chat")
-        .description("Jump back into your most recent RAGFlow conversation.")
+        .description("Jump back into your most recent Ragion conversation.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

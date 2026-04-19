@@ -1,19 +1,25 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-18",
+  "date": "2026-04-19",
   "status": "stable",
-  "phase": "brownfield improvement — 0.8.0 live on TestFlight, post-ship planning",
+  "phase": "brownfield improvement — app renamed to Ragion, tagline added",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md (High/Medium/Low + feature gaps by category)",
-    "Saved realsave shorthand command to auto-memory: mempalace mine → save → /deft:checkpoint → commit all → push remote",
-    "Saved project_backlog.md to auto-memory with full backlog summary",
-    "FEATURE_COMPARISON.md note: stamped iOS 0.3.0 but current is 0.8.0 — Categorize, Switch, Variable Assigner, DuckDuckGo/Wikipedia, Workflow export already done and excluded from backlog"
+    "App renamed from RAGFlowMobile / RAGFlow to Ragion across all targets (main app, widget, share extension)",
+    "Tagline 'Where retrieval meets reason' added to SplashView and OnboardingView",
+    "Updated CFBundleDisplayName in all three Info.plist files (RAGFlowMobile, RAGFlowWidget, RAGFlowShareExtension)",
+    "Updated display strings in KBStatusWidget.swift, RecentChatWidget.swift, ShareViewController.swift, ContentView.swift",
+    "Updated SplashView.swift: app name 'Ragion' + tagline 'Where retrieval meets reason'",
+    "Updated OnboardingView.swift: title/headers updated to Ragion branding + tagline on welcome page"
   ],
 
   "prior_session_completed": [
+    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md (High/Medium/Low + feature gaps by category)",
+    "Saved realsave shorthand command to auto-memory: mempalace mine → save → /deft:checkpoint → commit all → push remote",
+    "Saved project_backlog.md to auto-memory with full backlog summary",
+    "FEATURE_COMPARISON.md note: stamped iOS 0.3.0 but current is 0.8.0 — Categorize, Switch, Variable Assigner, DuckDuckGo/Wikipedia, Workflow export already done and excluded from backlog",
     "Fixed LLM error surfacing: OpenAIService + OllamaService split non-HTTP / non-200 guards with descriptive serverError messages",
     "Fixed ClaudeService.badResponse description: now says 'unrecognised response — check API key and network'",
     "Fixed KB tap on iPhone (task 12): replaced 3 competing navigationDestination registrations with single KBNavDest wrapper + navigationDestination(item:)",
@@ -32,20 +38,23 @@
     "Added DocumentCameraView cap check before OCR",
     "Added workflow export/import (task 16): context menu + leading swipe on WorkflowListView rows",
     "Fixed stale KB snapshot in retrieveChunks (task — topK always 10): re-fetches live KB from DB at query time via db.kb(id:)",
-    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers (raw session transcript noise); wrote diary entry; palace now 444 clean drawers"
+    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers (raw session transcript noise); wrote diary entry; palace now 444 clean drawers",
+    "Registered custom UTTypes for .ragflow-kb and .ragflow-workflow in Info.plist (UTExportedTypeDeclarations + CFBundleDocumentTypes)"
   ],
 
   "in_progress": [],
 
   "next": [
     "Task 13: Simulator regression — iPhone 17 Pro landscape + portrait (manual UI test)",
+    "App Store icon + screenshots updated to reflect Ragion branding (if submitting)",
     "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync (tasks 4-6)",
     "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (tasks 1-3, deferred)",
-    "iCloud sync re-index prompt when pulling remote KBs",
     "Update FEATURE_COMPARISON.md to reflect 0.8.0 actual state (many ❌ items are now ✅)"
   ],
 
   "key_facts": {
+    "app_name": "Ragion",
+    "app_tagline": "Where retrieval meets reason",
     "app_version": "0.8.0",
     "build_number": "8",
     "bundle_id": "com.dhorn.ragflowmobile",
@@ -53,15 +62,16 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "9c98a4070",
+    "last_commit": "ea62a7efa",
     "tag": "Golden_Child_4_16_26",
     "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",
-    "retrieval_fix_note": "ChatViewModel.retrieveChunks now calls db.kb(id:) to get live KB settings — fixes topK/topN/threshold always showing init-time defaults"
+    "retrieval_fix_note": "ChatViewModel.retrieveChunks now calls db.kb(id:) to get live KB settings — fixes topK/topN/threshold always showing init-time defaults",
+    "rename_note": "Display name is Ragion everywhere; internal code/bundle IDs remain com.dhorn.ragflowmobile / RAGFlowMobile — no bundle ID change needed"
   },
 
   "open_questions": [
     "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?",
-    "User reported: 'Claude results are not updating the screen properly' — needs clarification (iOS app or Claude Code UI?)"
+    "App Store listing name — should it be changed to Ragion when next submitting?"
   ]
 }

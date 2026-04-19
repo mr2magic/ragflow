@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>RAGFlow</string>
+    <string>Ragion</string>
     <key>CFBundleDisplayName</key>
-    <string>RAGFlow</string>
+    <string>Ragion</string>
     <key>CFBundleIdentifier</key>
     <string>com.dhorn.ragflowmobile</string>
     <key>CFBundleVersion</key>
@@ -43,7 +43,7 @@
     <key>NSSupportsLiveActivitiesFrequentUpdates</key>
     <true/>
     <key>NSCameraUsageDescription</key>
-    <string>RAGFlow uses the camera to scan physical documents and import them into your knowledge base.</string>
+    <string>Ragion uses the camera to scan physical documents and import them into your knowledge base.</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
@@ -63,7 +63,7 @@
         <true/>
     </dict>
     <key>NSLocalNetworkUsageDescription</key>
-    <string>RAGFlow connects to Ollama on your local network to run AI models privately on your own hardware.</string>
+    <string>Ragion connects to Ollama on your local network to run AI models privately on your own hardware.</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <!-- Deep-link URL scheme for Widget and Share Extension → ragflow://kb/{id} -->

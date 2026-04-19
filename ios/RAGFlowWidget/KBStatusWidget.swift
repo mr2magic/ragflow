@@ -53,7 +53,7 @@ struct KBStatusWidgetView: View {
             HStack {
                 Image(systemName: "square.stack.3d.up.fill")
                     .foregroundStyle(.blue)
-                Text("RAGFlow")
+                Text("Ragion")
                     .font(.caption.bold())
                     .foregroundStyle(.secondary)
             }
@@ -84,7 +84,7 @@ struct KBStatusMediumView: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Image(systemName: "square.stack.3d.up.fill").foregroundStyle(.blue)
-                    Text("RAGFlow").font(.caption.bold()).foregroundStyle(.secondary)
+                    Text("Ragion").font(.caption.bold()).foregroundStyle(.secondary)
                 }
                 Spacer()
                 Text("\(entry.kbCount)")

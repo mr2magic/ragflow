@@ -73,13 +73,13 @@ struct ShareView: View {
                     ContentUnavailableView(
                         "No Knowledge Bases",
                         systemImage: "square.stack.3d.up",
-                        description: Text("Open RAGFlow and create a knowledge base first.")
+                        description: Text("Open Ragion and create a knowledge base first.")
                     )
                 } else {
                     form
                 }
             }
-            .navigationTitle("Add to RAGFlow")
+            .navigationTitle("Add to Ragion")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
