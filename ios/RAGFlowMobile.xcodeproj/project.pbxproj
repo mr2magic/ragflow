@@ -85,6 +85,20 @@
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
 		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
+		AA0100000000001AABB0002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0001 /* AppTheme.swift */; };
+		AA0100000000001AABB0005 /* DossierTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0004 /* DossierTokens.swift */; };
+		AA0100000000001AABB0007 /* DossierTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0006 /* DossierTabBar.swift */; };
+		AA0100000000001AABB0009 /* DossierKBCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0008 /* DossierKBCard.swift */; };
+		AA0100000000001AABB000B /* DossierMessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000A /* DossierMessageBubble.swift */; };
+		AA0100000000001AABB000D /* DossierDocumentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000C /* DossierDocumentRow.swift */; };
+		AA0100000000001AABB000F /* DossierDocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000E /* DossierDocumentListView.swift */; };
+		AA0100000000001AABB0011 /* DossierChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0010 /* DossierChatView.swift */; };
+		AA0100000000001AABB0013 /* DossierWorkflowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0012 /* DossierWorkflowView.swift */; };
+		AA0100000000001AABB0015 /* DossierQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0014 /* DossierQueryView.swift */; };
+		AA0100000000001AABB0017 /* DossierKBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0016 /* DossierKBDetailView.swift */; };
+		AA0100000000001AABB0019 /* DossierArchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0018 /* DossierArchView.swift */; };
+		AA0100000000001AABB001B /* DossierKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001A /* DossierKBListView.swift */; };
+		AA0100000000001AABB001D /* DossierRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001C /* DossierRootView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -209,6 +223,20 @@
 		F67374355D00D87ED5451AF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0001 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0004 /* DossierTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTokens.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0006 /* DossierTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTabBar.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0008 /* DossierKBCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBCard.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000A /* DossierMessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierMessageBubble.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000C /* DossierDocumentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentRow.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000E /* DossierDocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentListView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0010 /* DossierChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierChatView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0012 /* DossierWorkflowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierWorkflowView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0014 /* DossierQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierQueryView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0016 /* DossierKBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBDetailView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0018 /* DossierArchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierArchView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001A /* DossierKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBListView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001C /* DossierRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierRootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */,
+				AA0100000000001AABB0001 /* AppTheme.swift */,
 				84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */,
 				1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */,
 				361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */,
@@ -412,6 +441,7 @@
 			isa = PBXGroup;
 			children = (
 				3980C7FFB7D0F975FB69F4CF /* Chat */,
+				AA0100000000001AABB0003 /* Dossier */,
 				41EEB10A6AB5188C60573CCE /* KB */,
 				4F4C99203F3F22E475F4DDB9 /* Library */,
 				7DC31A6088C99A517115B162 /* Onboarding */,
@@ -532,7 +562,28 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
+
+		AA0100000000001AABB0003 /* Dossier */ = {
+			isa = PBXGroup;
+			children = (
+				AA0100000000001AABB0004 /* DossierTokens.swift */,
+				AA0100000000001AABB0006 /* DossierTabBar.swift */,
+				AA0100000000001AABB0008 /* DossierKBCard.swift */,
+				AA0100000000001AABB000A /* DossierMessageBubble.swift */,
+				AA0100000000001AABB000C /* DossierDocumentRow.swift */,
+				AA0100000000001AABB000E /* DossierDocumentListView.swift */,
+				AA0100000000001AABB0010 /* DossierChatView.swift */,
+				AA0100000000001AABB0012 /* DossierWorkflowView.swift */,
+				AA0100000000001AABB0014 /* DossierQueryView.swift */,
+				AA0100000000001AABB0016 /* DossierKBDetailView.swift */,
+				AA0100000000001AABB0018 /* DossierArchView.swift */,
+				AA0100000000001AABB001A /* DossierKBListView.swift */,
+				AA0100000000001AABB001C /* DossierRootView.swift */,
+			);
+			path = Dossier;
+			sourceTree = "<group>";
+		};
+		/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */ = {
@@ -740,6 +791,20 @@
 				25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */,
 				5FD4846C607EE5C03326953F /* WorkflowRunner.swift in Sources */,
 				CBBC33147ADEBC3A06E0C092 /* WorkflowStep.swift in Sources */,
+				AA0100000000001AABB0002 /* AppTheme.swift in Sources */,
+				AA0100000000001AABB0005 /* DossierTokens.swift in Sources */,
+				AA0100000000001AABB0007 /* DossierTabBar.swift in Sources */,
+				AA0100000000001AABB0009 /* DossierKBCard.swift in Sources */,
+				AA0100000000001AABB000B /* DossierMessageBubble.swift in Sources */,
+				AA0100000000001AABB000D /* DossierDocumentRow.swift in Sources */,
+				AA0100000000001AABB000F /* DossierDocumentListView.swift in Sources */,
+				AA0100000000001AABB0011 /* DossierChatView.swift in Sources */,
+				AA0100000000001AABB0013 /* DossierWorkflowView.swift in Sources */,
+				AA0100000000001AABB0015 /* DossierQueryView.swift in Sources */,
+				AA0100000000001AABB0017 /* DossierKBDetailView.swift in Sources */,
+				AA0100000000001AABB0019 /* DossierArchView.swift in Sources */,
+				AA0100000000001AABB001B /* DossierKBListView.swift in Sources */,
+				AA0100000000001AABB001D /* DossierRootView.swift in Sources */,
 				891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

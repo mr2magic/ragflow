@@ -1,0 +1,109 @@
+import SwiftUI
+
+/// KB overview card — shown on the KB tab of DossierKBDetailView.
+struct DossierQueryView: View {
+    let kb: KnowledgeBase
+    let docCount: Int
+    let chunkCount: Int
+
+    private var createdLabel: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "MMM d, yyyy"
+        return fmt.string(from: kb.createdAt)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                headerBar
+                coverCard
+                statsGrid
+                Spacer()
+            }
+            .padding(.horizontal, DT.pagePadding)
+            .padding(.top, 12)
+        }
+        .background(DT.manila)
+    }
+
+    // MARK: - Header
+
+    private var headerBar: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("KNOWLEDGE BASE")
+                    .font(DT.mono(11, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(DT.inkFaint)
+                Spacer()
+            }
+            Rectangle().fill(DT.rule).frame(height: 0.5)
+        }
+    }
+
+    // MARK: - Cover card
+
+    private var coverCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("DOSSIER")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1.5)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
+                    .background(DT.stamp)
+                    .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
+                Spacer()
+                Text("EST. \(createdLabel)")
+                    .font(DT.mono(9))
+                    .foregroundStyle(DT.inkFaint)
+            }
+
+            Text(kb.name)
+                .font(DT.serif(24, weight: .semibold))
+                .foregroundStyle(DT.ink)
+
+            Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)
+
+            Text("Chunk method: \(kb.chunkMethod.rawValue.uppercased())")
+                .font(DT.mono(10))
+                .tracking(0.8)
+                .foregroundStyle(DT.inkFaint)
+        }
+        .padding(DT.cardPadding)
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+    }
+
+    // MARK: - Stats grid
+
+    private var statsGrid: some View {
+        HStack(spacing: 8) {
+            statCard(value: "\(docCount)", label: "DOCUMENTS", color: DT.ribbon)
+            statCard(value: formattedChunks, label: "CHUNKS", color: DT.stamp)
+        }
+    }
+
+    private func statCard(value: String, label: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(value)
+                .font(DT.serif(28, weight: .semibold))
+                .foregroundStyle(DT.ink)
+            Text(label)
+                .font(DT.mono(9, weight: .bold))
+                .tracking(1.5)
+                .foregroundStyle(color)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(DT.cardPadding)
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+    }
+
+    private var formattedChunks: String {
+        chunkCount >= 1000
+            ? String(format: "%.1fK", Double(chunkCount) / 1000)
+            : "\(chunkCount)"
+    }
+}

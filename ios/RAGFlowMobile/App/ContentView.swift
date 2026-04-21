@@ -30,6 +30,7 @@ private struct UnsupportedOSView: View {
 struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @ObservedObject private var store = SettingsStore.shared
 
     private var osSupported: Bool {
         ProcessInfo.processInfo.isOperatingSystemAtLeast(
@@ -48,7 +49,11 @@ struct ContentView: View {
     var body: some View {
         Group {
             if sizeClass == .compact {
-                phoneLayout
+                if store.theme == .dossier {
+                    DossierRootView()
+                } else {
+                    phoneLayout
+                }
             } else {
                 padLayout
             }

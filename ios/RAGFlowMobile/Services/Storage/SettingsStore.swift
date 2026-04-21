@@ -5,6 +5,7 @@ final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
     @Published var config: LLMConfig = .default
+    @Published var theme: AppTheme = .simple
 
     private let defaults = UserDefaults.standard
 
@@ -23,6 +24,7 @@ final class SettingsStore: ObservableObject {
     }
 
     func save() {
+        defaults.set(theme.rawValue, forKey: "app_theme")
         defaults.set(config.provider.rawValue, forKey: "llm_provider")
         defaults.set(config.ollamaHost, forKey: "ollama_host")
         defaults.set(config.ollamaModel, forKey: "ollama_model")
@@ -33,6 +35,7 @@ final class SettingsStore: ObservableObject {
     }
 
     private func load() {
+        theme = AppTheme(rawValue: defaults.string(forKey: "app_theme") ?? "") ?? .simple
         let provider = LLMProvider(rawValue: defaults.string(forKey: "llm_provider") ?? "") ?? .claude
         let ollamaHost = defaults.string(forKey: "ollama_host") ?? "http://localhost:11434"
         let ollamaModel = defaults.string(forKey: "ollama_model") ?? ""

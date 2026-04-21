@@ -14,6 +14,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                appearanceSection
                 providerSection
                 if store.config.provider == .claude { claudeSection }
                 if store.config.provider == .openAI { openAISection }
@@ -25,6 +26,7 @@ struct SettingsView: View {
                 #endif
             }
             .navigationTitle("Settings")
+            .onChange(of: store.theme) { _, _ in store.save() }
             .onChange(of: store.config.provider) { _, _ in store.save() }
             .onChange(of: store.config.claudeApiKey) { _, _ in store.save() }
             .onChange(of: store.config.openAIApiKey) { _, _ in store.save() }
@@ -33,6 +35,19 @@ struct SettingsView: View {
             .onChange(of: store.config.ollamaModel) { _, _ in store.save() }
             .onChange(of: store.config.useCloudKitSync) { _, _ in store.save() }
             .task { await loadOllamaModels() }
+        }
+    }
+
+    // MARK: - Appearance
+
+    private var appearanceSection: some View {
+        Section("Appearance") {
+            Picker("Theme", selection: $store.theme) {
+                ForEach(AppTheme.allCases) { theme in
+                    Text(theme.displayName).tag(theme)
+                }
+            }
+            .pickerStyle(.segmented)
         }
     }
 
