@@ -50,12 +50,10 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if sizeClass == .compact {
-                if theme == .dossier {
-                    DossierRootView()
-                } else {
-                    phoneLayout
-                }
+            if theme == .dossier {
+                DossierRootView()
+            } else if sizeClass == .compact {
+                phoneLayout
             } else {
                 padLayout
             }
