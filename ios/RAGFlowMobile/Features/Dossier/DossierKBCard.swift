@@ -5,6 +5,7 @@ struct DossierKBCard: View {
     let index: Int
     let docCount: Int
     let chunkCount: Int
+    var isSelected: Bool = false
 
     /// Cycle through accent colors to give each KB a distinct folder-tab color.
     private var accentColor: Color {
@@ -59,7 +60,7 @@ struct DossierKBCard: View {
             .background(DT.card)
             .overlay(
                 Rectangle()
-                    .stroke(DT.rule, lineWidth: 0.5)
+                    .stroke(isSelected ? DT.stamp : DT.rule, lineWidth: isSelected ? 1.5 : 0.5)
             )
         }
     }

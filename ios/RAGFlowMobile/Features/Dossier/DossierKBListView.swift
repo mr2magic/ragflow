@@ -5,8 +5,8 @@ struct DossierKBListView: View {
     @StateObject private var vm = KBListViewModel()
     @State private var docCounts: [String: Int] = [:]
     @State private var chunkCounts: [String: Int] = [:]
-    @State private var showCreateAlert = false
-    @State private var newKBName = ""
+    @State private var showSettings = false      // D-KBL1
+    @State private var showWorkflows = false     // D-KBL2
 
     private let db = DatabaseService.shared
 
@@ -24,10 +24,58 @@ struct DossierKBListView: View {
         .navigationDestination(item: $selectedKB) { kb in
             DossierKBDetailView(kb: kb)
         }
-        .alert("New Dossier", isPresented: $showCreateAlert) {
-            TextField("Name", text: $newKBName)
+        // Create KB
+        .alert("New Dossier", isPresented: $vm.showCreateAlert) {
+            TextField("Name", text: $vm.newKBName)
             Button("Create") { createKB() }
-            Button("Cancel", role: .cancel) { newKBName = "" }
+            Button("Cancel", role: .cancel) { vm.newKBName = "" }
+        }
+        // D-KBL6 — Rename sheet
+        .sheet(item: $vm.kbToRename) { _ in
+            RenameSheet(title: "Rename Dossier", text: $vm.renameText) {
+                vm.commitRename()
+                loadCounts()
+            }
+        }
+        // D-KBL8 — Retrieval Settings sheet
+        .sheet(item: $vm.kbToSettings) { kb in
+            KBRetrievalSettingsSheet(kb: kb) { updated in
+                vm.saveKBSettings(updated)
+            }
+        }
+        // D-KBL1 — Settings
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
+        // D-KBL2 — Workflows
+        .sheet(isPresented: $showWorkflows) {
+            NavigationStack {
+                WorkflowListView()
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { showWorkflows = false }
+                        }
+                    }
+            }
+        }
+        // D-KBL7 — Delete confirmation
+        .confirmationDialog(
+            "Delete \"\(vm.kbToDelete?.name ?? "this dossier")\"?",
+            isPresented: Binding(
+                get: { vm.kbToDelete != nil },
+                set: { if !$0 { vm.cancelDelete() } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                vm.confirmDelete { deleted in
+                    if selectedKB?.id == deleted.id { selectedKB = nil }
+                }
+                loadCounts()
+            }
+            Button("Cancel", role: .cancel) { vm.cancelDelete() }
+        } message: {
+            Text("All documents and chat history will be permanently deleted.")
         }
         .onAppear { loadCounts() }
     }
@@ -47,9 +95,24 @@ struct DossierKBListView: View {
                         .foregroundStyle(DT.ink)
                 }
                 Spacer()
-                Button {
-                    showCreateAlert = true
-                } label: {
+                // D-KBL1 — Settings
+                Button { showSettings = true } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 8)
+                // D-KBL2 — Workflows
+                Button { showWorkflows = true } label: {
+                    Image(systemName: "cpu")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 10)
+                // New dossier
+                Button { vm.showCreateAlert = true } label: {
                     Text("NEW")
                         .font(DT.mono(10, weight: .bold))
                         .tracking(1.5)
@@ -78,8 +141,23 @@ struct DossierKBListView: View {
                         kb: kb,
                         index: i,
                         docCount: docCounts[kb.id] ?? 0,
-                        chunkCount: chunkCounts[kb.id] ?? 0
+                        chunkCount: chunkCounts[kb.id] ?? 0,
+                        isSelected: selectedKB?.id == kb.id   // D-KBL3
                     )
+                    // D-KBL4 — Context menu
+                    .contextMenu {
+                        Button("Rename") {
+                            vm.renameText = kb.name
+                            vm.kbToRename = kb
+                        }
+                        Button("Retrieval Settings") {
+                            vm.kbToSettings = kb
+                        }
+                        Divider()
+                        Button("Delete", role: .destructive) {
+                            vm.requestDelete(kb: kb)
+                        }
+                    }
                     .onTapGesture { selectedKB = kb }
                 }
             }
@@ -109,11 +187,9 @@ struct DossierKBListView: View {
     // MARK: - Actions
 
     private func createKB() {
-        let name = newKBName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let name = vm.newKBName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return }
-        vm.newKBName = name
         vm.createKB()
-        newKBName = ""
         loadCounts()
     }
 
