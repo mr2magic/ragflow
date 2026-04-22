@@ -3,15 +3,18 @@ import Foundation
 final class ClaudeService: LLMService {
     private let apiKey: String
     private let braveApiKey: String
-    private let model = "claude-sonnet-4-6"
+    private let params: ChatParams
+    private let model: String
     private let endpoint = URL(string: "https://api.anthropic.com/v1/messages")!
 
     var onToolActivity: ((String?) -> Void)?   // reports "Searching Brave…" etc.
     private(set) var lastUsage: TokenUsage?
 
-    init(apiKey: String, braveApiKey: String = "") {
+    init(apiKey: String, braveApiKey: String = "", params: ChatParams = .default) {
         self.apiKey = apiKey
         self.braveApiKey = braveApiKey
+        self.params = params
+        self.model = params.modelOverride ?? "claude-sonnet-4-6"
     }
 
     func complete(messages: [LLMMessage], context: [Chunk], books: [Book]) async throws -> AsyncThrowingStream<String, Error> {
@@ -134,7 +137,7 @@ final class ClaudeService: LLMService {
     }
 
     private func buildBody(system: String, messages: [LLMMessage], tools: [[String: Any]], stream: Bool) -> [String: Any] {
-        [
+        var body: [String: Any] = [
             "model": model,
             "max_tokens": 2048,
             "stream": stream,
@@ -142,13 +145,19 @@ final class ClaudeService: LLMService {
             "tools": tools,
             "messages": messages.map { ["role": $0.role.rawValue, "content": $0.content] }
         ]
+        if let temp = params.temperature { body["temperature"] = temp }
+        if let topP = params.topP { body["top_p"] = topP }
+        return body
     }
 
     private func buildSystemPrompt(context: [Chunk], books: [Book]) -> String {
-        buildEnterprisePrompt(context: context, books: books, extraInstructions: """
+        var extra = """
         If the question requires current information not in the knowledge base, use the brave_search tool.
         If asked to retrieve a URL, use the jina_reader tool.
-        """)
+        """
+        let custom = params.extraSystemPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !custom.isEmpty { extra += "\n\(custom)" }
+        return buildEnterprisePrompt(context: context, books: books, extraInstructions: extra)
     }
 }
 

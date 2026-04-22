@@ -62,14 +62,29 @@ struct LLMMessage {
     }
 }
 
-func makeLLMService(config: LLMConfig) -> any LLMService {
+struct ChatParams {
+    var modelOverride: String?
+    var temperature: Double?
+    var topP: Double?
+    var extraSystemPrompt: String
+
+    static let `default` = ChatParams(
+        modelOverride: nil,
+        temperature: nil,
+        topP: nil,
+        extraSystemPrompt: ""
+    )
+}
+
+func makeLLMService(config: LLMConfig, params: ChatParams = .default) -> any LLMService {
     switch config.provider {
     case .claude:
-        return ClaudeService(apiKey: config.claudeApiKey, braveApiKey: config.braveSearchApiKey)
+        return ClaudeService(apiKey: config.claudeApiKey, braveApiKey: config.braveSearchApiKey, params: params)
     case .openAI:
-        return OpenAIService(apiKey: config.openAIApiKey)
+        return OpenAIService(apiKey: config.openAIApiKey, params: params)
     case .ollama:
-        return OllamaService(host: config.ollamaHost, model: config.ollamaModel)
+        let model = params.modelOverride ?? config.ollamaModel
+        return OllamaService(host: config.ollamaHost, model: model, params: params)
     }
 }
 

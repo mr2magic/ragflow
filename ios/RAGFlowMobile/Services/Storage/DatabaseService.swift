@@ -192,6 +192,23 @@ final class DatabaseService {
             // missing keys, so existing workflows remain fully backward-compatible.
         }
 
+        migrator.registerMigration("v10") { db in
+            // Per-chat overrides: model, temperature, top-p, system prompt.
+            let cols = try db.columns(in: "chat_sessions").map { $0.name }
+            if !cols.contains("modelOverride") {
+                try db.alter(table: "chat_sessions") { t in t.add(column: "modelOverride", .text) }
+            }
+            if !cols.contains("temperature") {
+                try db.alter(table: "chat_sessions") { t in t.add(column: "temperature", .double) }
+            }
+            if !cols.contains("topP") {
+                try db.alter(table: "chat_sessions") { t in t.add(column: "topP", .double) }
+            }
+            if !cols.contains("systemPrompt") {
+                try db.alter(table: "chat_sessions") { t in t.add(column: "systemPrompt", .text) }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -364,9 +381,7 @@ final class DatabaseService {
     func session(id: String) throws -> ChatSession? {
         try dbQueue.read { db in
             let rows = try Row.fetchAll(db, sql: "SELECT * FROM chat_sessions WHERE id = ?", arguments: [id])
-            return rows.first.map { row in
-                ChatSession(id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"])
-            }
+            return rows.first.map { Self.sessionFromRow($0) }
         }
     }
 
@@ -381,19 +396,40 @@ final class DatabaseService {
             let rows = try Row.fetchAll(db, sql: """
                 SELECT * FROM chat_sessions WHERE kbId = ? ORDER BY createdAt DESC
                 """, arguments: [kbId])
-            return rows.map { row in
-                ChatSession(id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"])
-            }
+            return rows.map { Self.sessionFromRow($0) }
         }
     }
 
     func saveSession(_ session: ChatSession) throws {
         try dbQueue.write { db in
             try db.execute(sql: """
-                INSERT OR REPLACE INTO chat_sessions (id, kbId, name, createdAt)
-                VALUES (?, ?, ?, ?)
-                """, arguments: [session.id, session.kbId, session.name, session.createdAt])
+                INSERT OR REPLACE INTO chat_sessions
+                    (id, kbId, name, createdAt, modelOverride, temperature, topP, systemPrompt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """, arguments: [
+                    session.id, session.kbId, session.name, session.createdAt,
+                    session.modelOverride, session.temperature, session.topP, session.systemPrompt
+                ])
         }
+    }
+
+    func updateSessionParams(id: String, modelOverride: String?, temperature: Double?,
+                             topP: Double?, systemPrompt: String?) throws {
+        try dbQueue.write { db in
+            try db.execute(sql: """
+                UPDATE chat_sessions
+                SET modelOverride = ?, temperature = ?, topP = ?, systemPrompt = ?
+                WHERE id = ?
+                """, arguments: [modelOverride, temperature, topP, systemPrompt, id])
+        }
+    }
+
+    private static func sessionFromRow(_ row: Row) -> ChatSession {
+        ChatSession(
+            id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"],
+            modelOverride: row["modelOverride"], temperature: row["temperature"],
+            topP: row["topP"], systemPrompt: row["systemPrompt"]
+        )
     }
 
     func deleteSession(_ id: String) throws {

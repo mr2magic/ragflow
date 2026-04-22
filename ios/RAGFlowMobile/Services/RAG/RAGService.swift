@@ -323,11 +323,14 @@ final class RAGService: ObservableObject {
     private func ingestZIP(url: URL, kbId: String) async throws -> Book {
         ingestPhase = "Expanding ZIP…"
 
-        let (tmpDir, fileURLs): (URL, [URL]) = try await Task.detached(priority: .utility) {
-            let dest = FileManager.default.temporaryDirectory
-                .appendingPathComponent(UUID().uuidString, isDirectory: true)
-            try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true)
-            try Zip.unzipFile(url, destination: dest, overwrite: true, password: nil)
+        let tmpDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        // Always remove the extracted directory when this function exits — success or failure.
+        defer { try? FileManager.default.removeItem(at: tmpDir) }
+
+        let fileURLs: [URL] = try await Task.detached(priority: .utility) {
+            try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+            try Zip.unzipFile(url, destination: tmpDir, overwrite: true, password: nil)
 
             let supported: Set<String> = [
                 "epub", "pdf", "docx", "xlsx", "pptx", "eml", "emlx", "odt", "ged",
@@ -339,7 +342,7 @@ final class RAGService: ObservableObject {
 
             var found: [URL] = []
             let enumerator = FileManager.default.enumerator(
-                at: dest,
+                at: tmpDir,
                 includingPropertiesForKeys: [.isRegularFileKey]
             )
             while let fileURL = enumerator?.nextObject() as? URL {
@@ -348,7 +351,7 @@ final class RAGService: ObservableObject {
                 guard supported.contains(fileURL.pathExtension.lowercased()) else { continue }
                 found.append(fileURL)
             }
-            return (dest, found.sorted { $0.lastPathComponent < $1.lastPathComponent })
+            return found.sorted { $0.lastPathComponent < $1.lastPathComponent }
         }.value
 
         guard !fileURLs.isEmpty else { throw IngestError.parseFailure }
@@ -360,7 +363,6 @@ final class RAGService: ObservableObject {
                 lastBook = book
             }
         }
-        _ = tmpDir  // keep reference until all ingests complete; OS reclaims temp dir
         guard let book = lastBook else { throw IngestError.parseFailure }
         return book
     }

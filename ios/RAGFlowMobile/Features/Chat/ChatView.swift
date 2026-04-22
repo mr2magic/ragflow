@@ -11,6 +11,7 @@ struct ChatView: View {
     @FocusState private var inputFocused: Bool
     @ObservedObject private var settings = SettingsStore.shared
     @State private var showSettings = false
+    @State private var showChatSettings = false
     @State private var showClearConfirm = false
 
     init(kb: KnowledgeBase, session: ChatSession, onNewChat: (() -> Void)? = nil) {
@@ -34,11 +35,17 @@ struct ChatView: View {
             inputBar
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showChatSettings) { ChatSettingsSheet(vm: vm) }
         // sessionTitle updates after auto-naming from the first message
         .navigationTitle(vm.sessionTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
+                // Chat settings (model, temperature, system prompt)
+                Button(action: { showChatSettings = true }) {
+                    Image(systemName: "slider.horizontal.3")
+                }
+                .accessibilityLabel("Chat settings")
                 // Share — only when there are messages to export
                 if !vm.messages.isEmpty {
                     ShareLink(
@@ -457,6 +464,158 @@ private struct MessageBubble: View {
     private func copyMessage() {
         UIPasteboard.general.string = message.content
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+}
+
+// MARK: - Chat Settings Sheet
+
+private struct ChatSettingsSheet: View {
+    @ObservedObject var vm: ChatViewModel
+    @ObservedObject private var settings = SettingsStore.shared
+    @Environment(\.dismiss) private var dismiss
+
+    /// Local draft — committed to vm on each field change via binding.
+    @State private var useModelOverride = false
+    @State private var useTemperature = false
+    @State private var useTopP = false
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                modelSection
+                temperatureSection
+                topPSection
+                systemPromptSection
+            }
+            .navigationTitle("Chat Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .onAppear {
+            useModelOverride = vm.modelOverride != nil
+            useTemperature   = vm.temperature != nil
+            useTopP          = vm.topP != nil
+        }
+    }
+
+    // MARK: Model
+
+    private var modelSection: some View {
+        Section {
+            Toggle("Override model", isOn: $useModelOverride)
+                .onChange(of: useModelOverride) { _, on in
+                    vm.modelOverride = on ? settings.config.provider.defaultModel : nil
+                }
+            if useModelOverride {
+                modelPicker
+            }
+        } header: {
+            Text("Model")
+        } footer: {
+            Text("Overrides the provider default for this chat only.")
+        }
+    }
+
+    @ViewBuilder
+    private var modelPicker: some View {
+        let models = settings.config.provider.availableModels
+        if models.isEmpty {
+            // Ollama: dynamic list not available — free-form entry
+            TextField("Model name", text: Binding(
+                get: { vm.modelOverride ?? "" },
+                set: { vm.modelOverride = $0.isEmpty ? nil : $0 }
+            ))
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+        } else {
+            Picker("Model", selection: Binding(
+                get: { vm.modelOverride ?? settings.config.provider.defaultModel },
+                set: { vm.modelOverride = $0 }
+            )) {
+                ForEach(models, id: \.self) { Text($0).tag($0) }
+            }
+        }
+    }
+
+    // MARK: Temperature
+
+    private var temperatureSection: some View {
+        Section {
+            Toggle("Override temperature", isOn: $useTemperature)
+                .onChange(of: useTemperature) { _, on in
+                    vm.temperature = on ? 1.0 : nil
+                }
+            if useTemperature {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("Temperature")
+                        Spacer()
+                        Text(String(format: "%.2f", vm.temperature ?? 1.0))
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                    Slider(value: Binding(
+                        get: { vm.temperature ?? 1.0 },
+                        set: { vm.temperature = $0 }
+                    ), in: 0.0...2.0, step: 0.05)
+                }
+            }
+        } header: {
+            Text("Temperature")
+        } footer: {
+            Text("Higher values produce more creative, varied responses. Lower values are more deterministic.")
+        }
+    }
+
+    // MARK: Top-P
+
+    private var topPSection: some View {
+        Section {
+            Toggle("Override top-p", isOn: $useTopP)
+                .onChange(of: useTopP) { _, on in
+                    vm.topP = on ? 1.0 : nil
+                }
+            if useTopP {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("Top-P")
+                        Spacer()
+                        Text(String(format: "%.2f", vm.topP ?? 1.0))
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+                    Slider(value: Binding(
+                        get: { vm.topP ?? 1.0 },
+                        set: { vm.topP = $0 }
+                    ), in: 0.0...1.0, step: 0.01)
+                }
+            }
+        } header: {
+            Text("Top-P (Nucleus Sampling)")
+        } footer: {
+            Text("Limits token selection to the top cumulative probability mass. Usually leave at default unless you also set temperature.")
+        }
+    }
+
+    // MARK: System Prompt
+
+    private var systemPromptSection: some View {
+        Section {
+            TextEditor(text: Binding(
+                get: { vm.systemPrompt ?? "" },
+                set: { vm.systemPrompt = $0.isEmpty ? nil : $0 }
+            ))
+            .frame(minHeight: 100)
+            .autocorrectionDisabled()
+        } header: {
+            Text("Extra System Instructions")
+        } footer: {
+            Text("Appended to the built-in RAGFlow system prompt for this chat only. Leave empty to use default behaviour.")
+        }
     }
 }
 

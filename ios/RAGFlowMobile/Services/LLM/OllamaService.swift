@@ -15,11 +15,13 @@ final class OllamaService: LLMService {
         return URLSession(configuration: config)
     }()
 
+    private let params: ChatParams
     private(set) var lastUsage: TokenUsage?
 
-    init(host: String, model: String) {
+    init(host: String, model: String, params: ChatParams = .default) {
         self.host = host
         self.model = model
+        self.params = params
     }
 
     func complete(messages: [LLMMessage], context: [Chunk], books: [Book]) async throws -> AsyncThrowingStream<String, Error> {
@@ -35,11 +37,14 @@ final class OllamaService: LLMService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: [
+        var bodyDict: [String: Any] = [
             "model": model,
             "stream": true,
             "messages": allMessages.map { ["role": $0.role.rawValue, "content": $0.content] }
-        ])
+        ]
+        if let temp = params.temperature { bodyDict["temperature"] = temp }
+        if let topP = params.topP { bodyDict["top_p"] = topP }
+        request.httpBody = try JSONSerialization.data(withJSONObject: bodyDict)
 
         let (bytes, response) = try await OllamaService.session.bytes(for: request)
 
@@ -87,6 +92,6 @@ final class OllamaService: LLMService {
     }
 
     private func buildSystemPrompt(context: [Chunk], books: [Book]) -> String {
-        buildEnterprisePrompt(context: context, books: books)
+        buildEnterprisePrompt(context: context, books: books, extraInstructions: params.extraSystemPrompt)
     }
 }

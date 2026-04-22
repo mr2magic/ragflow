@@ -14,6 +14,12 @@ final class ChatViewModel: ObservableObject {
     /// Current session display name — kept in sync when auto-naming fires after the first message.
     @Published var sessionTitle: String
 
+    // MARK: Per-chat LLM overrides
+    @Published var modelOverride: String? { didSet { persistParams() } }
+    @Published var temperature: Double?   { didSet { persistParams() } }
+    @Published var topP: Double?          { didSet { persistParams() } }
+    @Published var systemPrompt: String?  { didSet { persistParams() } }
+
     let kb: KnowledgeBase
     let session: ChatSession
     @Published var activeKBs: [KnowledgeBase]
@@ -32,6 +38,10 @@ final class ChatViewModel: ObservableObject {
         self.sessionTitle = session.name
         self.activeKBs = [kb]
         self.messages = (try? db.loadMessages(sessionId: session.id)) ?? []
+        self.modelOverride = session.modelOverride
+        self.temperature = session.temperature
+        self.topP = session.topP
+        self.systemPrompt = session.systemPrompt
         buildSuggestedPrompts()
     }
 
@@ -95,6 +105,16 @@ final class ChatViewModel: ObservableObject {
         return header + body
     }
 
+    private func persistParams() {
+        try? db.updateSessionParams(
+            id: session.id,
+            modelOverride: modelOverride,
+            temperature: temperature,
+            topP: topP,
+            systemPrompt: systemPrompt
+        )
+    }
+
     func send() async {
         let query = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return }
@@ -134,7 +154,13 @@ final class ChatViewModel: ObservableObject {
                     ChunkSource(from: $0, documentTitle: docTitles[$0.bookId] ?? "")
                 }
 
-                let llm = makeLLMService(config: settings.config)
+                let chatParams = ChatParams(
+                    modelOverride: modelOverride,
+                    temperature: temperature,
+                    topP: topP,
+                    extraSystemPrompt: systemPrompt ?? ""
+                )
+                let llm = makeLLMService(config: settings.config, params: chatParams)
                 let history = messages.dropLast().map {
                     LLMMessage(role: $0.role == .user ? .user : .assistant, content: $0.content)
                 }

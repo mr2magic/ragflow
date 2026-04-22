@@ -2,13 +2,16 @@ import Foundation
 
 final class OpenAIService: LLMService {
     private let apiKey: String
-    private let model = "gpt-4o"
+    private let params: ChatParams
+    private let model: String
     private let endpoint = URL(string: "https://api.openai.com/v1/chat/completions")!
 
     private(set) var lastUsage: TokenUsage?
 
-    init(apiKey: String) {
+    init(apiKey: String, params: ChatParams = .default) {
         self.apiKey = apiKey
+        self.params = params
+        self.model = params.modelOverride ?? "gpt-4o"
     }
 
     func complete(messages: [LLMMessage], context: [Chunk], books: [Book]) async throws -> AsyncThrowingStream<String, Error> {
@@ -89,14 +92,17 @@ final class OpenAIService: LLMService {
             ["role": "system", "content": system]
         ]
         allMessages += messages.map { ["role": $0.role.rawValue, "content": $0.content] }
-        return [
+        var body: [String: Any] = [
             "model": model,
             "max_tokens": 2048,
             "messages": allMessages
         ]
+        if let temp = params.temperature { body["temperature"] = temp }
+        if let topP = params.topP { body["top_p"] = topP }
+        return body
     }
 
     private func buildSystemPrompt(context: [Chunk], books: [Book]) -> String {
-        buildEnterprisePrompt(context: context, books: books)
+        buildEnterprisePrompt(context: context, books: books, extraInstructions: params.extraSystemPrompt)
     }
 }
