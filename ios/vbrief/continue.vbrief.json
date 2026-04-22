@@ -2,56 +2,50 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-21",
-  "status": "in-progress — Dossier theme feature parity sprint",
-  "phase": "Dossier UI gap closure",
+  "status": "wave-1 complete — all 30 Dossier gaps closed",
+  "phase": "Dossier UI feature parity DONE",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "Universal layout fix for Dossier theme: DossierRootView now owns selectedKB state, branches on horizontalSizeClass — NavigationStack on iPhone, NavigationSplitView on iPad",
-    "DossierKBListView: @State selectedKB → @Binding selectedKB; .toolbar(.hidden, for: .navigationBar) suppresses empty nav bar over custom masthead",
-    "DossierKBDetailView: switched from VStack+DossierTabBar to .safeAreaInset(edge:.bottom) — tab bar now floats above home indicator in all orientations/platforms",
-    "DossierTabBar: .padding(.bottom, 28) → .padding(.bottom, 8) — was double-stacking with home indicator clearance in landscape",
-    "Build verified clean on iPhone 16 and iPad Pro 13-inch simulators",
-    "Dossier-vs-Simple audit: read all 13 Dossier files + KBListView, PhoneKBListView, KBDetailView, LibraryView, ConversationsListView, ChatView",
-    "Documented 30 Dossier feature gaps across 4 categories (D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4)",
-    "project_backlog.md updated with full Dossier Feature Gaps section"
+    "D-KBL1/2: Settings + Workflows buttons in DossierKBListView masthead",
+    "D-KBL3: Active KB highlight — isSelected passed to DossierKBCard with stamp border",
+    "D-KBL4/5/6/7/8: Context menu (Rename/Retrieval Settings/Delete), RenameSheet, KBRetrievalSettingsSheet, confirmationDialog — all on KB cards",
+    "D-DOC1-13: Full DossierDocumentListView rewrite — import sheet, camera scan, search bar, sort menu, context menus, chunk viewer sheet, ingest overlay, drag-drop, export/import KB archive, capacity badge, dynamic status badge",
+    "D-DOC13: DossierDocumentRow statusBadge — spinner/INDEXED/0-CHUNKS dynamic",
+    "D-CHAT1: Session persistence (shell+content split, .id(session.id), loadOrCreateSession)",
+    "D-CHAT3: Stop button when streaming",
+    "D-CHAT4: Copy via long-press contextMenu on DossierMessageBubble",
+    "D-CHAT5: ShareLink export in header",
+    "D-CHAT6: Clear conversation + confirmationDialog",
+    "D-CHAT7: New chat button — creates fresh session, saves to DB",
+    "D-CHAT8: .userActivity Handoff support",
+    "D-CHAT9: LLM provider warning banner",
+    "D-WF1: NEW button → NewWorkflowSheet (made NewWorkflowSheet internal)",
+    "D-WF2: Rename workflow via context menu + alert",
+    "D-WF3: Delete workflow via context menu + confirmationDialog",
+    "D-WF4: ALL button → full WorkflowListView sheet"
   ],
 
   "prior_session_completed": [
-    "WorkflowRunner.swift: fixed multi-hop KB retrieval bug — sentinel injected when retrieve step returns 0 chunks",
-    "ECC configure-ecc: 35 core skills + 10 common rules installed to ~/.claude/",
-    "Updated all .md files with new app name Ragion",
+    "Universal layout fix for Dossier theme: DossierRootView now owns selectedKB state, branches on horizontalSizeClass",
+    "DossierKBListView: @State selectedKB → @Binding selectedKB",
+    "DossierKBDetailView: switched to .safeAreaInset(edge:.bottom) tab bar",
+    "DossierTabBar: padding fixed for home indicator",
+    "Build verified clean on iPhone 16 and iPad Pro 13-inch simulators",
+    "30 Dossier feature gaps documented and all closed this sprint",
+    "WorkflowRunner.swift: fixed multi-hop KB retrieval bug",
     "App renamed to Ragion across all targets",
-    "Tagline 'Where retrieval meets reason' added to SplashView and OnboardingView",
-    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md",
-    "Fixed LLM error surfacing in OpenAIService + OllamaService",
-    "Fixed KB tap on iPhone (single KBNavDest wrapper)",
-    "Added workflow export/import, 50-doc cap, New Chat button, multiline tooltips",
     "Registered custom UTTypes for .ragflow-kb and .ragflow-workflow",
-    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers",
-    "Dossier theme wired in Settings + ContentView — 13-view paper-dossier UI",
-    "Dossier theme: AppStorage @app_theme drives DossierRootView branch in ContentView"
+    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers"
   ],
 
-  "in_progress": [
-    "Dossier feature parity — implementing 30 gap items starting with highest priority"
-  ],
+  "in_progress": [],
 
   "next": [
-    "WAVE 1 — Quick wins (uncommitted 4 layout-fix files ready to commit first):",
-    "  D-KBL1/2: Settings + Workflows buttons in DossierKBListView masthead",
-    "  D-KBL3: Active KB highlight — pass isSelected to DossierKBCard",
-    "  D-KBL4/5/6/7/8: Context menu + swipe-delete + Rename + Delete + Retrieval Settings on KB cards",
-    "  D-DOC1: Fix broken empty state (references non-existent Library tab) + add import button",
-    "  D-DOC13: Fix DossierDocumentRow status badge — currently hardcoded INDEXED; needs spinner + 0-chunk warning",
-    "  D-DOC2-7: Search, sort, context menus, swipe-delete, chunk viewer, ingest overlay",
-    "WAVE 2:",
-    "  D-CHAT1: Session persistence (load/create from DB instead of ephemeral UUID each launch)",
-    "  D-CHAT3/4/6/7: Stop, copy via long-press, clear, new chat",
-    "  D-WF1-4: Create/rename/delete workflows from DossierWorkflowView",
-    "After Dossier parity:",
-    "  Simulator regression — all orientations all platforms",
-    "  App Store icon + screenshots updated to Ragion branding"
+    "Simulator regression — all orientations (iPhone 16 + iPad Pro 13-inch), all tabs in Dossier theme",
+    "Simple theme regression — verify no regressions from WorkflowListView.swift change (NewWorkflowSheet visibility)",
+    "App Store icon + screenshots updated to Ragion branding",
+    "TestFlight build 0.8.1 — bump version, archive via Xcode GUI (keychain issue blocks xcodebuild archive)"
   ],
 
   "key_facts": {
@@ -64,11 +58,10 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "802c9e276",
+    "last_commit": "d64162029",
     "tag": "Golden_Child_4_16_26",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
-    "dossier_gap_note": "30 Dossier feature gaps documented 2026-04-21 — D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4 — all in project_backlog.md",
-    "uncommitted_changes": "4 Dossier layout fix files — DossierRootView, DossierKBListView, DossierKBDetailView, DossierTabBar",
+    "dossier_gap_note": "All 30 Dossier feature gaps closed 2026-04-21 — D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8"
   },
