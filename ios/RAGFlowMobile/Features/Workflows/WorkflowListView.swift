@@ -198,7 +198,7 @@ struct WorkflowListView: View {
 
 // MARK: - New Workflow Sheet
 
-private struct NewWorkflowSheet: View {
+struct NewWorkflowSheet: View {
     @ObservedObject var vm: WorkflowListViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showKBAlert = false

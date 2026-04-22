@@ -7,10 +7,20 @@ struct DossierMessageBubble: View {
     private var isUser: Bool { message.role == .user }
 
     var body: some View {
-        if isUser {
-            userBubble
-        } else {
-            assistantMemo
+        Group {
+            if isUser {
+                userBubble
+            } else {
+                assistantMemo
+            }
+        }
+        // D-CHAT4 — Copy message via long-press
+        .contextMenu {
+            Button {
+                UIPasteboard.general.string = message.content
+            } label: {
+                Label("Copy", systemImage: "doc.on.doc")
+            }
         }
     }
 

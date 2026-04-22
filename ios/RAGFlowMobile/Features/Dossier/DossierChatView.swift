@@ -1,36 +1,115 @@
 import SwiftUI
 
+// D-CHAT1 — Session persistence: shell owns session state; .id(session.id) forces
+// @StateObject recreation in DossierChatContent whenever the session changes (new chat).
 struct DossierChatView: View {
     let kb: KnowledgeBase
-
-    @StateObject private var vm: ChatViewModel
-    @FocusState private var inputFocused: Bool
+    @State private var session: ChatSession
 
     init(kb: KnowledgeBase) {
         self.kb = kb
-        let session = ChatSession(id: UUID().uuidString, kbId: kb.id, name: "Query", createdAt: Date())
+        _session = State(initialValue: Self.loadOrCreateSession(kb: kb))
+    }
+
+    var body: some View {
+        DossierChatContent(kb: kb, session: session) { newSession in
+            session = newSession
+        }
+        .id(session.id)
+    }
+
+    private static func loadOrCreateSession(kb: KnowledgeBase) -> ChatSession {
+        let db = DatabaseService.shared
+        if let existing = try? db.allSessions(kbId: kb.id).first {
+            return existing
+        }
+        let s = ChatSession(id: UUID().uuidString, kbId: kb.id, name: "Chat", createdAt: Date())
+        try? db.saveSession(s)
+        return s
+    }
+}
+
+// MARK: - Content view (owns ChatViewModel)
+
+private struct DossierChatContent: View {
+    let kb: KnowledgeBase
+    let session: ChatSession
+    let onNewSession: (ChatSession) -> Void
+
+    @StateObject private var vm: ChatViewModel
+    @FocusState private var inputFocused: Bool
+    @State private var showClearConfirm = false     // D-CHAT6
+    @ObservedObject private var settings = SettingsStore.shared
+
+    init(kb: KnowledgeBase, session: ChatSession, onNewSession: @escaping (ChatSession) -> Void) {
+        self.kb = kb
+        self.session = session
+        self.onNewSession = onNewSession
         _vm = StateObject(wrappedValue: ChatViewModel(kb: kb, session: session))
     }
 
     var body: some View {
         VStack(spacing: 0) {
             headerBar
+            if !settings.isConfigured && !vm.messages.isEmpty {
+                providerBanner   // D-CHAT9
+            }
             messageList
             inputBar
         }
         .background(DT.manila)
+        // D-CHAT8 — Handoff
+        .userActivity("com.dhorn.ragflowmobile.chat") { activity in
+            activity.title = kb.name
+            activity.isEligibleForHandoff = true
+            activity.userInfo = ["kbId": kb.id, "sessionId": session.id]
+        }
+        // D-CHAT6 — Clear confirmation
+        .confirmationDialog("Clear this conversation?",
+                            isPresented: $showClearConfirm,
+                            titleVisibility: .visible) {
+            Button("Clear", role: .destructive) { vm.clearConversation() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("All messages will be permanently deleted.")
+        }
     }
 
     // MARK: - Header
 
     private var headerBar: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack {
+            HStack(spacing: 12) {
                 Text("QUERY")
                     .font(DT.mono(11, weight: .bold))
                     .tracking(2)
                     .foregroundStyle(DT.inkFaint)
                 Spacer()
+                // D-CHAT5 — Export
+                ShareLink(item: vm.conversationExport) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+                .disabled(vm.messages.isEmpty)
+                .opacity(vm.messages.isEmpty ? 0.3 : 1)
+                // D-CHAT6 — Clear
+                Button { showClearConfirm = true } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+                .disabled(vm.messages.isEmpty)
+                .opacity(vm.messages.isEmpty ? 0.3 : 1)
+                // D-CHAT7 — New chat
+                Button { newChat() } label: {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
                 Text(String(kb.name.prefix(20)))
                     .font(DT.mono(10))
                     .tracking(1)
@@ -41,6 +120,23 @@ struct DossierChatView: View {
         .padding(.horizontal, DT.pagePadding)
         .padding(.top, 12)
         .padding(.bottom, 8)
+    }
+
+    // MARK: - Provider banner (D-CHAT9)
+
+    private var providerBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(.white)
+            Text("LLM not configured — open Settings to add a provider")
+                .font(DT.mono(10))
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.horizontal, DT.pagePadding)
+        .padding(.vertical, 6)
+        .background(DT.amber)
     }
 
     // MARK: - Message list
@@ -86,17 +182,33 @@ struct DossierChatView: View {
                     .lineLimit(1...5)
                     .focused($inputFocused)
 
-                Button(action: sendMessage) {
-                    Text("SEND")
-                        .font(DT.mono(10, weight: .bold))
-                        .tracking(1.5)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? DT.inkFaint : DT.stamp)
-                        .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
+                // D-CHAT3 — Stop button when streaming
+                if vm.isLoading {
+                    Button {
+                        vm.stop()
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(.white)
+                            .frame(width: 34, height: 34)
+                            .background(Color.red.opacity(0.85))
+                            .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Button(action: sendMessage) {
+                        Text("SEND")
+                            .font(DT.mono(10, weight: .bold))
+                            .tracking(1.5)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                        ? DT.inkFaint : DT.stamp)
+                            .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
+                    }
+                    .disabled(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
-                .disabled(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || vm.isLoading)
             }
             .padding(.horizontal, DT.pagePadding)
             .padding(.vertical, 10)
@@ -161,5 +273,13 @@ struct DossierChatView: View {
         let text = vm.input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
         Task { await vm.send() }
+    }
+
+    // D-CHAT7 — New chat
+    private func newChat() {
+        let db = DatabaseService.shared
+        let s = ChatSession(id: UUID().uuidString, kbId: kb.id, name: "Chat", createdAt: Date())
+        try? db.saveSession(s)
+        onNewSession(s)
     }
 }
