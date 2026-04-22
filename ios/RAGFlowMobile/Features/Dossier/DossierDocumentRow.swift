@@ -4,6 +4,7 @@ struct DossierDocumentRow: View {
     let book: Book
     let index: Int
     let isSelected: Bool
+    var isIndexing: Bool = false     // D-DOC13
 
     private var dateLabel: String {
         let fmt = DateFormatter()
@@ -20,14 +21,7 @@ struct DossierDocumentRow: View {
                     .foregroundStyle(DT.ink)
                     .lineLimit(2)
                 HStack(spacing: 8) {
-                    Text("INDEXED")
-                        .font(DT.mono(8, weight: .bold))
-                        .tracking(1)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(DT.green)
-                        .clipShape(RoundedRectangle(cornerRadius: 2))
+                    statusBadge      // D-DOC13 — dynamic badge
                     Text("\(dateLabel) · \(book.chunkCount) chunks")
                         .font(DT.mono(10))
                         .foregroundStyle(DT.inkFaint)
@@ -43,15 +37,46 @@ struct DossierDocumentRow: View {
         }
     }
 
+    // D-DOC13 — accurate index status badge
+    @ViewBuilder
+    private var statusBadge: some View {
+        if isIndexing {
+            ProgressView()
+                .scaleEffect(0.6)
+                .frame(width: 20, height: 14)
+                .tint(DT.stamp)
+        } else if book.chunkCount > 0 {
+            Text("INDEXED")
+                .font(DT.mono(8, weight: .bold))
+                .tracking(1)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(DT.green)
+                .clipShape(RoundedRectangle(cornerRadius: 2))
+        } else {
+            HStack(spacing: 3) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 8))
+                Text("0 CHUNKS")
+                    .font(DT.mono(8, weight: .bold))
+                    .tracking(1)
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(.orange)
+            .clipShape(RoundedRectangle(cornerRadius: 2))
+        }
+    }
+
     private var fileIcon: some View {
         ZStack(alignment: .topTrailing) {
-            // Page body with dog-ear
             RoundedRectangle(cornerRadius: 2)
                 .fill(DT.card)
                 .overlay(RoundedRectangle(cornerRadius: 2).stroke(DT.rule, lineWidth: 0.5))
                 .frame(width: 36, height: 44)
 
-            // Dog-ear triangle
             Path { p in
                 p.move(to: CGPoint(x: 26, y: 0))
                 p.addLine(to: CGPoint(x: 36, y: 10))
@@ -60,7 +85,6 @@ struct DossierDocumentRow: View {
             }
             .fill(DT.manila)
 
-            // Index number
             Text("\(index + 1)")
                 .font(DT.mono(9, weight: .bold))
                 .foregroundStyle(DT.stamp)
@@ -68,7 +92,6 @@ struct DossierDocumentRow: View {
                 .padding(.leading, 4)
                 .padding(.bottom, 4)
 
-            // File type label
             Text(book.fileTypeLabel.prefix(4))
                 .font(DT.mono(7, weight: .bold))
                 .tracking(0.5)
