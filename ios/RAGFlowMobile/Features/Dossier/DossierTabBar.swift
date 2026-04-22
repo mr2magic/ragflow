@@ -34,7 +34,7 @@ struct DossierTabBar: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, DT.pagePadding)
         .padding(.top, 10)
-        .padding(.bottom, 28) // safe area buffer
+        .padding(.bottom, 8)
         .background(DT.manila)
         .overlay(alignment: .top) {
             Rectangle()

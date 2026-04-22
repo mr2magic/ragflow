@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct DossierKBListView: View {
+    @Binding var selectedKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
-    @State private var selectedKB: KnowledgeBase?
     @State private var docCounts: [String: Int] = [:]
     @State private var chunkCounts: [String: Int] = [:]
     @State private var showCreateAlert = false
@@ -20,6 +20,7 @@ struct DossierKBListView: View {
             }
         }
         .background(DT.manila)
+        .toolbar(.hidden, for: .navigationBar)
         .navigationDestination(item: $selectedKB) { kb in
             DossierKBDetailView(kb: kb)
         }

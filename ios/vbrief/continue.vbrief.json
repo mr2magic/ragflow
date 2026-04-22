@@ -1,40 +1,57 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-19",
-  "status": "stable",
-  "phase": "brownfield improvement — KB retrieval fix + tooling setup",
+  "date": "2026-04-21",
+  "status": "in-progress — Dossier theme feature parity sprint",
+  "phase": "Dossier UI gap closure",
   "tag": "Golden_Child_4_16_26",
 
   "completed_this_session": [
-    "WorkflowRunner.swift: fixed multi-hop KB retrieval bug — sentinel message injected when retrieve step returns 0 chunks (was silently writing empty string, causing LLM to answer from training data only)",
-    "Sentinel: '[No relevant content found in the knowledge base for this query. The knowledge base may be empty, or no documents match the search terms.]'",
-    "Log upgraded: '⚠ 0 chunks retrieved — check KB assignment and document indexing. <slot> will signal no-context to the LLM.'",
-    "ECC configure-ecc run: 35 core skills + 10 common rules installed to ~/.claude/ (user-level)",
-    "~/.claude/settings.json updated: model=sonnet, MAX_THINKING_TOKENS=10000, CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50"
+    "Universal layout fix for Dossier theme: DossierRootView now owns selectedKB state, branches on horizontalSizeClass — NavigationStack on iPhone, NavigationSplitView on iPad",
+    "DossierKBListView: @State selectedKB → @Binding selectedKB; .toolbar(.hidden, for: .navigationBar) suppresses empty nav bar over custom masthead",
+    "DossierKBDetailView: switched from VStack+DossierTabBar to .safeAreaInset(edge:.bottom) — tab bar now floats above home indicator in all orientations/platforms",
+    "DossierTabBar: .padding(.bottom, 28) → .padding(.bottom, 8) — was double-stacking with home indicator clearance in landscape",
+    "Build verified clean on iPhone 16 and iPad Pro 13-inch simulators",
+    "Dossier-vs-Simple audit: read all 13 Dossier files + KBListView, PhoneKBListView, KBDetailView, LibraryView, ConversationsListView, ChatView",
+    "Documented 30 Dossier feature gaps across 4 categories (D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4)",
+    "project_backlog.md updated with full Dossier Feature Gaps section"
   ],
 
   "prior_session_completed": [
-    "Updated all .md files with new app name 'Ragion' (replacing 'RAGFlow Mobile' and heading-level 'RAGFlowMobile')",
-    "App renamed from RAGFlowMobile / RAGFlow to Ragion across all targets (main app, widget, share extension)",
+    "WorkflowRunner.swift: fixed multi-hop KB retrieval bug — sentinel injected when retrieve step returns 0 chunks",
+    "ECC configure-ecc: 35 core skills + 10 common rules installed to ~/.claude/",
+    "Updated all .md files with new app name Ragion",
+    "App renamed to Ragion across all targets",
     "Tagline 'Where retrieval meets reason' added to SplashView and OnboardingView",
-    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md (High/Medium/Low + feature gaps by category)",
-    "Fixed LLM error surfacing: OpenAIService + OllamaService split non-HTTP / non-200 guards with descriptive serverError messages",
-    "Fixed KB tap on iPhone (task 12): replaced 3 competing navigationDestination registrations with single KBNavDest wrapper",
-    "Fixed stale KB snapshot in retrieveChunks: re-fetches live KB from DB at query time via db.kb(id:)",
-    "Added workflow export/import (task 16), 50-doc cap (task 20), New Chat button (task 18), multiline tooltips (task 19)",
-    "Registered custom UTTypes for .ragflow-kb and .ragflow-workflow in Info.plist",
-    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers"
+    "Compiled full prioritized backlog from CONTRIBUTING.md + FEATURE_COMPARISON.md",
+    "Fixed LLM error surfacing in OpenAIService + OllamaService",
+    "Fixed KB tap on iPhone (single KBNavDest wrapper)",
+    "Added workflow export/import, 50-doc cap, New Chat button, multiline tooltips",
+    "Registered custom UTTypes for .ragflow-kb and .ragflow-workflow",
+    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers",
+    "Dossier theme wired in Settings + ContentView — 13-view paper-dossier UI",
+    "Dossier theme: AppStorage @app_theme drives DossierRootView branch in ContentView"
   ],
 
-  "in_progress": [],
+  "in_progress": [
+    "Dossier feature parity — implementing 30 gap items starting with highest priority"
+  ],
 
   "next": [
-    "Task 13: Simulator regression — iPhone 17 Pro landscape + portrait (manual UI test)",
-    "App Store icon + screenshots updated to reflect Ragion branding (if submitting)",
-    "Create iCloud.com.dhorn.ragflowmobile container in Apple Developer portal → enable iCloud sync (tasks 4-6)",
-    "Full MiniLM tokenizer via swift-transformers + .mlpackage conversion (tasks 1-3, deferred)",
-    "Update FEATURE_COMPARISON.md to reflect 0.8.0 actual state (many ❌ items are now ✅)"
+    "WAVE 1 — Quick wins (uncommitted 4 layout-fix files ready to commit first):",
+    "  D-KBL1/2: Settings + Workflows buttons in DossierKBListView masthead",
+    "  D-KBL3: Active KB highlight — pass isSelected to DossierKBCard",
+    "  D-KBL4/5/6/7/8: Context menu + swipe-delete + Rename + Delete + Retrieval Settings on KB cards",
+    "  D-DOC1: Fix broken empty state (references non-existent Library tab) + add import button",
+    "  D-DOC13: Fix DossierDocumentRow status badge — currently hardcoded INDEXED; needs spinner + 0-chunk warning",
+    "  D-DOC2-7: Search, sort, context menus, swipe-delete, chunk viewer, ingest overlay",
+    "WAVE 2:",
+    "  D-CHAT1: Session persistence (load/create from DB instead of ephemeral UUID each launch)",
+    "  D-CHAT3/4/6/7: Stop, copy via long-press, clear, new chat",
+    "  D-WF1-4: Create/rename/delete workflows from DossierWorkflowView",
+    "After Dossier parity:",
+    "  Simulator regression — all orientations all platforms",
+    "  App Store icon + screenshots updated to Ragion branding"
   ],
 
   "key_facts": {
@@ -47,14 +64,13 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "9198b1d38",
+    "last_commit": "802c9e276",
     "tag": "Golden_Child_4_16_26",
-    "archive_path": "~/Desktop/RAGFlowMobile-0.8.0.xcarchive",
-    "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: set destination to Any iOS Device (arm64) via Product > Destination, then Product > Archive",
-    "retrieval_fix_note": "WorkflowRunner retrieve step now injects sentinel when 0 chunks — prevents LLM hallucination on empty KB",
-    "rename_note": "Display name is Ragion everywhere; internal code/bundle IDs remain com.dhorn.ragflowmobile / RAGFlowMobile — no bundle ID change needed",
-    "md_rename_note": "All .md files updated 2026-04-19: user-facing name is Ragion; Xcode project/target/scheme/dir names unchanged",
-    "ecc_note": "ECC 35 core skills + 10 common rules installed to ~/.claude/ (user-level) on 2026-04-19"
+    "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
+    "dossier_gap_note": "30 Dossier feature gaps documented 2026-04-21 — D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4 — all in project_backlog.md",
+    "uncommitted_changes": "4 Dossier layout fix files — DossierRootView, DossierKBListView, DossierKBDetailView, DossierTabBar",
+    "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
+    "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8"
   },
 
   "open_questions": [

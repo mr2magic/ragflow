@@ -10,11 +10,11 @@ struct DossierKBDetailView: View {
     private let db = DatabaseService.shared
 
     var body: some View {
-        VStack(spacing: 0) {
-            tabContent
-            DossierTabBar(selected: $selectedTab)
-        }
-        .background(DT.manila)
+        tabContent
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                DossierTabBar(selected: $selectedTab)
+            }
+            .background(DT.manila)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
