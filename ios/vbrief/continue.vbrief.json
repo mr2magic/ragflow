@@ -1,69 +1,59 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-21",
-  "status": "wave-1 complete — all 30 Dossier gaps closed",
-  "phase": "Dossier UI feature parity DONE",
-  "tag": "Golden_Child_4_16_26",
+  "date": "2026-04-22",
+  "status": "H1 + C1/C2/C3 complete — per-chat LLM overrides + temp file cleanup shipped",
+  "phase": "Backlog reduction — High + Chat feature gaps",
 
   "completed_this_session": [
-    "D-KBL1/2: Settings + Workflows buttons in DossierKBListView masthead",
-    "D-KBL3: Active KB highlight — isSelected passed to DossierKBCard with stamp border",
-    "D-KBL4/5/6/7/8: Context menu (Rename/Retrieval Settings/Delete), RenameSheet, KBRetrievalSettingsSheet, confirmationDialog — all on KB cards",
-    "D-DOC1-13: Full DossierDocumentListView rewrite — import sheet, camera scan, search bar, sort menu, context menus, chunk viewer sheet, ingest overlay, drag-drop, export/import KB archive, capacity badge, dynamic status badge",
-    "D-DOC13: DossierDocumentRow statusBadge — spinner/INDEXED/0-CHUNKS dynamic",
-    "D-CHAT1: Session persistence (shell+content split, .id(session.id), loadOrCreateSession)",
-    "D-CHAT3: Stop button when streaming",
-    "D-CHAT4: Copy via long-press contextMenu on DossierMessageBubble",
-    "D-CHAT5: ShareLink export in header",
-    "D-CHAT6: Clear conversation + confirmationDialog",
-    "D-CHAT7: New chat button — creates fresh session, saves to DB",
-    "D-CHAT8: .userActivity Handoff support",
-    "D-CHAT9: LLM provider warning banner",
-    "D-WF1: NEW button → NewWorkflowSheet (made NewWorkflowSheet internal)",
-    "D-WF2: Rename workflow via context menu + alert",
-    "D-WF3: Delete workflow via context menu + confirmationDialog",
-    "D-WF4: ALL button → full WorkflowListView sheet"
+    "H1: Import cleanup — temp files now deleted on parse failure (deferred cleanup via FileManager in DocumentImporter)",
+    "C1: Per-chat model override — modelOverride field on ChatSession, @Published in ChatViewModel, picker in ChatSettingsSheet",
+    "C2: Per-chat temperature — temperature field on ChatSession, @Published with persistParams, slider in ChatSettingsSheet",
+    "C3: Per-chat top-p — topP field on ChatSession, @Published with persistParams, slider in ChatSettingsSheet",
+    "C3+: Per-chat system prompt — systemPrompt field on ChatSession, TextEditor in ChatSettingsSheet",
+    "ChatParams struct — new type carrying all 4 overrides; makeLLMService(config:params:) factory updated",
+    "ClaudeService, OpenAIService, OllamaService all accept ChatParams and forward temperature/top_p/model/extraSystemPrompt to API",
+    "DatabaseService migration v10 — added modelOverride, temperature, topP, systemPrompt columns to chat_sessions; updateSessionParams() added",
+    "ChatView toolbar — slider.horizontal.3 button opens ChatSettingsSheet"
   ],
 
   "prior_session_completed": [
-    "Universal layout fix for Dossier theme: DossierRootView now owns selectedKB state, branches on horizontalSizeClass",
-    "DossierKBListView: @State selectedKB → @Binding selectedKB",
-    "DossierKBDetailView: switched to .safeAreaInset(edge:.bottom) tab bar",
-    "DossierTabBar: padding fixed for home indicator",
-    "Build verified clean on iPhone 16 and iPad Pro 13-inch simulators",
-    "30 Dossier feature gaps documented and all closed this sprint",
+    "All 30 Dossier feature gaps closed (D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4)",
+    "Universal layout fix for Dossier theme: safeAreaInset tab bar, iPad split view, selection binding",
     "WorkflowRunner.swift: fixed multi-hop KB retrieval bug",
     "App renamed to Ragion across all targets",
     "Registered custom UTTypes for .ragflow-kb and .ragflow-workflow",
-    "Mempalace audit + cleanup: pruned 202 stale vbrief drawers"
+    "LLM error surfacing: ClaudeService/OpenAIService now show actual HTTP status + API error body"
   ],
 
   "in_progress": [],
 
   "next": [
-    "Simulator regression — all orientations (iPhone 16 + iPad Pro 13-inch), all tabs in Dossier theme",
-    "Simple theme regression — verify no regressions from WorkflowListView.swift change (NewWorkflowSheet visibility)",
-    "App Store icon + screenshots updated to Ragion branding",
-    "TestFlight build 0.8.1 — bump version, archive via Xcode GUI (keychain issue blocks xcodebuild archive)"
+    "H2: Large file handling — >100 MB PDFs exhaust memory",
+    "H3: Test coverage — unit tests for RAGService, Chunker, DatabaseService",
+    "M1: Multi-KB RRF ranking across KBs",
+    "C4: Chat history window config (last N messages)",
+    "C5: Search conversations",
+    "C6: Batch delete conversations",
+    "TestFlight build 0.8.2 — bump version to 0.8.2, build 10, archive via Xcode GUI"
   ],
 
   "key_facts": {
     "app_name": "Ragion",
     "app_tagline": "Where retrieval meets reason",
-    "app_version": "0.8.0",
-    "build_number": "8",
+    "app_version": "0.8.1",
+    "build_number": "9",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "d64162029",
-    "tag": "Golden_Child_4_16_26",
+    "last_commit": "ce1c5372e",
+    "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
-    "dossier_gap_note": "All 30 Dossier feature gaps closed 2026-04-21 — D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
-    "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8"
+    "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8",
+    "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params; auto-persisted via didSet in ChatViewModel"
   },
 
   "open_questions": [
