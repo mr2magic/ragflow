@@ -69,6 +69,13 @@ struct SplashView: View {
         .onAppear {
             withAnimation { appeared = true }
         }
+        .task {
+            // Returning users: auto-dismiss after the splash animation completes
+            // so they land straight in the app without a manual tap.
+            guard hasCompletedOnboarding else { return }
+            try? await Task.sleep(for: .seconds(0.8))
+            onDismiss()
+        }
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingView()
         }

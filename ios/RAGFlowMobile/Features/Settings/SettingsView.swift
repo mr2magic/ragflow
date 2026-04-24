@@ -214,10 +214,17 @@ struct SettingsView: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
         } header: {
-            Text("Agent Tools")
+            Text("Web Augmentation (Claude only)")
         } footer: {
-            Text("Optional. Enables web search when chatting with Claude. Get a free key at brave.com/search/api.")
-                .font(.footnote)
+            VStack(alignment: .leading, spacing: 4) {
+                if !store.config.braveSearchApiKey.isEmpty {
+                    Label("Web search is active — the AI may answer from the internet, not just your knowledge base.", systemImage: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.footnote)
+                }
+                Text("Optional. Providing a Brave Search API key enables web search for Claude responses. \u{26A0}\u{FE0F} This overrides RAG-only mode — the AI will draw on web results in addition to your knowledge base. Leave empty to enforce knowledge-base-only answers.")
+                    .font(.footnote)
+            }
         }
     }
 

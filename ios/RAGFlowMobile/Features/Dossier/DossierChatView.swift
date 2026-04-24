@@ -51,8 +51,8 @@ private struct DossierChatContent: View {
     var body: some View {
         VStack(spacing: 0) {
             headerBar
-            if !settings.isConfigured && !vm.messages.isEmpty {
-                providerBanner   // D-CHAT9
+            if !settings.isConfigured {
+                providerBanner   // D-CHAT9 / UI10
             }
             messageList
             inputBar

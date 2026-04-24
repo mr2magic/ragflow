@@ -150,6 +150,17 @@ final class ChatViewModel: ObservableObject {
 
             do {
                 let (chunks, docTitles) = try await retrieveChunks(for: query)
+
+                // RAG1: block the LLM when no KB passages were retrieved so the
+                // model cannot fall back to general training knowledge.
+                if chunks.isEmpty {
+                    messages[assistantIndex].content = "No relevant passages were found in your knowledge base for this question. Try rephrasing, or add more documents to your knowledge base."
+                    try? db.saveMessages([messages[assistantIndex]], sessionId: session.id, kbId: kb.id)
+                    isLoading = false
+                    isTyping = false
+                    return
+                }
+
                 messages[assistantIndex].sources = chunks.map {
                     ChunkSource(from: $0, documentTitle: docTitles[$0.bookId] ?? "")
                 }
