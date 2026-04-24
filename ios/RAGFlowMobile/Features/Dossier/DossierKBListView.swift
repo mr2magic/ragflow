@@ -25,14 +25,14 @@ struct DossierKBListView: View {
             DossierKBDetailView(kb: kb)
         }
         // Create KB
-        .alert("New Dossier", isPresented: $vm.showCreateAlert) {
+        .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
             TextField("Name", text: $vm.newKBName)
             Button("Create") { createKB() }
             Button("Cancel", role: .cancel) { vm.newKBName = "" }
         }
         // D-KBL6 — Rename sheet
         .sheet(item: $vm.kbToRename) { _ in
-            RenameSheet(title: "Rename Dossier", text: $vm.renameText) {
+            RenameSheet(title: "Rename Knowledge Base", text: $vm.renameText) {
                 vm.commitRename()
                 loadCounts()
             }
@@ -60,7 +60,7 @@ struct DossierKBListView: View {
         }
         // D-KBL7 — Delete confirmation
         .confirmationDialog(
-            "Delete \"\(vm.kbToDelete?.name ?? "this dossier")\"?",
+            "Delete \"\(vm.kbToDelete?.name ?? "this knowledge base")\"?",
             isPresented: Binding(
                 get: { vm.kbToDelete != nil },
                 set: { if !$0 { vm.cancelDelete() } }
@@ -90,7 +90,7 @@ struct DossierKBListView: View {
                         .font(DT.mono(10, weight: .bold))
                         .tracking(3)
                         .foregroundStyle(DT.stamp)
-                    Text("Dossier Cabinet")
+                    Text("Knowledgebases")
                         .font(DT.serif(26, weight: .semibold))
                         .foregroundStyle(DT.ink)
                 }
@@ -171,11 +171,11 @@ struct DossierKBListView: View {
     private var emptyState: some View {
         VStack(spacing: 16) {
             Spacer()
-            Text("CABINET EMPTY")
+            Text("NO KNOWLEDGEBASES")
                 .font(DT.mono(12, weight: .bold))
                 .tracking(2)
                 .foregroundStyle(DT.inkFaint)
-            Text("Tap NEW to create your first dossier.")
+            Text("Tap NEW to create your first knowledge base.")
                 .font(DT.serif(15))
                 .italic()
                 .foregroundStyle(DT.inkSoft)

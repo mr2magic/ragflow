@@ -26,6 +26,11 @@ struct SettingsView: View {
                 #endif
             }
             .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
             .onChange(of: store.theme) { _, _ in store.save() }
             .onChange(of: store.config.provider) { _, _ in store.save() }
             .onChange(of: store.config.claudeApiKey) { _, _ in store.save() }

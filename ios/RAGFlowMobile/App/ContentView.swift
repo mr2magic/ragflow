@@ -47,6 +47,8 @@ struct ContentView: View {
     @State private var pendingAutoImportKBId: String? = nil
     // iPhone Handoff — KB to navigate to after resume
     @State private var handoffKB: KnowledgeBase? = nil
+    // UI6 — persist selected tab across theme re-renders
+    @AppStorage("selectedPhoneTab") private var selectedPhoneTab: Int = 0
 
     var body: some View {
         Group {
@@ -101,21 +103,24 @@ struct ContentView: View {
     /// Tab 2: Workflows
     /// Tab 3: Settings
     private var phoneLayout: some View {
-        TabView {
+        TabView(selection: $selectedPhoneTab) {
             NavigationStack {
                 PhoneKBListView(handoffKB: $handoffKB)
             }
             .tabItem { Label("Knowledge Bases", systemImage: "square.stack.3d.up") }
+            .tag(0)
 
             NavigationStack {
                 WorkflowListView()
             }
             .tabItem { Label("Workflows", systemImage: "cpu") }
+            .tag(1)
 
             NavigationStack {
                 SettingsView()
             }
             .tabItem { Label("Settings", systemImage: "gearshape") }
+            .tag(2)
         }
     }
 

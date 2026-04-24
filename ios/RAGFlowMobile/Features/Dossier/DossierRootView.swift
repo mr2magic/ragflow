@@ -19,9 +19,9 @@ struct DossierRootView: View {
                             .id(kb.id)
                     } else {
                         ContentUnavailableView(
-                            "Select a Dossier",
+                            "Select a Knowledge Base",
                             systemImage: "folder",
-                            description: Text("Choose a dossier from the cabinet to view or chat.")
+                            description: Text("Choose a knowledge base to view or chat.")
                         )
                     }
                 }
