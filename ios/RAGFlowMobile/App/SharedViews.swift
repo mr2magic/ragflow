@@ -23,6 +23,9 @@ struct RenameSheet: View {
     @Binding var text: String
     let onSave: () -> Void
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     var body: some View {
         NavigationStack {
@@ -31,6 +34,8 @@ struct RenameSheet: View {
                     .submitLabel(.done)
                     .onSubmit { saveIfValid() }
             }
+            .scrollContentBackground(.hidden)
+            .background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -17,6 +17,8 @@ import SwiftUI
 //            document scanning, drag-and-drop import, Live Activities, Handoff
 //   0.8.0 — Import page: added GEDCOM (.ged) and ZIP archive; updated subtitle to 30+;
 //            KB page: added export/import bullet; Chat page: New Chat button in-chat
+//   0.9.0 — Chat page: added ChatSettingsSheet per-chat LLM override bullet;
+//            theme-aware: Dossier mode applies manila background
 // ─────────────────────────────────────────────────────────────────────────────
 
 // MARK: - Data model
@@ -100,7 +102,7 @@ private let onboardingPages: [OnboardingPage] = [
             ("doc.text.magnifyingglass",          "Tap 'N passages used' under any reply to read the exact chunks the AI retrieved"),
             ("plus.circle",                       "Search across multiple KBs in one chat — tap + in the scope bar to add another KB"),
             ("square.and.pencil",                 "Tap the compose icon (top-right) inside any chat to start a new one instantly — no need to go back"),
-            ("pencil",                            "Sessions are auto-named from your first message — long-press to rename or delete"),
+            ("slider.horizontal.3",              "Tap the sliders icon (top-right) to override the AI model, temperature, or add a system prompt for this chat only"),
         ]
     ),
 
@@ -164,10 +166,14 @@ private let onboardingPages: [OnboardingPage] = [
 
 struct OnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompleted = false
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
     @State private var currentPage = 0
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     var body: some View {
         ZStack(alignment: .top) {
+            if isDossier { DT.manila.ignoresSafeArea() }
             // Paged content
             // safeAreaInset(edge: .bottom) on the outer ZStack already adjusts the
             // safe area for the bottom controls, so each page's ScrollView naturally

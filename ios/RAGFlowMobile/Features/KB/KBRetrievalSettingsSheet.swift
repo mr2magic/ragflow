@@ -5,8 +5,11 @@ import SwiftUI
 /// chunking strategy (method, size, overlap) applied at ingest time.
 struct KBRetrievalSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
     private let kb: KnowledgeBase
     private let onSave: (KnowledgeBase) -> Void
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     // Retrieval settings
     @State private var topK: Int
@@ -36,6 +39,8 @@ struct KBRetrievalSettingsSheet: View {
                 chunkingSection
                 infoSection
             }
+            .scrollContentBackground(.hidden)
+            .background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))
             .navigationTitle(kb.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

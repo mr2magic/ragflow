@@ -9,16 +9,26 @@ import SwiftUI
 /// to transition to ContentView.
 struct SplashView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
     let onDismiss: () -> Void
 
     @State private var appeared = false
     @State private var showOnboarding = false
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     private var versionString: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
     var body: some View {
+        ZStack {
+            if isDossier { DT.manila.ignoresSafeArea() }
+            splashContent
+        }
+    }
+
+    private var splashContent: some View {
         VStack(spacing: 0) {
             Spacer()
 

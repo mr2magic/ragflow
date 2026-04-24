@@ -3,9 +3,12 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var store = SettingsStore.shared
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
     @State private var ollamaModels: [String] = []
     @State private var isFetchingModels = false
     @State private var connectionStatus: ConnectionStatus = .idle
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     enum ConnectionStatus {
         case idle, testing, success, failure(String)
@@ -25,6 +28,8 @@ struct SettingsView: View {
                 debugSection
                 #endif
             }
+            .scrollContentBackground(.hidden)
+            .background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {

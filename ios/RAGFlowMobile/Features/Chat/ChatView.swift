@@ -473,6 +473,9 @@ private struct ChatSettingsSheet: View {
     @ObservedObject var vm: ChatViewModel
     @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
+
+    private var isDossier: Bool { AppTheme(rawValue: themeRaw) == .dossier }
 
     /// Local draft — committed to vm on each field change via binding.
     @State private var useModelOverride = false
@@ -487,6 +490,8 @@ private struct ChatSettingsSheet: View {
                 topPSection
                 systemPromptSection
             }
+            .scrollContentBackground(.hidden)
+            .background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Chat Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
