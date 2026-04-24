@@ -11,6 +11,12 @@ struct DossierChatView: View {
         _session = State(initialValue: Self.loadOrCreateSession(kb: kb))
     }
 
+    /// Open a specific existing session (e.g. from the Archive tab).
+    init(kb: KnowledgeBase, session: ChatSession) {
+        self.kb = kb
+        _session = State(initialValue: session)
+    }
+
     var body: some View {
         DossierChatContent(kb: kb, session: session) { newSession in
             session = newSession

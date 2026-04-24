@@ -41,7 +41,7 @@ struct DossierKBDetailView: View {
         case .flow:
             DossierWorkflowView(kb: kb)
         case .arch:
-            DossierArchView(kb: kb, docCount: docCount, chunkCount: chunkCount)
+            DossierArchiveView(kb: kb)
         }
     }
 

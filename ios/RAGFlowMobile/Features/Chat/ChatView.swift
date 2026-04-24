@@ -482,6 +482,12 @@ private struct ChatSettingsSheet: View {
     @State private var useTemperature = false
     @State private var useTopP = false
 
+    /// Snapshot captured on appear so Cancel can revert live binding writes.
+    @State private var originalModelOverride: String? = nil
+    @State private var originalTemperature: Double? = nil
+    @State private var originalTopP: Double? = nil
+    @State private var originalSystemPrompt: String? = nil
+
     var body: some View {
         NavigationStack {
             Form {
@@ -498,13 +504,28 @@ private struct ChatSettingsSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { cancel() }
+                }
             }
         }
         .onAppear {
             useModelOverride = vm.modelOverride != nil
             useTemperature   = vm.temperature != nil
             useTopP          = vm.topP != nil
+            originalModelOverride = vm.modelOverride
+            originalTemperature   = vm.temperature
+            originalTopP          = vm.topP
+            originalSystemPrompt  = vm.systemPrompt
         }
+    }
+
+    private func cancel() {
+        vm.modelOverride = originalModelOverride
+        vm.temperature   = originalTemperature
+        vm.topP          = originalTopP
+        vm.systemPrompt  = originalSystemPrompt
+        dismiss()
     }
 
     // MARK: Model

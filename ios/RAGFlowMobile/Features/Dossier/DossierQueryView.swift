@@ -18,6 +18,7 @@ struct DossierQueryView: View {
                 headerBar
                 coverCard
                 statsGrid
+                retrievalCard
                 Spacer()
             }
             .padding(.horizontal, DT.pagePadding)
@@ -105,5 +106,40 @@ struct DossierQueryView: View {
         chunkCount >= 1000
             ? String(format: "%.1fK", Double(chunkCount) / 1000)
             : "\(chunkCount)"
+    }
+
+    // MARK: - Retrieval settings card
+
+    private var retrievalCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("RETRIEVAL")
+                .font(DT.mono(9, weight: .bold))
+                .tracking(1.5)
+                .foregroundStyle(DT.inkFaint)
+
+            Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)
+
+            metaRow(label: "TOP-K",      value: "\(kb.topK)")
+            metaRow(label: "TOP-N",      value: "\(kb.topN)")
+            metaRow(label: "SIMILARITY", value: String(format: "%.2f", kb.similarityThreshold))
+            metaRow(label: "CHUNK SIZE", value: "\(kb.chunkSize)")
+            metaRow(label: "OVERLAP",    value: "\(kb.chunkOverlap)")
+        }
+        .padding(DT.cardPadding)
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+    }
+
+    private func metaRow(label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(DT.mono(10, weight: .bold))
+                .tracking(1)
+                .foregroundStyle(DT.inkFaint)
+            Spacer()
+            Text(value)
+                .font(DT.serif(14))
+                .foregroundStyle(DT.ink)
+        }
     }
 }

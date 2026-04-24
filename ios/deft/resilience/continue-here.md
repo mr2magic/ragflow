@@ -96,9 +96,9 @@ When starting a new session, Claude reads this file to understand where things l
 ### Info.plist changes (0.6.0)
 - Version: 0.6.0 build 6
 
-## What Was Done (0.9.0 session — 2026-04-24)
+## What Was Done (0.9.0 session — 2026-04-24/25)
 
-### UI/UX polish
+### UI/UX polish (wave 1 — 2026-04-24)
 - **UI2**: `SplashView` + `OnboardingView` detect `@AppStorage("app_theme")` and overlay `DT.manila.ignoresSafeArea()` in Dossier mode
 - **UI3**: Onboarding Chat page (index 4) — replaced auto-naming bullet with `slider.horizontal.3` bullet for ChatSettingsSheet per-chat LLM overrides; version history updated to 0.9.0
 - **UI5**: `RenameSheet`, `SettingsView`, `ChatSettingsSheet`, `KBRetrievalSettingsSheet` — `.scrollContentBackground(.hidden).background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))`
@@ -106,6 +106,11 @@ When starting a new session, Claude reads this file to understand where things l
 - **UI7**: Dossier strings — "Dossier Cabinet" → "Knowledgebases"; "Select a Dossier" → "Select a Knowledge Base" in `DossierKBListView` + `DossierRootView`
 - **UI11**: `SettingsView` Done toolbar button added
 - **RAG1**: Confirmed already implemented — `chunks.isEmpty` guard in `ChatViewModel.send()` + strict system prompt in `LLMService.buildEnterprisePrompt()`
+
+### UI/UX polish (wave 2 — 2026-04-25)
+- **UI9**: `DossierDocumentListView.bookList` converted from `ScrollView+LazyVStack` → `List` with `.swipeActions` (trailing=Delete `allowsFullSwipe:true`, leading=Rename); Dossier styling via `.listRowBackground(DT.card)` + `.listRowSeparatorTint(DT.rule)` + `.listStyle(.plain)` + `.scrollContentBackground(.hidden)`
+- **UI12**: `ChatSettingsSheet` gained Cancel button; pre-open snapshot pattern (`@State private var originalX` captured in `onAppear`, restored via `cancel()` before `dismiss()`); toolbar `.cancellationAction` placement
+- **NAV1**: `DossierTab .arch` label `"ARCH"` → `"LOG"`; `DossierArchView.swift` fully repurposed as `DossierArchiveView` — chat sessions List (swipe-delete, context-menu rename, sheet-open via `DossierChatView(kb:session:)`); `DossierKBDetailView .arch` case now shows `DossierArchiveView(kb:)`; arch stats (TOP-K/TOP-N/SIMILARITY/CHUNK SIZE/OVERLAP) moved to `DossierQueryView.retrievalCard`; `DossierChatView` gained `init(kb:session:)` overload
 
 ### Last commits
 - `569d6c97c` Chore(ios): realsave checkpoint 2026-04-22
@@ -115,7 +120,7 @@ When starting a new session, Claude reads this file to understand where things l
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.9.0** (build 9 pending) — UI polish wave complete; backlog updated
+- Version: **0.9.0** (build 9 pending) — UI polish waves 1+2 complete; backlog updated
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
 
 ## Team IDs (confirmed working 2026-04-16)

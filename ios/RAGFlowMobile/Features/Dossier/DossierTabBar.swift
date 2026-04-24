@@ -15,7 +15,7 @@ enum DossierTab: Int, CaseIterable {
         case .docs:  "DOCS"
         case .query: "QUERY"
         case .flow:  "FLOW"
-        case .arch:  "ARCH"
+        case .arch:  "LOG"
         }
     }
 }

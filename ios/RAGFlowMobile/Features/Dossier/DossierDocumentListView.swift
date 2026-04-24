@@ -257,7 +257,7 @@ struct DossierDocumentListView: View {
     // MARK: - Book list
 
     private var bookList: some View {
-        ScrollView {
+        List {
             // D-DOC9 — iPad drag-and-drop drop target banner
             if isDropTargeted {
                 HStack {
@@ -270,41 +270,57 @@ struct DossierDocumentListView: View {
                 .padding(.vertical, 10)
                 .background(DT.stamp.opacity(0.12))
                 .foregroundStyle(DT.stamp)
-                .padding(.horizontal, DT.pagePadding)
-                .padding(.bottom, 4)
+                .listRowBackground(DT.manila)
+                .listRowSeparator(.hidden)
             }
 
-            LazyVStack(spacing: 0) {
-                ForEach(Array(vm.filteredBooks.enumerated()), id: \.element.id) { i, book in
-                    DossierDocumentRow(
-                        book: book,
-                        index: i,
-                        isSelected: selectedBook?.id == book.id,
-                        isIndexing: vm.ingestingFilePaths.contains(book.filePath)  // D-DOC13
-                    )
-                    // D-DOC4 — context menu
-                    .contextMenu {
-                        Button("Rename") {
-                            vm.renameText = book.title
-                            vm.bookToRename = book
-                        }
-                        Button("Re-index") {
-                            Task { await vm.reindex(book: book) }
-                        }
-                        Divider()
-                        Button("Delete", role: .destructive) {
-                            vm.requestDelete(book: book)
-                        }
+            ForEach(Array(vm.filteredBooks.enumerated()), id: \.element.id) { i, book in
+                DossierDocumentRow(
+                    book: book,
+                    index: i,
+                    isSelected: selectedBook?.id == book.id,
+                    isIndexing: vm.ingestingFilePaths.contains(book.filePath)  // D-DOC13
+                )
+                .contentShape(Rectangle())
+                .onTapGesture { selectedBook = book }   // D-DOC6
+                // D-DOC4 — context menu
+                .contextMenu {
+                    Button("Rename") {
+                        vm.renameText = book.title
+                        vm.bookToRename = book
                     }
-                    .onTapGesture { selectedBook = book }   // D-DOC6
+                    Button("Re-index") {
+                        Task { await vm.reindex(book: book) }
+                    }
+                    Divider()
+                    Button("Delete", role: .destructive) {
+                        vm.requestDelete(book: book)
+                    }
                 }
+                // UI9 — swipe actions
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        vm.requestDelete(book: book)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        vm.renameText = book.title
+                        vm.bookToRename = book
+                    } label: {
+                        Label("Rename", systemImage: "pencil")
+                    }
+                    .tint(.blue)
+                }
+                .listRowBackground(DT.card)
+                .listRowSeparatorTint(DT.rule)
             }
-            .background(DT.card)
-            .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
-            .padding(.horizontal, DT.pagePadding)
-            .padding(.top, 4)
-            .padding(.bottom, 24)
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(DT.manila)
         // D-DOC9 — iPad drag-and-drop
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             for provider in providers {
