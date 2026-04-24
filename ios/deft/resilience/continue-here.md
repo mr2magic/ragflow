@@ -96,11 +96,26 @@ When starting a new session, Claude reads this file to understand where things l
 ### Info.plist changes (0.6.0)
 - Version: 0.6.0 build 6
 
+## What Was Done (0.9.0 session — 2026-04-24)
+
+### UI/UX polish
+- **UI2**: `SplashView` + `OnboardingView` detect `@AppStorage("app_theme")` and overlay `DT.manila.ignoresSafeArea()` in Dossier mode
+- **UI3**: Onboarding Chat page (index 4) — replaced auto-naming bullet with `slider.horizontal.3` bullet for ChatSettingsSheet per-chat LLM overrides; version history updated to 0.9.0
+- **UI5**: `RenameSheet`, `SettingsView`, `ChatSettingsSheet`, `KBRetrievalSettingsSheet` — `.scrollContentBackground(.hidden).background(isDossier ? DT.manila : Color(uiColor: .systemGroupedBackground))`
+- **UI6**: `ContentView` tab selection persisted via `@AppStorage("selectedPhoneTab")`
+- **UI7**: Dossier strings — "Dossier Cabinet" → "Knowledgebases"; "Select a Dossier" → "Select a Knowledge Base" in `DossierKBListView` + `DossierRootView`
+- **UI11**: `SettingsView` Done toolbar button added
+- **RAG1**: Confirmed already implemented — `chunks.isEmpty` guard in `ChatViewModel.send()` + strict system prompt in `LLMService.buildEnterprisePrompt()`
+
+### Last commits
+- `569d6c97c` Chore(ios): realsave checkpoint 2026-04-22
+- `3aa05985c` Feat(ios): UI2/UI3/UI5 — theme-aware onboarding, splash, and sheets
+
 ## Active Context
 
 - Project: RAGFlowMobile iOS app (SwiftUI + GRDB)
 - Strategy: brownfield (analyze before changing)
-- Version: **0.8.0** (build 8) — committed + pushed, archive working
+- Version: **0.9.0** (build 9 pending) — UI polish wave complete; backlog updated
 - Last shipped to TestFlight: 0.2.0 on 2026-04-03
 
 ## Team IDs (confirmed working 2026-04-16)
