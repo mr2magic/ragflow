@@ -13,6 +13,7 @@ struct ChatView: View {
     @State private var showSettings = false
     @State private var showChatSettings = false
     @State private var showClearConfirm = false
+    @State private var showLibrary = false
 
     init(kb: KnowledgeBase, session: ChatSession, onNewChat: (() -> Void)? = nil) {
         self.kb = kb
@@ -36,6 +37,9 @@ struct ChatView: View {
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showChatSettings) { ChatSettingsSheet(vm: vm) }
+        .sheet(isPresented: $showLibrary) {
+            NavigationStack { LibraryView(kb: kb, autoImport: true) }
+        }
         // sessionTitle updates after auto-naming from the first message
         .navigationTitle(vm.sessionTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -282,6 +286,10 @@ struct ChatView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, Spacing.xxl)
                     }
+
+                    Button("Import Documents") { showLibrary = true }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                 }
                 .padding(.vertical, Spacing.xxl)
             } else {

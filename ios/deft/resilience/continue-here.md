@@ -112,6 +112,13 @@ When starting a new session, Claude reads this file to understand where things l
 - **UI12**: `ChatSettingsSheet` gained Cancel button; pre-open snapshot pattern (`@State private var originalX` captured in `onAppear`, restored via `cancel()` before `dismiss()`); toolbar `.cancellationAction` placement
 - **NAV1**: `DossierTab .arch` label `"ARCH"` → `"LOG"`; `DossierArchView.swift` fully repurposed as `DossierArchiveView` — chat sessions List (swipe-delete, context-menu rename, sheet-open via `DossierChatView(kb:session:)`); `DossierKBDetailView .arch` case now shows `DossierArchiveView(kb:)`; arch stats (TOP-K/TOP-N/SIMILARITY/CHUNK SIZE/OVERLAP) moved to `DossierQueryView.retrievalCard`; `DossierChatView` gained `init(kb:session:)` overload
 
+### UI/UX polish (wave 3 — 2026-04-25)
+- **UI1**: Already done — Ragion Icon.png 1024×1024 already wired in AppIcon.appiconset/Contents.json
+- **UI4**: `KBStatusWidget` family routing fixed — `KBStatusEntryView` with `@Environment(\.widgetFamily)` routes small→`KBStatusWidgetView`, medium→`KBStatusMediumView`
+- **UI8**: `DossierChatContent.emptyState` branches on `!vm.hasDocuments` — tray icon + "NO DOCUMENTS" + "IMPORT DOCUMENTS" button → `DossierDocumentListView` sheet; `ChatView` no-docs branch → "Import Documents" button → `LibraryView` sheet
+- **UI10**: Already done — `providerBanner` in both `ChatView` + `DossierChatContent` when `!settings.isConfigured`
+- **UI13**: Skipped — depends on unimplemented file-attach feature
+
 ### Last commits
 - `569d6c97c` Chore(ios): realsave checkpoint 2026-04-22
 - `3aa05985c` Feat(ios): UI2/UI3/UI5 — theme-aware onboarding, splash, and sheets

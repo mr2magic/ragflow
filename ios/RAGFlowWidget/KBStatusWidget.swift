@@ -110,6 +110,21 @@ struct KBStatusMediumView: View {
     }
 }
 
+// MARK: - Entry view (routes by family via @Environment)
+
+private struct KBStatusEntryView: View {
+    let entry: KBStatusEntry
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        if family == .systemSmall {
+            KBStatusWidgetView(entry: entry)
+        } else {
+            KBStatusMediumView(entry: entry)
+        }
+    }
+}
+
 // MARK: - Widget
 
 struct KBStatusWidget: Widget {
@@ -117,19 +132,11 @@ struct KBStatusWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: KBStatusProvider()) { entry in
-            Group {
-                if entry.topKBs.isEmpty || [WidgetFamily.systemMedium, .systemLarge].contains(family(for: entry)) {
-                    KBStatusMediumView(entry: entry)
-                } else {
-                    KBStatusWidgetView(entry: entry)
-                }
-            }
-            .containerBackground(.fill.tertiary, for: .widget)
+            KBStatusEntryView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("KB Status")
         .description("See your knowledge base count and top KBs at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
-
-    private func family(for _: KBStatusEntry) -> WidgetFamily { .systemSmall }
 }

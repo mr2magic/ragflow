@@ -45,6 +45,7 @@ private struct DossierChatContent: View {
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
     @State private var showClearConfirm = false     // D-CHAT6
+    @State private var showDocumentImport = false
     @ObservedObject private var settings = SettingsStore.shared
 
     init(kb: KnowledgeBase, session: ChatSession, onNewSession: @escaping (ChatSession) -> Void) {
@@ -64,6 +65,9 @@ private struct DossierChatContent: View {
             inputBar
         }
         .background(DT.manila)
+        .sheet(isPresented: $showDocumentImport) {
+            NavigationStack { DossierDocumentListView(kb: kb) }
+        }
         // D-CHAT8 — Handoff
         .userActivity("com.dhorn.ragflowmobile.chat") { activity in
             activity.title = kb.name
@@ -227,31 +231,58 @@ private struct DossierChatContent: View {
     private var emptyState: some View {
         VStack(spacing: 16) {
             Spacer().frame(height: 40)
-            Text("AWAITING QUERY")
-                .font(DT.mono(11, weight: .bold))
-                .tracking(2)
-                .foregroundStyle(DT.inkFaint)
-            if !vm.suggestedPrompts.isEmpty {
-                VStack(spacing: 8) {
-                    ForEach(vm.suggestedPrompts.prefix(3), id: \.self) { prompt in
-                        Button {
-                            vm.input = prompt
-                            sendMessage()
-                        } label: {
-                            Text(prompt)
-                                .font(DT.serif(13))
-                                .italic()
-                                .foregroundStyle(DT.inkSoft)
-                                .multilineTextAlignment(.leading)
-                                .padding(10)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(DT.card)
-                                .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
-                        }
-                        .buttonStyle(.plain)
-                    }
+            if !vm.hasDocuments {
+                Image(systemName: "tray")
+                    .font(.system(size: 36))
+                    .foregroundStyle(DT.inkFaint)
+                Text("NO DOCUMENTS")
+                    .font(DT.mono(11, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(DT.inkFaint)
+                Text("Import documents into this dossier before querying.")
+                    .font(DT.serif(13))
+                    .italic()
+                    .foregroundStyle(DT.inkSoft)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+                Button { showDocumentImport = true } label: {
+                    Text("IMPORT DOCUMENTS")
+                        .font(DT.mono(10, weight: .bold))
+                        .tracking(1.5)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(DT.stamp)
+                        .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                 }
-                .padding(.horizontal, DT.pagePadding)
+                .buttonStyle(.plain)
+            } else {
+                Text("AWAITING QUERY")
+                    .font(DT.mono(11, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(DT.inkFaint)
+                if !vm.suggestedPrompts.isEmpty {
+                    VStack(spacing: 8) {
+                        ForEach(vm.suggestedPrompts.prefix(3), id: \.self) { prompt in
+                            Button {
+                                vm.input = prompt
+                                sendMessage()
+                            } label: {
+                                Text(prompt)
+                                    .font(DT.serif(13))
+                                    .italic()
+                                    .foregroundStyle(DT.inkSoft)
+                                    .multilineTextAlignment(.leading)
+                                    .padding(10)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(DT.card)
+                                    .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, DT.pagePadding)
+                }
             }
         }
         .frame(maxWidth: .infinity)
