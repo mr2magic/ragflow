@@ -28,6 +28,10 @@ final class RAGService: ObservableObject {
     }
 
     func ingest(url: URL, kbId: String) async throws -> Book {
+        let fileSize = (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0
+        if fileSize > 250 * 1024 * 1024 {
+            throw IngestError.fileTooLarge
+        }
         // Load KB settings for per-KB chunking configuration
         let kb = (try? db.kb(id: kbId)) ?? KnowledgeBase(id: kbId, name: "", createdAt: Date())
         let c = Chunker(chunkSize: kb.chunkSize, overlap: kb.chunkOverlap)
@@ -513,13 +517,14 @@ final class RAGService: ObservableObject {
     }
 
     enum IngestError: LocalizedError {
-        case unsupportedFormat, parseFailure, unsupportedLegacyDoc
+        case unsupportedFormat, parseFailure, unsupportedLegacyDoc, fileTooLarge
 
         var errorDescription: String? {
             switch self {
             case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, GED (GEDCOM), ZIP, and common code files."
             case .parseFailure: return "Could not parse the document."
             case .unsupportedLegacyDoc: return "Legacy .doc files are not supported. Open the file in Word or Pages and resave as .docx, then import again."
+            case .fileTooLarge: return "File exceeds the 250 MB limit. Split the document into smaller parts and import each separately."
             }
         }
     }

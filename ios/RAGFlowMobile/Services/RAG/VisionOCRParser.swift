@@ -19,15 +19,15 @@ struct VisionOCRParser {
     /// Returns page-separated text strings.
     func extractText(fromPDFAt url: URL) async -> [String] {
         guard let doc = CGPDFDocument(url as CFURL) else { return [] }
-        let count = doc.numberOfPages
+        let count = min(doc.numberOfPages, 200)
         var results: [String] = []
 
         for i in 1...max(1, count) {
             guard let page = doc.page(at: i) else { continue }
             let bounds = page.getBoxRect(.mediaBox)
 
-            // Render the PDF page to a CGImage at 150 dpi
-            let scale: CGFloat = 150.0 / 72.0
+            // Render the PDF page to a CGImage at 100 dpi (reduces peak memory ~56% vs 150 dpi)
+            let scale: CGFloat = 100.0 / 72.0
             let width  = Int(bounds.width  * scale)
             let height = Int(bounds.height * scale)
             guard width > 0, height > 0 else { continue }

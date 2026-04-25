@@ -2563,3 +2563,169 @@ final class DOCXParserTests: XCTestCase {
         XCTAssertGreaterThan(text.count, 50)
     }
 }
+
+// MARK: - H3: PDFParser unit tests
+
+final class PDFParserTests: XCTestCase {
+
+    func test_parse_missingFile_returnsEmpty() {
+        let parser = PDFParser()
+        let url = URL(fileURLWithPath: "/tmp/nonexistent_\(UUID().uuidString).pdf")
+        let sections = parser.parse(url: url)
+        XCTAssertTrue(sections.isEmpty)
+    }
+
+    func test_hasTextLayer_missingFile_returnsFalse() {
+        let parser = PDFParser()
+        let url = URL(fileURLWithPath: "/tmp/nonexistent_\(UUID().uuidString).pdf")
+        XCTAssertFalse(parser.hasTextLayer(url: url))
+    }
+}
+
+// MARK: - H3: IngestError description tests
+
+final class IngestErrorTests: XCTestCase {
+
+    func test_unsupportedFormat_hasDescription() {
+        let err = RAGService.IngestError.unsupportedFormat
+        XCTAssertNotNil(err.errorDescription)
+        XCTAssertTrue(err.errorDescription?.contains("PDF") == true)
+    }
+
+    func test_parseFailure_hasDescription() {
+        let err = RAGService.IngestError.parseFailure
+        XCTAssertNotNil(err.errorDescription)
+    }
+
+    func test_unsupportedLegacyDoc_mentionsDOCX() {
+        let err = RAGService.IngestError.unsupportedLegacyDoc
+        XCTAssertTrue(err.errorDescription?.contains("docx") == true || err.errorDescription?.contains(".docx") == true)
+    }
+
+    func test_fileTooLarge_mentions250MB() {
+        let err = RAGService.IngestError.fileTooLarge
+        XCTAssertNotNil(err.errorDescription)
+        XCTAssertTrue(err.errorDescription?.contains("250") == true)
+    }
+}
+
+// MARK: - H3: DatabaseService keyword search tests (FTS5 via raw GRDB)
+
+final class DatabaseServiceKeywordTests: XCTestCase {
+    private var dbq: DatabaseQueue!
+    private let kbId = "kb-kw-test"
+    private let bookId = "book-kw-test"
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! setupSchema(dbq)
+        try! seedBook(dbq)
+    }
+
+    private func setupSchema(_ queue: DatabaseQueue) throws {
+        try queue.write { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.execute(sql: "INSERT INTO knowledge_bases (id, name, createdAt) VALUES (?, ?, ?)",
+                           arguments: [kbId, "KW Test KB", Date()])
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+                t.column("kbId", .text).notNull()
+                t.column("fileType", .text).notNull().defaults(to: "")
+                t.column("pageCount", .integer).notNull().defaults(to: 0)
+                t.column("wordCount", .integer).notNull().defaults(to: 0)
+                t.column("sourceURL", .text).notNull().defaults(to: "")
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+                t.column("embedding", .blob)
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+    }
+
+    private func seedBook(_ queue: DatabaseQueue) throws {
+        try queue.write { db in
+            try db.execute(sql: """
+                INSERT INTO books (id, kbId, title, author, filePath, addedAt, chunkCount)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, arguments: [bookId, kbId, "Test Book", "Author", "/tmp/t.pdf", Date(), 0])
+        }
+    }
+
+    private func insertChunk(id: String, content: String, position: Int = 0) throws {
+        try dbq.write { db in
+            try db.execute(sql: """
+                INSERT INTO chunks (id, bookId, content, chapterTitle, position)
+                VALUES (?, ?, ?, ?, ?)
+                """, arguments: [id, bookId, content, "Ch", position])
+            try db.execute(sql: """
+                INSERT INTO chunks_fts (chunk_id, content, chapterTitle) VALUES (?, ?, ?)
+                """, arguments: [id, content, "Ch"])
+        }
+    }
+
+    func test_fts_findsExactTerm() throws {
+        let cid = UUID().uuidString
+        try insertChunk(id: cid, content: "The quick brown fox jumps")
+        let results = try dbq.read { db -> [Row] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "fox") else { return [] }
+            return try Row.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = ?
+                AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 10)
+                """, arguments: [kbId, pattern])
+        }
+        XCTAssertFalse(results.isEmpty)
+        XCTAssertEqual(results.first?["id"] as? String, cid)
+    }
+
+    func test_fts_noResults_forUnknownTerm() throws {
+        try insertChunk(id: UUID().uuidString, content: "The quick brown fox jumps")
+        let results = try dbq.read { db -> [Row] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "xylophone") else { return [] }
+            return try Row.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                WHERE books.kbId = ?
+                AND chunks.id IN (SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ? LIMIT 10)
+                """, arguments: [kbId, pattern])
+        }
+        XCTAssertTrue(results.isEmpty)
+    }
+
+    func test_fts_rankedSearch_returnsBothChunks() throws {
+        try insertChunk(id: UUID().uuidString, content: "swift programming language features", position: 0)
+        try insertChunk(id: UUID().uuidString, content: "swift is fast and safe", position: 1)
+        let results = try dbq.read { db -> [Row] in
+            guard let pattern = FTS5Pattern(matchingAnyTokenIn: "swift") else { return [] }
+            return try Row.fetchAll(db, sql: """
+                SELECT chunks.* FROM chunks
+                JOIN books ON books.id = chunks.bookId
+                JOIN chunks_fts ON chunks_fts.chunk_id = chunks.id
+                WHERE books.kbId = ? AND chunks_fts MATCH ?
+                ORDER BY chunks_fts.rank LIMIT 10
+                """, arguments: [kbId, pattern])
+        }
+        XCTAssertEqual(results.count, 2)
+    }
+}

@@ -13,7 +13,7 @@ struct PDFParser {
 
         // Group every 5 pages into a section to keep chunks meaningful
         let groupSize = 5
-        let pageCount = doc.pageCount
+        let pageCount = min(doc.pageCount, 1_000)
 
         var i = 0
         while i < pageCount {
