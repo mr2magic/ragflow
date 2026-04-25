@@ -134,36 +134,54 @@ struct DossierKBListView: View {
     // MARK: - KB list
 
     private var kbList: some View {
-        ScrollView {
-            LazyVStack(spacing: DT.rowSpacing) {
-                ForEach(Array(vm.kbs.enumerated()), id: \.element.id) { i, kb in
-                    DossierKBCard(
-                        kb: kb,
-                        index: i,
-                        docCount: docCounts[kb.id] ?? 0,
-                        chunkCount: chunkCounts[kb.id] ?? 0,
-                        isSelected: selectedKB?.id == kb.id   // D-KBL3
-                    )
-                    // D-KBL4 — Context menu
-                    .contextMenu {
-                        Button("Rename") {
-                            vm.renameText = kb.name
-                            vm.kbToRename = kb
-                        }
-                        Button("Retrieval Settings") {
-                            vm.kbToSettings = kb
-                        }
-                        Divider()
-                        Button("Delete", role: .destructive) {
-                            vm.requestDelete(kb: kb)
-                        }
+        List {
+            ForEach(Array(vm.kbs.enumerated()), id: \.element.id) { i, kb in
+                DossierKBCard(
+                    kb: kb,
+                    index: i,
+                    docCount: docCounts[kb.id] ?? 0,
+                    chunkCount: chunkCounts[kb.id] ?? 0,
+                    isSelected: selectedKB?.id == kb.id
+                )
+                .contentShape(Rectangle())
+                .onTapGesture { selectedKB = kb }
+                .contextMenu {
+                    Button("Rename") {
+                        vm.renameText = kb.name
+                        vm.kbToRename = kb
                     }
-                    .onTapGesture { selectedKB = kb }
+                    Button("Retrieval Settings") {
+                        vm.kbToSettings = kb
+                    }
+                    Divider()
+                    Button("Delete", role: .destructive) {
+                        vm.requestDelete(kb: kb)
+                    }
                 }
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        vm.requestDelete(kb: kb)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        vm.renameText = kb.name
+                        vm.kbToRename = kb
+                    } label: {
+                        Label("Rename", systemImage: "pencil")
+                    }
+                    .tint(.blue)
+                }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 3, leading: DT.pagePadding, bottom: 3, trailing: DT.pagePadding))
             }
-            .padding(.horizontal, DT.pagePadding)
-            .padding(.bottom, 24)
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(DT.manila)
     }
 
     // MARK: - Empty state

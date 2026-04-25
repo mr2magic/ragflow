@@ -477,7 +477,7 @@ private struct MessageBubble: View {
 
 // MARK: - Chat Settings Sheet
 
-private struct ChatSettingsSheet: View {
+struct ChatSettingsSheet: View {
     @ObservedObject var vm: ChatViewModel
     @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.dismiss) private var dismiss

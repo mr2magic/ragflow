@@ -2,19 +2,17 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-25",
-  "status": "UI9 + UI12 + NAV1 complete — Dossier swipe actions, ChatSettingsSheet Cancel, LOG tab archive",
-  "phase": "Backlog reduction — UI/UX polish wave",
+  "status": "Feature parity wave — swipe-to-delete KBs, New Chat fix, ChatSettingsSheet + retrieval settings in Dossier",
+  "phase": "Backlog reduction — parity + bug fixes",
 
   "completed_this_session": [
-    "UI9: DossierDocumentListView bookList converted from ScrollView+LazyVStack to List with .swipeActions (trailing=Delete, leading=Rename); Dossier styling preserved via .listRowBackground/.listRowSeparatorTint",
-    "UI12: ChatSettingsSheet gained Cancel button with pre-open snapshot revert (originalModelOverride/Temperature/TopP/SystemPrompt @State vars captured in onAppear, restored on cancel())",
-    "NAV1: DossierTab .arch label ARCH→LOG; DossierArchView.swift repurposed as DossierArchiveView (chat sessions list — tap to open, swipe to delete, context menu rename); DossierKBDetailView .arch case now shows DossierArchiveView(kb:); DossierChatView gained init(kb:session:) overload for archive sheet; arch stats (TOP-K/TOP-N/SIMILARITY/CHUNK SIZE/OVERLAP) moved to DossierQueryView as new retrievalCard",
-    "UI2: SplashView + OnboardingView apply DT.manila overlay in Dossier mode",
-    "UI3: Onboarding Chat page updated with slider.horizontal.3 bullet for per-chat LLM overrides",
-    "UI5: RenameSheet, SettingsView, ChatSettingsSheet, KBRetrievalSettingsSheet all use DT.manila in Dossier mode",
-    "UI6: ContentView @AppStorage(selectedPhoneTab) persists tab selection",
-    "UI7: Dossier Cabinet → Knowledgebases string updates",
-    "UI11: SettingsView Done toolbar button added"
+    "SWIPE: DossierKBListView.kbList converted from ScrollView+LazyVStack to List with .swipeActions (trailing=Delete allowsFullSwipe:true, leading=Rename .tint(.blue)); .listRowBackground(Color.clear) preserves DossierKBCard styling",
+    "BUGFIX: ConversationsListView.createNewSession() — nil-then-async-set pattern (selectedSession=nil then DispatchMain{selectedSession=s}) fixes SwiftUI navigationDestination(item:) bug when navigating from one non-nil session to another",
+    "PARITY: DossierChatContent gained showChatSettings @State + slider.horizontal.3 button in headerBar + .sheet(ChatSettingsSheet(vm:)) — matches Simple ChatView per-chat LLM override",
+    "PARITY: ChatSettingsSheet promoted from private→internal so DossierChatView can reference it",
+    "PARITY: DossierQueryView.retrievalCard gained pencil edit button + showRetrievalSettings @State + .sheet(KBRetrievalSettingsSheet) with DatabaseService.shared.saveKB callback — retrieval settings now editable in Dossier KB overview tab",
+    "UI1/UI4/UI8/UI10: UI backlog wave 3 complete (prior commit c2dea4d80)",
+    "UI9/UI12/NAV1: Dossier swipe actions, ChatSettingsSheet Cancel, LOG archive tab (prior commit 41f5ecb64)"
   ],
 
   "prior_session_completed": [
@@ -28,9 +26,7 @@
   "in_progress": [],
 
   "next": [
-    "UI1: App icon — needs 1024×1024 Ragion logo PNG in AppIcon.appiconset (manual step)",
-    "UI4: Widget broken — Embed App Extensions phase must be added manually in Xcode",
-    "UI10: Provider not configured warning — inline banner when SettingsStore.isConfigured == false",
+    "Screenshot verify: grant screen recording permission, compare ~/Desktop/Screenshot 2026-04-22 at 9.52.25 AM.jpg against Dossier UI",
     "UI13: Attachment chips in chat query bubbles (skip until Message model has attachment infrastructure)",
     "H2: Large file handling — >100 MB PDFs exhaust memory",
     "H3: Test coverage — unit tests for RAGService, Chunker, DatabaseService",
@@ -44,24 +40,27 @@
     "app_name": "Ragion",
     "app_tagline": "Where retrieval meets reason",
     "app_version": "0.9.0",
-    "build_number": "9",
+    "build_number": "10",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "569d6c97c",
+    "last_commit": "c2dea4d80",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8",
     "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params; auto-persisted via didSet in ChatViewModel",
-    "dossier_list_note": "DossierDocumentListView uses List (not ScrollView+LazyVStack) — required for swipeActions support",
-    "arch_tab_note": "DossierTab .arch is now LOG tab showing DossierArchiveView (chat sessions); arch stats live in DossierQueryView.retrievalCard"
+    "dossier_list_note": "DossierKBListView and DossierDocumentListView both use List (not ScrollView+LazyVStack) — required for swipeActions support",
+    "arch_tab_note": "DossierTab .arch is now LOG tab showing DossierArchiveView (chat sessions); arch stats live in DossierQueryView.retrievalCard",
+    "chat_settings_note": "ChatSettingsSheet is module-internal (not private) — used by both ChatView and DossierChatView",
+    "new_chat_fix_note": "navigationDestination(item:) requires nil-then-async-set when changing from one non-nil value to another"
   },
 
   "open_questions": [
     "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?",
-    "App Store listing name — should it be changed to Ragion when next submitting?"
+    "App Store listing name — should it be changed to Ragion when next submitting?",
+    "Screenshot verification pending: need screen recording permission in System Settings"
   ]
 }

@@ -44,7 +44,8 @@ private struct DossierChatContent: View {
 
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
-    @State private var showClearConfirm = false     // D-CHAT6
+    @State private var showClearConfirm = false
+    @State private var showChatSettings = false
     @State private var showDocumentImport = false
     @ObservedObject private var settings = SettingsStore.shared
 
@@ -67,6 +68,9 @@ private struct DossierChatContent: View {
         .background(DT.manila)
         .sheet(isPresented: $showDocumentImport) {
             NavigationStack { DossierDocumentListView(kb: kb) }
+        }
+        .sheet(isPresented: $showChatSettings) {
+            ChatSettingsSheet(vm: vm)
         }
         // D-CHAT8 — Handoff
         .userActivity("com.dhorn.ragflowmobile.chat") { activity in
@@ -113,6 +117,13 @@ private struct DossierChatContent: View {
                 .buttonStyle(.plain)
                 .disabled(vm.messages.isEmpty)
                 .opacity(vm.messages.isEmpty ? 0.3 : 1)
+                // Chat settings (LLM override)
+                Button { showChatSettings = true } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
                 // D-CHAT7 — New chat
                 Button { newChat() } label: {
                     Image(systemName: "square.and.pencil")

@@ -5,6 +5,9 @@ struct DossierQueryView: View {
     let kb: KnowledgeBase
     let docCount: Int
     let chunkCount: Int
+    var onSaveSettings: ((KnowledgeBase) -> Void)?
+
+    @State private var showRetrievalSettings = false
 
     private var createdLabel: String {
         let fmt = DateFormatter()
@@ -25,6 +28,12 @@ struct DossierQueryView: View {
             .padding(.top, 12)
         }
         .background(DT.manila)
+        .sheet(isPresented: $showRetrievalSettings) {
+            KBRetrievalSettingsSheet(kb: kb) { updated in
+                try? DatabaseService.shared.saveKB(updated)
+                onSaveSettings?(updated)
+            }
+        }
     }
 
     // MARK: - Header
@@ -112,10 +121,19 @@ struct DossierQueryView: View {
 
     private var retrievalCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("RETRIEVAL")
-                .font(DT.mono(9, weight: .bold))
-                .tracking(1.5)
-                .foregroundStyle(DT.inkFaint)
+            HStack {
+                Text("RETRIEVAL")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1.5)
+                    .foregroundStyle(DT.inkFaint)
+                Spacer()
+                Button { showRetrievalSettings = true } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+            }
 
             Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)
 

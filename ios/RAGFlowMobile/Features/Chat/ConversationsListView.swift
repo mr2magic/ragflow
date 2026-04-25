@@ -155,15 +155,16 @@ struct ConversationsListView: View {
     }
 
     private func createNewSession() {
-        let session = ChatSession(
+        let s = ChatSession(
             id: UUID().uuidString,
             kbId: kb.id,
             name: "Chat",
             createdAt: Date()
         )
-        try? db.saveSession(session)
+        try? db.saveSession(s)
         reload()
-        selectedSession = session
+        selectedSession = nil
+        DispatchQueue.main.async { self.selectedSession = s }
     }
 
     private func commitRename() {
