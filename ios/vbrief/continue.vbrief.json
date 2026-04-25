@@ -2,10 +2,14 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-25",
-  "status": "Feature parity wave — swipe-to-delete KBs, New Chat fix, ChatSettingsSheet + retrieval settings in Dossier",
+  "status": "H2/H3 complete — large-file guard, OCR memory reduction, 9 new tests all green",
   "phase": "Backlog reduction — parity + bug fixes",
 
   "completed_this_session": [
+    "H2: RAGService.ingest() rejects files >250 MB with IngestError.fileTooLarge",
+    "H2: PDFParser.parse() caps text extraction at 1,000 pages",
+    "H2: VisionOCRParser OCR page cap 200, DPI reduced 150→100 (~56% less peak RAM per page)",
+    "H3: 9 new tests all passing — PDFParserTests (2), IngestErrorTests (4), DatabaseServiceKeywordTests (3 FTS5 via raw GRDB DatabaseQueue)",
     "SWIPE: DossierKBListView.kbList converted from ScrollView+LazyVStack to List with .swipeActions (trailing=Delete allowsFullSwipe:true, leading=Rename .tint(.blue)); .listRowBackground(Color.clear) preserves DossierKBCard styling",
     "BUGFIX: ConversationsListView.createNewSession() — nil-then-async-set pattern (selectedSession=nil then DispatchMain{selectedSession=s}) fixes SwiftUI navigationDestination(item:) bug when navigating from one non-nil session to another",
     "PARITY: DossierChatContent gained showChatSettings @State + slider.horizontal.3 button in headerBar + .sheet(ChatSettingsSheet(vm:)) — matches Simple ChatView per-chat LLM override",
@@ -28,12 +32,14 @@
   "next": [
     "Screenshot verify: grant screen recording permission, compare ~/Desktop/Screenshot 2026-04-22 at 9.52.25 AM.jpg against Dossier UI",
     "UI13: Attachment chips in chat query bubbles (skip until Message model has attachment infrastructure)",
-    "H2: Large file handling — >100 MB PDFs exhaust memory",
-    "H3: Test coverage — unit tests for RAGService, Chunker, DatabaseService",
     "M1: Multi-KB RRF ranking across KBs",
+    "M2: Workflow parallel steps",
+    "M3: Chat history pagination",
+    "M4: Accessibility audit",
     "C4: Chat history window config (last N messages)",
     "C5: Search conversations",
-    "C6: Batch delete conversations"
+    "C6: Batch delete conversations",
+    "L1-L4: Ollama auto-download, OpenAI streaming, export, CloudKit sync"
   ],
 
   "key_facts": {
@@ -46,7 +52,7 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "c2dea4d80",
+    "last_commit": "14c770b33",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
@@ -55,7 +61,9 @@
     "dossier_list_note": "DossierKBListView and DossierDocumentListView both use List (not ScrollView+LazyVStack) — required for swipeActions support",
     "arch_tab_note": "DossierTab .arch is now LOG tab showing DossierArchiveView (chat sessions); arch stats live in DossierQueryView.retrievalCard",
     "chat_settings_note": "ChatSettingsSheet is module-internal (not private) — used by both ChatView and DossierChatView",
-    "new_chat_fix_note": "navigationDestination(item:) requires nil-then-async-set when changing from one non-nil value to another"
+    "new_chat_fix_note": "navigationDestination(item:) requires nil-then-async-set when changing from one non-nil value to another",
+    "h2_note": "Large file guard: 250 MB limit in ingest(), PDF page cap 1000 in PDFParser, OCR page cap 200 + 100 DPI in VisionOCRParser",
+    "h3_note": "9 new tests: PDFParserTests, IngestErrorTests, DatabaseServiceKeywordTests — all use raw GRDB DatabaseQueue (not DatabaseService singleton)"
   },
 
   "open_questions": [
