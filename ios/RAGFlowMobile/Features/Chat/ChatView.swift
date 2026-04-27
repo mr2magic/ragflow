@@ -370,10 +370,14 @@ struct ChatView: View {
 
 private struct MessageBubble: View {
     let message: Message
+    @AppStorage("showAttachmentChips") private var showAttachmentChips = true
     @State private var showSources = false
 
     var body: some View {
         VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 6) {
+            if message.role == .user && showAttachmentChips && !message.attachmentNames.isEmpty {
+                attachmentChips
+            }
             HStack(alignment: .bottom, spacing: 6) {
                 if message.role == .user { Spacer(minLength: 60) }
 
@@ -406,6 +410,21 @@ private struct MessageBubble: View {
         message.role == .user
             ? AnyShapeStyle(Color.accentColor)
             : AnyShapeStyle(Color(.secondarySystemBackground))
+    }
+
+    private var attachmentChips: some View {
+        HStack(spacing: 6) {
+            Spacer(minLength: 60)
+            ForEach(message.attachmentNames, id: \.self) { name in
+                Label(name, systemImage: "paperclip")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(.quaternary, in: Capsule())
+                    .lineLimit(1)
+            }
+        }
     }
 
     private var sourcesDisclosure: some View {

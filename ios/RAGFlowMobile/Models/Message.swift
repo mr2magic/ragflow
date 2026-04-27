@@ -8,6 +8,8 @@ struct Message: Identifiable {
     var toolActivity: String? = nil
     var timestamp = Date()
     var tokenUsage: TokenUsage? = nil
+    /// Names of files attached to this user message. Empty until file-attach is implemented.
+    var attachmentNames: [String] = []
 
     enum Role {
         case user, assistant

@@ -117,7 +117,7 @@ When starting a new session, Claude reads this file to understand where things l
 - **UI4**: `KBStatusWidget` family routing fixed — `KBStatusEntryView` with `@Environment(\.widgetFamily)` routes small→`KBStatusWidgetView`, medium→`KBStatusMediumView`
 - **UI8**: `DossierChatContent.emptyState` branches on `!vm.hasDocuments` — tray icon + "NO DOCUMENTS" + "IMPORT DOCUMENTS" button → `DossierDocumentListView` sheet; `ChatView` no-docs branch → "Import Documents" button → `LibraryView` sheet
 - **UI10**: Already done — `providerBanner` in both `ChatView` + `DossierChatContent` when `!settings.isConfigured`
-- **UI13**: Skipped — depends on unimplemented file-attach feature
+- **UI13**: Done 2026-04-27 — attachmentNames on Message; chips in MessageBubble (ChatView); Settings toggle "Show attachment chips in chat"
 
 ### Last commits
 - `569d6c97c` Chore(ios): realsave checkpoint 2026-04-22

@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var store = SettingsStore.shared
     @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
+    @AppStorage("showAttachmentChips") private var showAttachmentChips = true
     @State private var ollamaModels: [String] = []
     @State private var isFetchingModels = false
     @State private var connectionStatus: ConnectionStatus = .idle
@@ -58,6 +59,7 @@ struct SettingsView: View {
                 }
             }
             .pickerStyle(.segmented)
+            Toggle("Show attachment chips in chat", isOn: $showAttachmentChips)
         }
     }
 
