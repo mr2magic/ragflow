@@ -29,7 +29,7 @@ final class RAGService: ObservableObject {
 
     func ingest(url: URL, kbId: String) async throws -> Book {
         let fileSize = (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0
-        if fileSize > 250 * 1024 * 1024 {
+        if fileSize > 100 * 1024 * 1024 {
             throw IngestError.fileTooLarge
         }
         // Load KB settings for per-KB chunking configuration
@@ -96,25 +96,38 @@ final class RAGService: ObservableObject {
 
         ingestPhase = "Chunking…"
         let bookId = UUID().uuidString
-        let allChunks: [Chunk] = await Task.detached(priority: .utility) {
-            var chunks: [Chunk] = []
-            for section in sections {
-                chunks.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
-            }
-            return chunks
-        }.value
-
-        let wordCount = allChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
         var book = Book(id: bookId, kbId: kbId, title: title, author: author,
-                        filePath: url.path, addedAt: Date(), chunkCount: allChunks.count)
+                        filePath: url.path, addedAt: Date(), chunkCount: 0)
         book.fileType = "pdf"
         book.pageCount = pageCount
-        book.wordCount = wordCount
-        ingestPhase = "Saving chunks…"
         try db.save(book)
-        try db.saveChunks(allChunks)
-        ingestPhase = "Embedding…"
-        await embedChunks(allChunks)
+
+        // Process sections in batches of 20 to bound peak memory for large PDFs.
+        let batchSize = 20
+        var totalChunks = 0
+        var totalWordCount = 0
+        let stride = Swift.stride(from: 0, to: sections.count, by: batchSize)
+        for batchStart in stride {
+            let batchEnd = min(batchStart + batchSize, sections.count)
+            let batch = Array(sections[batchStart..<batchEnd])
+            let batchChunks: [Chunk] = await Task.detached(priority: .utility) {
+                var out: [Chunk] = []
+                for section in batch {
+                    out.append(contentsOf: c.chunk(text: section.text, bookId: bookId, chapterTitle: section.title))
+                }
+                return out
+            }.value
+            totalWordCount += batchChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
+            ingestPhase = "Saving chunks…"
+            try db.saveChunks(batchChunks)
+            ingestPhase = "Embedding…"
+            await embedChunks(batchChunks)
+            totalChunks += batchChunks.count
+        }
+
+        book.chunkCount = totalChunks
+        book.wordCount = totalWordCount
+        try db.save(book)
         ingestPhase = ""
         return book
     }
@@ -524,7 +537,7 @@ final class RAGService: ObservableObject {
             case .unsupportedFormat: return "Unsupported format. Supported: PDF, ePub, DOCX, XLSX, PPTX, EML, TXT, MD, HTML, RTF, CSV, JSON, GED (GEDCOM), ZIP, and common code files."
             case .parseFailure: return "Could not parse the document."
             case .unsupportedLegacyDoc: return "Legacy .doc files are not supported. Open the file in Word or Pages and resave as .docx, then import again."
-            case .fileTooLarge: return "File exceeds the 250 MB limit. Split the document into smaller parts and import each separately."
+            case .fileTooLarge: return "File exceeds the 100 MB limit. Split the document into smaller parts and import each separately."
             }
         }
     }

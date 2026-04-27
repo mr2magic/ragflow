@@ -13,6 +13,11 @@ final class ChatViewModel: ObservableObject {
     @Published var hasDocuments = true
     /// Current session display name — kept in sync when auto-naming fires after the first message.
     @Published var sessionTitle: String
+    @Published var hasMoreMessages = false
+    @Published var isLoadingMoreMessages = false
+
+    private static let pageSize = 50
+    private var loadedOffset = 0
 
     // MARK: Per-chat LLM overrides
     @Published var modelOverride: String? { didSet { persistParams() } }
@@ -37,12 +42,29 @@ final class ChatViewModel: ObservableObject {
         self.session = session
         self.sessionTitle = session.name
         self.activeKBs = [kb]
-        self.messages = (try? db.loadMessages(sessionId: session.id)) ?? []
         self.modelOverride = session.modelOverride
         self.temperature = session.temperature
         self.topP = session.topP
         self.systemPrompt = session.systemPrompt
+        let page = (try? db.loadMessages(sessionId: session.id,
+                                         limit: Self.pageSize, offset: 0)) ?? []
+        self.messages = page
+        self.loadedOffset = page.count
+        let total = (try? db.countMessages(sessionId: session.id)) ?? 0
+        self.hasMoreMessages = total > page.count
         buildSuggestedPrompts()
+    }
+
+    func loadMoreMessages() async {
+        guard hasMoreMessages, !isLoadingMoreMessages else { return }
+        isLoadingMoreMessages = true
+        let older = (try? db.loadMessages(sessionId: session.id,
+                                          limit: Self.pageSize, offset: loadedOffset)) ?? []
+        loadedOffset += older.count
+        let total = (try? db.countMessages(sessionId: session.id)) ?? 0
+        messages = older + messages
+        hasMoreMessages = loadedOffset < total
+        isLoadingMoreMessages = false
     }
 
     private func buildSuggestedPrompts() {

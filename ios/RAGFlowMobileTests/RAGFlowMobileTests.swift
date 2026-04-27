@@ -2602,10 +2602,10 @@ final class IngestErrorTests: XCTestCase {
         XCTAssertTrue(err.errorDescription?.contains("docx") == true || err.errorDescription?.contains(".docx") == true)
     }
 
-    func test_fileTooLarge_mentions250MB() {
+    func test_fileTooLarge_mentions100MB() {
         let err = RAGService.IngestError.fileTooLarge
         XCTAssertNotNil(err.errorDescription)
-        XCTAssertTrue(err.errorDescription?.contains("250") == true)
+        XCTAssertTrue(err.errorDescription?.contains("100") == true)
     }
 }
 
@@ -2727,5 +2727,195 @@ final class DatabaseServiceKeywordTests: XCTestCase {
                 """, arguments: [kbId, pattern])
         }
         XCTAssertEqual(results.count, 2)
+    }
+}
+
+// MARK: - Paginated message loading
+
+final class PaginatedMessageLoadingTests: XCTestCase {
+
+    private var dbq: DatabaseQueue!
+    private var sut: DatabaseService!
+
+    override func setUp() {
+        super.setUp()
+        dbq = try! DatabaseQueue()
+        try! runMigrations(on: dbq)
+        sut = DatabaseService(queue: dbq)
+    }
+
+    private func runMigrations(on queue: DatabaseQueue) throws {
+        var m = DatabaseMigrator()
+        m.registerMigration("v1") { db in
+            try db.create(table: "books", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("title", .text).notNull()
+                t.column("author", .text).notNull().defaults(to: "")
+                t.column("filePath", .text).notNull()
+                t.column("addedAt", .datetime).notNull()
+                t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(table: "chunks", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+                t.column("content", .text).notNull()
+                t.column("chapterTitle", .text)
+                t.column("position", .integer).notNull()
+            }
+            try db.create(virtualTable: "chunks_fts", ifNotExists: true, using: FTS5()) { t in
+                t.tokenizer = .porter()
+                t.column("chunk_id")
+                t.column("content")
+                t.column("chapterTitle")
+            }
+        }
+        m.registerMigration("v2") { db in
+            try db.alter(table: "chunks") { t in t.add(column: "embedding", .blob) }
+        }
+        m.registerMigration("v3") { db in
+            try db.create(table: "knowledge_bases", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("name", .text).notNull()
+                t.column("createdAt", .datetime).notNull()
+            }
+            try db.alter(table: "books") { t in
+                t.add(column: "kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            }
+        }
+        m.registerMigration("v4") { db in
+            try db.create(table: "messages", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("kbId", .text).notNull()
+                t.column("role", .text).notNull()
+                t.column("content", .text).notNull()
+                t.column("timestamp", .datetime).notNull()
+            }
+            try db.create(table: "message_sources", ifNotExists: true) { t in
+                t.column("id", .text).primaryKey()
+                t.column("messageId", .text).notNull().references("messages", onDelete: .cascade)
+                t.column("chapterTitle", .text)
+                t.column("preview", .text).notNull()
+            }
+        }
+        m.registerMigration("v8") { db in
+            try db.alter(table: "knowledge_bases") { t in
+                t.add(column: "topK", .integer).notNull().defaults(to: 10)
+                t.add(column: "topN", .integer).notNull().defaults(to: 50)
+                t.add(column: "chunkMethod", .text).notNull().defaults(to: "General")
+                t.add(column: "chunkSize", .integer).notNull().defaults(to: 512)
+                t.add(column: "chunkOverlap", .integer).notNull().defaults(to: 64)
+                t.add(column: "similarityThreshold", .double).notNull().defaults(to: 0.2)
+            }
+            try db.alter(table: "books") { t in
+                t.add(column: "fileType", .text).notNull().defaults(to: "")
+                t.add(column: "pageCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "wordCount", .integer).notNull().defaults(to: 0)
+                t.add(column: "sourceURL", .text).notNull().defaults(to: "")
+            }
+            try db.alter(table: "messages") { t in
+                t.add(column: "sessionId", .text).notNull().defaults(to: "")
+            }
+            try db.alter(table: "message_sources") { t in
+                t.add(column: "documentTitle", .text).notNull().defaults(to: "")
+            }
+        }
+        try m.migrate(queue)
+    }
+
+    private func insertMessage(id: String, sessionId: String, role: String,
+                               content: String, offset: TimeInterval) throws {
+        let ts = Date(timeIntervalSinceReferenceDate: offset)
+        try dbq.write { db in
+            try db.execute(
+                sql: "INSERT INTO messages (id, kbId, sessionId, role, content, timestamp) VALUES (?,?,?,?,?,?)",
+                arguments: [id, KnowledgeBase.defaultID, sessionId, role, content, ts])
+        }
+    }
+
+    // MARK: - countMessages
+
+    func testCountMessagesReturnsZeroForEmptySession() throws {
+        let count = try sut.countMessages(sessionId: "none")
+        XCTAssertEqual(count, 0)
+    }
+
+    func testCountMessagesReturnsExactCount() throws {
+        try insertMessage(id: "m1", sessionId: "s1", role: "user", content: "hi", offset: 1)
+        try insertMessage(id: "m2", sessionId: "s1", role: "assistant", content: "hello", offset: 2)
+        try insertMessage(id: "m3", sessionId: "s1", role: "user", content: "bye", offset: 3)
+        XCTAssertEqual(try sut.countMessages(sessionId: "s1"), 3)
+    }
+
+    func testCountMessagesIsScopedToSession() throws {
+        try insertMessage(id: "a1", sessionId: "sessA", role: "user", content: "x", offset: 1)
+        try insertMessage(id: "b1", sessionId: "sessB", role: "user", content: "y", offset: 2)
+        try insertMessage(id: "b2", sessionId: "sessB", role: "assistant", content: "z", offset: 3)
+        XCTAssertEqual(try sut.countMessages(sessionId: "sessA"), 1)
+        XCTAssertEqual(try sut.countMessages(sessionId: "sessB"), 2)
+    }
+
+    // MARK: - loadMessages
+
+    func testLoadMessagesReturnsEmptyForUnknownSession() throws {
+        let msgs = try sut.loadMessages(sessionId: "x", limit: 50, offset: 0)
+        XCTAssertTrue(msgs.isEmpty)
+    }
+
+    func testLoadMessagesReturnsChronologicalOrder() throws {
+        try insertMessage(id: "c3", sessionId: "s2", role: "assistant", content: "third", offset: 3)
+        try insertMessage(id: "c1", sessionId: "s2", role: "user",      content: "first",  offset: 1)
+        try insertMessage(id: "c2", sessionId: "s2", role: "user",      content: "second", offset: 2)
+        let msgs = try sut.loadMessages(sessionId: "s2", limit: 50, offset: 0)
+        XCTAssertEqual(msgs.count, 3)
+        XCTAssertEqual(msgs[0].content, "first")
+        XCTAssertEqual(msgs[1].content, "second")
+        XCTAssertEqual(msgs[2].content, "third")
+    }
+
+    func testLoadMessagesRespectLimit() throws {
+        for i in 0..<10 {
+            try insertMessage(id: "lim\(i)", sessionId: "s3", role: "user",
+                              content: "msg\(i)", offset: Double(i))
+        }
+        let page = try sut.loadMessages(sessionId: "s3", limit: 4, offset: 0)
+        XCTAssertEqual(page.count, 4)
+    }
+
+    func testLoadMessagesRespectOffset() throws {
+        for i in 0..<6 {
+            try insertMessage(id: "off\(i)", sessionId: "s4", role: "user",
+                              content: "msg\(i)", offset: Double(i))
+        }
+        // offset=0 fetches the 3 NEWEST (DESC order), reversed → chronological newest 3
+        let first  = try sut.loadMessages(sessionId: "s4", limit: 3, offset: 0)
+        // offset=3 fetches the 3 OLDER (DESC order), reversed → chronological older 3
+        let second = try sut.loadMessages(sessionId: "s4", limit: 3, offset: 3)
+        XCTAssertEqual(first.count, 3)
+        XCTAssertEqual(second.count, 3)
+        // Pages must not overlap: all messages in second are older than all in first.
+        XCTAssertLessThan(second.last!.timestamp, first.first!.timestamp)
+    }
+
+    func testLoadMessagesDoesNotReturnOtherSessions() throws {
+        try insertMessage(id: "x1", sessionId: "sX", role: "user", content: "xmsg", offset: 1)
+        try insertMessage(id: "y1", sessionId: "sY", role: "user", content: "ymsg", offset: 2)
+        let msgs = try sut.loadMessages(sessionId: "sX", limit: 50, offset: 0)
+        XCTAssertEqual(msgs.count, 1)
+        XCTAssertEqual(msgs[0].content, "xmsg")
+    }
+
+    func testLoadMessagesTotalMatchesCount() throws {
+        let sessionId = "total-check"
+        for i in 0..<15 {
+            try insertMessage(id: "tc\(i)", sessionId: sessionId, role: "user",
+                              content: "m\(i)", offset: Double(i))
+        }
+        let total  = try sut.countMessages(sessionId: sessionId)
+        let page1  = try sut.loadMessages(sessionId: sessionId, limit: 10, offset: 0)
+        let page2  = try sut.loadMessages(sessionId: sessionId, limit: 10, offset: 10)
+        XCTAssertEqual(total, 15)
+        XCTAssertEqual(page1.count, 10)
+        XCTAssertEqual(page2.count, 5)
+        XCTAssertEqual(page1.count + page2.count, total)
     }
 }

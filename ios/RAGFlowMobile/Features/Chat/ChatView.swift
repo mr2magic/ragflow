@@ -213,6 +213,22 @@ struct ChatView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 12) {
+                    if vm.hasMoreMessages {
+                        HStack {
+                            Spacer()
+                            if vm.isLoadingMoreMessages {
+                                ProgressView()
+                            } else {
+                                Button("Load earlier messages") {
+                                    Task { await vm.loadMoreMessages() }
+                                }
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                    }
                     if vm.messages.isEmpty {
                         emptyChatPrompts
                     }

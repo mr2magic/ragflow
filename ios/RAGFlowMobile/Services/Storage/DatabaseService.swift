@@ -6,6 +6,11 @@ final class DatabaseService {
 
     private let dbQueue: DatabaseQueue
 
+    /// For unit tests only — injects a pre-configured in-memory queue.
+    init(queue: DatabaseQueue) {
+        self.dbQueue = queue
+    }
+
     private init() {
         do {
             let dir = try FileManager.default.url(
@@ -490,6 +495,43 @@ final class DatabaseService {
                 msg.timestamp = row["timestamp"]
                 return msg
             }
+        }
+    }
+
+    func countMessages(sessionId: String) throws -> Int {
+        try dbQueue.read { db in
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM messages WHERE sessionId = ?",
+                             arguments: [sessionId]) ?? 0
+        }
+    }
+
+    /// Returns up to `limit` messages ending at `offset` from the newest, in chronological order.
+    /// Fetch newest-first, then reverse so callers receive oldest→newest slice.
+    func loadMessages(sessionId: String, limit: Int, offset: Int) throws -> [Message] {
+        try dbQueue.read { db in
+            let rows = try Row.fetchAll(db, sql: """
+                SELECT * FROM messages WHERE sessionId = ?
+                ORDER BY timestamp DESC LIMIT ? OFFSET ?
+                """, arguments: [sessionId, limit, offset])
+            let messages = try rows.map { row -> Message in
+                let msgId: String = row["id"]
+                let srcRows = try Row.fetchAll(db, sql: """
+                    SELECT * FROM message_sources WHERE messageId = ?
+                    """, arguments: [msgId])
+                let sources = srcRows.map { r in
+                    ChunkSource(id: r["id"], chapterTitle: r["chapterTitle"],
+                                documentTitle: r["documentTitle"] ?? "", preview: r["preview"])
+                }
+                var msg = Message(
+                    role: (row["role"] as String) == "user" ? .user : .assistant,
+                    content: row["content"]
+                )
+                msg.id = UUID(uuidString: msgId) ?? UUID()
+                msg.sources = sources
+                msg.timestamp = row["timestamp"]
+                return msg
+            }
+            return messages.reversed()
         }
     }
 
