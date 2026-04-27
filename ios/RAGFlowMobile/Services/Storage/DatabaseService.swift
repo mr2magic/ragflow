@@ -547,6 +547,35 @@ final class DatabaseService {
         }
     }
 
+    func firstUserMessage(sessionId: String) throws -> String? {
+        try dbQueue.read { db in
+            try String.fetchOne(db, sql: """
+                SELECT content FROM messages
+                WHERE sessionId = ? AND role = 'user'
+                ORDER BY timestamp ASC LIMIT 1
+                """, arguments: [sessionId])
+        }
+    }
+
+    func sourceCount(sessionId: String) throws -> Int {
+        try dbQueue.read { db in
+            try Int.fetchOne(db, sql: """
+                SELECT COUNT(*) FROM message_sources
+                JOIN messages ON messages.id = message_sources.messageId
+                WHERE messages.sessionId = ?
+                """, arguments: [sessionId]) ?? 0
+        }
+    }
+
+    func bookTitles(kbId: String, limit: Int = 3) throws -> [String] {
+        try dbQueue.read { db in
+            try String.fetchAll(db, sql: """
+                SELECT title FROM books WHERE kbId = ?
+                ORDER BY addedAt DESC LIMIT ?
+                """, arguments: [kbId, limit])
+        }
+    }
+
     // MARK: - Workflows
 
     func allWorkflows() throws -> [Workflow] {

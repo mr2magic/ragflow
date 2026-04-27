@@ -5,6 +5,7 @@ struct DossierKBCard: View {
     let index: Int
     let docCount: Int
     let chunkCount: Int
+    var subtitle: String = ""
     var isSelected: Bool = false
 
     /// Cycle through accent colors to give each KB a distinct folder-tab color.
@@ -42,6 +43,13 @@ struct DossierKBCard: View {
                     .font(DT.serif(20, weight: .semibold))
                     .foregroundStyle(DT.ink)
                     .lineLimit(2)
+
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(DT.mono(10))
+                        .foregroundStyle(DT.inkSoft)
+                        .lineLimit(1)
+                }
 
                 Rectangle()
                     .fill(DT.rule.opacity(0.6))

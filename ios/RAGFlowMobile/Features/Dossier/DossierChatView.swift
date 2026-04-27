@@ -4,21 +4,24 @@ import SwiftUI
 // @StateObject recreation in DossierChatContent whenever the session changes (new chat).
 struct DossierChatView: View {
     let kb: KnowledgeBase
+    var onMessageTap: ((Message) -> Void)? = nil
     @State private var session: ChatSession
 
-    init(kb: KnowledgeBase) {
+    init(kb: KnowledgeBase, onMessageTap: ((Message) -> Void)? = nil) {
         self.kb = kb
+        self.onMessageTap = onMessageTap
         _session = State(initialValue: Self.loadOrCreateSession(kb: kb))
     }
 
     /// Open a specific existing session (e.g. from the Archive tab).
-    init(kb: KnowledgeBase, session: ChatSession) {
+    init(kb: KnowledgeBase, session: ChatSession, onMessageTap: ((Message) -> Void)? = nil) {
         self.kb = kb
+        self.onMessageTap = onMessageTap
         _session = State(initialValue: session)
     }
 
     var body: some View {
-        DossierChatContent(kb: kb, session: session) { newSession in
+        DossierChatContent(kb: kb, session: session, onMessageTap: onMessageTap) { newSession in
             session = newSession
         }
         .id(session.id)
@@ -41,6 +44,7 @@ private struct DossierChatContent: View {
     let kb: KnowledgeBase
     let session: ChatSession
     let onNewSession: (ChatSession) -> Void
+    var onMessageTap: ((Message) -> Void)? = nil
 
     @StateObject private var vm: ChatViewModel
     @FocusState private var inputFocused: Bool
@@ -49,9 +53,11 @@ private struct DossierChatContent: View {
     @State private var showDocumentImport = false
     @ObservedObject private var settings = SettingsStore.shared
 
-    init(kb: KnowledgeBase, session: ChatSession, onNewSession: @escaping (ChatSession) -> Void) {
+    init(kb: KnowledgeBase, session: ChatSession, onMessageTap: ((Message) -> Void)? = nil,
+         onNewSession: @escaping (ChatSession) -> Void) {
         self.kb = kb
         self.session = session
+        self.onMessageTap = onMessageTap
         self.onNewSession = onNewSession
         _vm = StateObject(wrappedValue: ChatViewModel(kb: kb, session: session))
     }
@@ -170,7 +176,7 @@ private struct DossierChatContent: View {
                         emptyState
                     } else {
                         ForEach(Array(vm.messages.enumerated()), id: \.element.id) { i, msg in
-                            DossierMessageBubble(message: msg, index: i)
+                            DossierMessageBubble(message: msg, index: i, onTap: msg.role == .assistant ? { onMessageTap?(msg) } : nil)
                                 .id(msg.id)
                         }
                     }
@@ -196,39 +202,39 @@ private struct DossierChatContent: View {
     private var inputBar: some View {
         VStack(spacing: 0) {
             Rectangle().fill(DT.rule).frame(height: 0.5)
-            HStack(alignment: .bottom, spacing: 10) {
-                TextField("Interrogate the dossier…", text: $vm.input, axis: .vertical)
+            HStack(alignment: .bottom, spacing: 8) {
+                Text("FILE INQUIRY →")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(DT.stamp)
+
+                TextField("Next question…", text: $vm.input, axis: .vertical)
                     .font(DT.serif(14))
+                    .italic()
                     .foregroundStyle(DT.ink)
                     .lineLimit(1...5)
                     .focused($inputFocused)
 
                 // D-CHAT3 — Stop button when streaming
                 if vm.isLoading {
-                    Button {
-                        vm.stop()
-                    } label: {
+                    Button { vm.stop() } label: {
                         Image(systemName: "stop.fill")
                             .font(.system(size: 14))
                             .foregroundStyle(.white)
-                            .frame(width: 34, height: 34)
+                            .frame(width: 30, height: 30)
                             .background(Color.red.opacity(0.85))
                             .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                     }
                     .buttonStyle(.plain)
                 } else {
                     Button(action: sendMessage) {
-                        Text("SEND")
-                            .font(DT.mono(10, weight: .bold))
-                            .tracking(1.5)
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                        ? DT.inkFaint : DT.stamp)
-                            .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
+                        Text("⏎")
+                            .font(.system(size: 17, weight: .medium))
+                            .foregroundStyle(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                            ? DT.inkFaint : DT.stamp)
                     }
                     .disabled(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, DT.pagePadding)

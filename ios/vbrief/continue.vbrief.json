@@ -1,37 +1,37 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-25",
-  "status": "H2/H3 complete — large-file guard, OCR memory reduction, 9 new tests all green",
-  "phase": "Backlog reduction — parity + bug fixes",
+  "date": "2026-04-27",
+  "status": "Dossier 5-screen + iPad 3-column layout complete — build green",
+  "phase": "Backlog reduction — Dossier UI parity",
 
   "completed_this_session": [
+    "DatabaseService: added firstUserMessage(sessionId:), sourceCount(sessionId:), bookTitles(kbId:limit:)",
+    "DossierMessageBubble: added onTap callback + grounding stamp overlay (GROUNDED/PARTIAL/UNGROUNDED) on assistant bubbles",
+    "DossierChatView: threaded onMessageTap((Message)->Void) through DossierChatView + DossierChatContent; updated input bar to FILE INQUIRY → prefix + 'Next question…' italic placeholder + ⏎ send",
+    "DossierKBCard: added optional subtitle param (first 3 doc titles, joined by ' · ')",
+    "DossierKBListView: added cabinetSummaryBar (DOCS/CHUNKS/KBS totals on DT.cream); loadCounts() populates subtitles + totals via bookTitles()",
+    "DossierArchView: full rewrite as DossierArchiveView — date-grouped sessions (TODAY/YESTERDAY/MMM D), #NNNN index, border-only grounding stamp, italic query preview in curly quotes, KB scope label, N CITED count, REOPEN → button; EnrichedSession private struct",
+    "DossierSourcesPanel: new file — right panel for iPad; SOURCES · N ATTACHED header; source cards with SRC·[N] ribbon chip + left-border; retrieval trace EMBED→BM25→COS-SIM→RRF-FUSE→THRESHOLD; empty state TAP A MEMO",
+    "DossierRootView: rebuilt iPad branch as DossierIPadLayout — true 3-column HStack (LEFT 240pt manilaDeep sidebar with brand + tab nav + KB list | MIDDLE flex content | RIGHT 340pt DossierSourcesPanel); tap-to-select wired via onMessageTap",
+    "project.pbxproj: registered DossierSourcesPanel.swift in PBXBuildFile + PBXFileReference + PBXGroup + PBXSourcesBuildPhase (UUIDs AA0100000000001AABB001E/001F)",
+    "Build: green on iPad Pro 13-inch (M4) simulator (id=69682D2A-65AD-43B6-B709-25B5DB2B03C8)"
+  ],
+
+  "prior_session_completed": [
     "H2: RAGService.ingest() rejects files >250 MB with IngestError.fileTooLarge",
     "H2: PDFParser.parse() caps text extraction at 1,000 pages",
     "H2: VisionOCRParser OCR page cap 200, DPI reduced 150→100 (~56% less peak RAM per page)",
     "H3: 9 new tests all passing — PDFParserTests (2), IngestErrorTests (4), DatabaseServiceKeywordTests (3 FTS5 via raw GRDB DatabaseQueue)",
-    "SWIPE: DossierKBListView.kbList converted from ScrollView+LazyVStack to List with .swipeActions (trailing=Delete allowsFullSwipe:true, leading=Rename .tint(.blue)); .listRowBackground(Color.clear) preserves DossierKBCard styling",
-    "BUGFIX: ConversationsListView.createNewSession() — nil-then-async-set pattern (selectedSession=nil then DispatchMain{selectedSession=s}) fixes SwiftUI navigationDestination(item:) bug when navigating from one non-nil session to another",
-    "PARITY: DossierChatContent gained showChatSettings @State + slider.horizontal.3 button in headerBar + .sheet(ChatSettingsSheet(vm:)) — matches Simple ChatView per-chat LLM override",
-    "PARITY: ChatSettingsSheet promoted from private→internal so DossierChatView can reference it",
-    "PARITY: DossierQueryView.retrievalCard gained pencil edit button + showRetrievalSettings @State + .sheet(KBRetrievalSettingsSheet) with DatabaseService.shared.saveKB callback — retrieval settings now editable in Dossier KB overview tab",
-    "UI1/UI4/UI8/UI10: UI backlog wave 3 complete (prior commit c2dea4d80)",
-    "UI9/UI12/NAV1: Dossier swipe actions, ChatSettingsSheet Cancel, LOG archive tab (prior commit 41f5ecb64)"
-  ],
-
-  "prior_session_completed": [
-    "H1: Import cleanup — temp files deleted on parse failure",
-    "C1/C2/C3: Per-chat model override, temperature, top-p, system prompt via ChatSettingsSheet",
-    "All 30 Dossier feature gaps closed (D-KBL1-8, D-DOC1-13, D-CHAT1-9, D-WF1-4)",
-    "Universal layout fix for Dossier theme: safeAreaInset tab bar, iPad split view",
-    "App renamed to Ragion across all targets"
+    "UI13: Attachment chips in chat bubbles with Settings toggle",
+    "SWIPE: DossierKBListView converted to List with .swipeActions",
+    "BUGFIX: new-chat navigationDestination nil-then-async-set pattern",
+    "PARITY: ChatSettingsSheet + KBRetrievalSettingsSheet in Dossier"
   ],
 
   "in_progress": [],
 
   "next": [
-    "Screenshot verify: grant screen recording permission, compare ~/Desktop/Screenshot 2026-04-22 at 9.52.25 AM.jpg against Dossier UI",
-    "UI13: Attachment chips in chat query bubbles (skip until Message model has attachment infrastructure)",
     "M1: Multi-KB RRF ranking across KBs",
     "M2: Workflow parallel steps",
     "M3: Chat history pagination",
@@ -52,23 +52,22 @@
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "14c770b33",
+    "last_commit": "cca35ecda",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8",
+    "dossier_ipad_layout": "DossierIPadLayout in DossierRootView — 3-column HStack: LEFT 240pt sidebar, MIDDLE flex, RIGHT 340pt DossierSourcesPanel; tap assistant bubble → populates sources panel",
+    "dossier_grounding": "GROUNDED=sources>=2 (DT.green), PARTIAL=1 (DT.amber), UNGROUNDED=0 (DT.stamp) — used in DossierMessageBubble overlay + DossierArchiveView row stamp",
+    "dossier_sources_panel": "DossierSourcesPanel(message: Message?) — registered in pbxproj via UUIDs AA0100000000001AABB001E/001F",
     "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params; auto-persisted via didSet in ChatViewModel",
-    "dossier_list_note": "DossierKBListView and DossierDocumentListView both use List (not ScrollView+LazyVStack) — required for swipeActions support",
-    "arch_tab_note": "DossierTab .arch is now LOG tab showing DossierArchiveView (chat sessions); arch stats live in DossierQueryView.retrievalCard",
-    "chat_settings_note": "ChatSettingsSheet is module-internal (not private) — used by both ChatView and DossierChatView",
-    "new_chat_fix_note": "navigationDestination(item:) requires nil-then-async-set when changing from one non-nil value to another",
+    "arch_tab_note": "DossierTab .arch is LOG tab showing DossierArchiveView (date-grouped sessions); arch stats live in DossierQueryView.retrievalCard",
     "h2_note": "Large file guard: 250 MB limit in ingest(), PDF page cap 1000 in PDFParser, OCR page cap 200 + 100 DPI in VisionOCRParser",
     "h3_note": "9 new tests: PDFParserTests, IngestErrorTests, DatabaseServiceKeywordTests — all use raw GRDB DatabaseQueue (not DatabaseService singleton)"
   },
 
   "open_questions": [
     "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?",
-    "App Store listing name — should it be changed to Ragion when next submitting?",
-    "Screenshot verification pending: need screen recording permission in System Settings"
+    "App Store listing name — should it be changed to Ragion when next submitting?"
   ]
 }

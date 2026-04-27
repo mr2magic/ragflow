@@ -3,8 +3,17 @@ import SwiftUI
 struct DossierMessageBubble: View {
     let message: Message
     let index: Int
+    var onTap: (() -> Void)? = nil
 
     private var isUser: Bool { message.role == .user }
+
+    private var groundingStamp: (label: String, color: Color) {
+        switch message.sources.count {
+        case 2...: return ("GROUNDED",   DT.green)
+        case 1:    return ("PARTIAL",    DT.amber)
+        default:   return ("UNGROUNDED", DT.stamp)
+        }
+    }
 
     var body: some View {
         Group {
@@ -14,6 +23,8 @@ struct DossierMessageBubble: View {
                 assistantMemo
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture { onTap?() }
         // D-CHAT4 — Copy message via long-press
         .contextMenu {
             Button {
@@ -80,17 +91,34 @@ struct DossierMessageBubble: View {
             }
             .padding(.horizontal, DT.cardPadding)
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text(message.content)
-                    .font(DT.serif(14.5))
-                    .foregroundStyle(DT.ink)
-                    .lineSpacing(4)
+            ZStack(alignment: .topTrailing) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(message.content)
+                        .font(DT.serif(14.5))
+                        .foregroundStyle(DT.ink)
+                        .lineSpacing(4)
 
-                if !message.sources.isEmpty {
-                    sourcesSection
+                    if !message.sources.isEmpty {
+                        sourcesSection
+                    }
                 }
+                .padding(DT.cardPadding)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Grounding stamp — border-only, rotated
+                let stamp = groundingStamp
+                Text(stamp.label)
+                    .font(DT.mono(8, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(stamp.color)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .overlay(RoundedRectangle(cornerRadius: 2).stroke(stamp.color, lineWidth: 1.5))
+                    .rotationEffect(.degrees(8))
+                    .opacity(0.88)
+                    .padding(.top, 10)
+                    .padding(.trailing, 14)
             }
-            .padding(DT.cardPadding)
             .background(DT.card)
             .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
         }

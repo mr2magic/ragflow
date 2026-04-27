@@ -99,6 +99,7 @@
 		AA0100000000001AABB0019 /* DossierArchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0018 /* DossierArchView.swift */; };
 		AA0100000000001AABB001B /* DossierKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001A /* DossierKBListView.swift */; };
 		AA0100000000001AABB001D /* DossierRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001C /* DossierRootView.swift */; };
+		AA0100000000001AABB001F /* DossierSourcesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001E /* DossierSourcesPanel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -237,6 +238,7 @@
 		AA0100000000001AABB0018 /* DossierArchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierArchView.swift; sourceTree = "<group>"; };
 		AA0100000000001AABB001A /* DossierKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBListView.swift; sourceTree = "<group>"; };
 		AA0100000000001AABB001C /* DossierRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierRootView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001E /* DossierSourcesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierSourcesPanel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -579,6 +581,7 @@
 				AA0100000000001AABB0018 /* DossierArchView.swift */,
 				AA0100000000001AABB001A /* DossierKBListView.swift */,
 				AA0100000000001AABB001C /* DossierRootView.swift */,
+				AA0100000000001AABB001E /* DossierSourcesPanel.swift */,
 			);
 			path = Dossier;
 			sourceTree = "<group>";
@@ -805,6 +808,7 @@
 				AA0100000000001AABB0019 /* DossierArchView.swift in Sources */,
 				AA0100000000001AABB001B /* DossierKBListView.swift in Sources */,
 				AA0100000000001AABB001D /* DossierRootView.swift in Sources */,
+				AA0100000000001AABB001F /* DossierSourcesPanel.swift in Sources */,
 				891878867AB6FF410BEC0030 /* WorkflowTemplate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

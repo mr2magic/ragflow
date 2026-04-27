@@ -5,6 +5,9 @@ struct DossierKBListView: View {
     @StateObject private var vm = KBListViewModel()
     @State private var docCounts: [String: Int] = [:]
     @State private var chunkCounts: [String: Int] = [:]
+    @State private var subtitles: [String: String] = [:]
+    @State private var totalDocs: Int = 0
+    @State private var totalChunks: Int = 0
     @State private var showSettings = false      // D-KBL1
     @State private var showWorkflows = false     // D-KBL2
 
@@ -13,6 +16,9 @@ struct DossierKBListView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             masthead
+            if !vm.kbs.isEmpty {
+                cabinetSummaryBar
+            }
             if vm.kbs.isEmpty {
                 emptyState
             } else {
@@ -131,6 +137,38 @@ struct DossierKBListView: View {
         .padding(.bottom, 10)
     }
 
+    // MARK: - Cabinet summary bar
+
+    private var cabinetSummaryBar: some View {
+        HStack(spacing: 0) {
+            summaryCell(value: "\(totalDocs)", label: "DOCS")
+            Divider().frame(height: 28).background(DT.rule)
+            summaryCell(value: totalChunks >= 1000
+                        ? String(format: "%.1fK", Double(totalChunks) / 1000)
+                        : "\(totalChunks)", label: "CHUNKS")
+            Divider().frame(height: 28).background(DT.rule)
+            summaryCell(value: "\(vm.kbs.count)", label: "KBS")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(DT.cream)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+        .padding(.bottom, 6)
+    }
+
+    private func summaryCell(value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(DT.serif(18, weight: .semibold))
+                .foregroundStyle(DT.ink)
+            Text(label)
+                .font(DT.mono(9))
+                .tracking(1.5)
+                .foregroundStyle(DT.inkFaint)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     // MARK: - KB list
 
     private var kbList: some View {
@@ -141,6 +179,7 @@ struct DossierKBListView: View {
                     index: i,
                     docCount: docCounts[kb.id] ?? 0,
                     chunkCount: chunkCounts[kb.id] ?? 0,
+                    subtitle: subtitles[kb.id] ?? "",
                     isSelected: selectedKB?.id == kb.id
                 )
                 .contentShape(Rectangle())
@@ -213,10 +252,20 @@ struct DossierKBListView: View {
 
     private func loadCounts() {
         vm.reload()
+        var docs = 0
+        var chunks = 0
         for kb in vm.kbs {
             let books = (try? db.allBooks(kbId: kb.id)) ?? []
-            docCounts[kb.id] = books.count
-            chunkCounts[kb.id] = books.reduce(0) { $0 + $1.chunkCount }
+            let kbDocs = books.count
+            let kbChunks = books.reduce(0) { $0 + $1.chunkCount }
+            docCounts[kb.id] = kbDocs
+            chunkCounts[kb.id] = kbChunks
+            docs += kbDocs
+            chunks += kbChunks
+            let titles = (try? db.bookTitles(kbId: kb.id, limit: 3)) ?? []
+            subtitles[kb.id] = titles.joined(separator: " · ")
         }
+        totalDocs = docs
+        totalChunks = chunks
     }
 }
