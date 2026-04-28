@@ -64,6 +64,17 @@ final class AuthService: ObservableObject {
     func signInWithGoogle() {}
     func signInWithLinkedIn() {}
     func signInWithGitHub() {}
+
+    // MARK: - Debug bypass
+
+    #if DEBUG
+    func bypassForTesting() {
+        userIdentifier = "debug-bypass"
+        userFullName = "Test User"
+        userEmail = "test@example.com"
+        isAuthenticated = true
+    }
+    #endif
 }
 
 // MARK: - Keychain helper (internal to this file)

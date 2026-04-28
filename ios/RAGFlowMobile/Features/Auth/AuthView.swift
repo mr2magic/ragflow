@@ -73,6 +73,16 @@ struct AuthView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)
             }
+
+            #if DEBUG
+            Button(action: { auth.bypassForTesting() }) {
+                Text("⚠ BYPASS LOGIN (DEBUG)")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(.orange)
+                    .padding(.top, 8)
+            }
+            #endif
         }
     }
 
@@ -144,6 +154,15 @@ struct AuthView: View {
                         .foregroundStyle(.red)
                         .multilineTextAlignment(.center)
                 }
+
+                #if DEBUG
+                Button(action: { auth.bypassForTesting() }) {
+                    Text("⚠ Bypass Login (Debug)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                        .padding(.top, 4)
+                }
+                #endif
             }
             .padding(.horizontal, 24)
 
