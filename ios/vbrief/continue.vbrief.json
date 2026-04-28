@@ -2,29 +2,33 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-27",
-  "status": "Dossier 5-screen + iPad 3-column layout complete — build green",
-  "phase": "Backlog reduction — Dossier UI parity",
+  "status": "v0.9.0 build 12 — auth + CloudKit sync + iPhone landscape + onboarding updated — build green, pushed",
+  "phase": "Backlog reduction — responsiveness + sync wave",
 
   "completed_this_session": [
-    "DatabaseService: added firstUserMessage(sessionId:), sourceCount(sessionId:), bookTitles(kbId:limit:)",
-    "DossierMessageBubble: added onTap callback + grounding stamp overlay (GROUNDED/PARTIAL/UNGROUNDED) on assistant bubbles",
-    "DossierChatView: threaded onMessageTap((Message)->Void) through DossierChatView + DossierChatContent; updated input bar to FILE INQUIRY → prefix + 'Next question…' italic placeholder + ⏎ send",
-    "DossierKBCard: added optional subtitle param (first 3 doc titles, joined by ' · ')",
-    "DossierKBListView: added cabinetSummaryBar (DOCS/CHUNKS/KBS totals on DT.cream); loadCounts() populates subtitles + totals via bookTitles()",
-    "DossierArchView: full rewrite as DossierArchiveView — date-grouped sessions (TODAY/YESTERDAY/MMM D), #NNNN index, border-only grounding stamp, italic query preview in curly quotes, KB scope label, N CITED count, REOPEN → button; EnrichedSession private struct",
-    "DossierSourcesPanel: new file — right panel for iPad; SOURCES · N ATTACHED header; source cards with SRC·[N] ribbon chip + left-border; retrieval trace EMBED→BM25→COS-SIM→RRF-FUSE→THRESHOLD; empty state TAP A MEMO",
-    "DossierRootView: rebuilt iPad branch as DossierIPadLayout — true 3-column HStack (LEFT 240pt manilaDeep sidebar with brand + tab nav + KB list | MIDDLE flex content | RIGHT 340pt DossierSourcesPanel); tap-to-select wired via onMessageTap",
-    "project.pbxproj: registered DossierSourcesPanel.swift in PBXBuildFile + PBXFileReference + PBXGroup + PBXSourcesBuildPhase (UUIDs AA0100000000001AABB001E/001F)",
-    "Build: green on iPad Pro 13-inch (M4) simulator (id=69682D2A-65AD-43B6-B709-25B5DB2B03C8)"
+    "AuthService.swift + AuthView.swift: Sign In with Apple (stub OAuth flow) — registered in project.pbxproj",
+    "CloudKitSyncService: pushWorkflows + pullWorkflows added to full sync pipeline; sync() gated on AuthService.shared.isAuthenticated",
+    "DossierRootView: GeometryReader wraps HStack — iPad sources panel proportional ~30% width (min 280pt) instead of fixed 340pt",
+    "DossierKBListView: added .toolbar(.visible, for: .navigationBar) to WorkflowListView inside D-KBL2 sheet — fixes iPhone Workflows Done button hidden by parent .toolbar(.hidden)",
+    "DossierWorkflowView: ShareSheet API fix — was ShareSheet(items: [url]), now ShareSheet(url: url)",
+    "Info.plist: CFBundleVersion 11->12, CFBundleShortVersionString 0.8.2->0.9.0",
+    "DossierRootView: DossierIPhoneLandscapeLayout — activates when hSizeClass==.compact && vSizeClass==.compact; 200pt sidebar KB list + right NavigationStack with DossierKBDetailView",
+    "OnboardingView: 0.9.0 version history updated; iCloud sync bullet replaces token-cost bullet on iOS-native page"
   ],
 
   "prior_session_completed": [
-    "H2: RAGService.ingest() rejects files >250 MB with IngestError.fileTooLarge",
-    "H2: PDFParser.parse() caps text extraction at 1,000 pages",
-    "H2: VisionOCRParser OCR page cap 200, DPI reduced 150→100 (~56% less peak RAM per page)",
-    "H3: 9 new tests all passing — PDFParserTests (2), IngestErrorTests (4), DatabaseServiceKeywordTests (3 FTS5 via raw GRDB DatabaseQueue)",
-    "UI13: Attachment chips in chat bubbles with Settings toggle",
-    "SWIPE: DossierKBListView converted to List with .swipeActions",
+    "DatabaseService: added firstUserMessage(sessionId:), sourceCount(sessionId:), bookTitles(kbId:limit:)",
+    "DossierMessageBubble: grounding stamp overlay (GROUNDED/PARTIAL/UNGROUNDED)",
+    "DossierChatView: threaded onMessageTap + FILE INQUIRY input bar",
+    "DossierKBCard: subtitle (first 3 doc titles)",
+    "DossierKBListView: cabinetSummaryBar (DOCS/CHUNKS/KBS)",
+    "DossierArchiveView: full date-grouped session log",
+    "DossierSourcesPanel: right panel for iPad 3-column",
+    "DossierIPadLayout: true 3-column HStack in DossierRootView",
+    "H2: 250MB ingest guard + PDF 1000-page cap + OCR 200-page cap",
+    "H3: 9 new tests all passing",
+    "UI13: Attachment chips + Settings toggle",
+    "SWIPE: DossierKBListView List with swipeActions",
     "BUGFIX: new-chat navigationDestination nil-then-async-set pattern",
     "PARITY: ChatSettingsSheet + KBRetrievalSettingsSheet in Dossier"
   ],
@@ -39,35 +43,40 @@
     "C4: Chat history window config (last N messages)",
     "C5: Search conversations",
     "C6: Batch delete conversations",
-    "L1-L4: Ollama auto-download, OpenAI streaming, export, CloudKit sync"
+    "CloudKit container: confirm iCloud.com.dhorn.ragflowmobile created in Apple developer portal",
+    "TestFlight: archive + upload 0.9.0 build 12 via Xcode GUI (terminal archive fails — keychain locked)",
+    "Extension build warning: bump Share Extension + Widget extension Info.plist CFBundleVersion to 12"
   ],
 
   "key_facts": {
     "app_name": "Ragion",
     "app_tagline": "Where retrieval meets reason",
     "app_version": "0.9.0",
-    "build_number": "10",
+    "build_number": "12",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "cca35ecda",
+    "last_commit": "faf24833a",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_iphone_udid": "5EF314CD-F183-40E1-8918-8D58B4A186D9",
     "simulator_ipad_udid": "69682D2A-65AD-43B6-B709-25B5DB2B03C8",
-    "dossier_ipad_layout": "DossierIPadLayout in DossierRootView — 3-column HStack: LEFT 240pt sidebar, MIDDLE flex, RIGHT 340pt DossierSourcesPanel; tap assistant bubble → populates sources panel",
-    "dossier_grounding": "GROUNDED=sources>=2 (DT.green), PARTIAL=1 (DT.amber), UNGROUNDED=0 (DT.stamp) — used in DossierMessageBubble overlay + DossierArchiveView row stamp",
-    "dossier_sources_panel": "DossierSourcesPanel(message: Message?) — registered in pbxproj via UUIDs AA0100000000001AABB001E/001F",
-    "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params; auto-persisted via didSet in ChatViewModel",
-    "arch_tab_note": "DossierTab .arch is LOG tab showing DossierArchiveView (date-grouped sessions); arch stats live in DossierQueryView.retrievalCard",
-    "h2_note": "Large file guard: 250 MB limit in ingest(), PDF page cap 1000 in PDFParser, OCR page cap 200 + 100 DPI in VisionOCRParser",
-    "h3_note": "9 new tests: PDFParserTests, IngestErrorTests, DatabaseServiceKeywordTests — all use raw GRDB DatabaseQueue (not DatabaseService singleton)"
+    "dossier_ipad_layout": "DossierIPadLayout in DossierRootView — 3-column HStack: LEFT 240pt sidebar, MIDDLE flex, RIGHT ~30% proportional DossierSourcesPanel via GeometryReader",
+    "dossier_iphone_landscape": "DossierIPhoneLandscapeLayout — 200pt sidebar + NavigationStack(DossierKBDetailView); triggers on hSizeClass==.compact && vSizeClass==.compact",
+    "dossier_grounding": "GROUNDED=sources>=2 (DT.green), PARTIAL=1 (DT.amber), UNGROUNDED=0 (DT.stamp)",
+    "cloudkit_container": "iCloud.com.dhorn.ragflowmobile — private DB only; syncs KBs, Books, Sessions, Messages, Workflows; gated on AuthService.shared.isAuthenticated",
+    "auth_service": "AuthService.swift in Services/Auth/ — Sign In with Apple stub; AuthView.swift in Features/Auth/; both registered in project.pbxproj",
+    "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params",
+    "arch_tab_note": "DossierTab .arch is LOG tab showing DossierArchiveView; arch stats live in DossierQueryView.retrievalCard",
+    "h2_note": "Large file guard: 250 MB in ingest(), PDF page cap 1000, OCR page cap 200 + 100 DPI",
+    "h3_note": "9 tests: PDFParserTests, IngestErrorTests, DatabaseServiceKeywordTests — use raw GRDB DatabaseQueue"
   },
 
   "open_questions": [
-    "CloudKit container iCloud.com.dhorn.ragflowmobile — created in developer portal yet?",
-    "App Store listing name — should it be changed to Ragion when next submitting?"
+    "CloudKit container iCloud.com.dhorn.ragflowmobile — confirmed created in developer portal?",
+    "App Store listing name — change to Ragion when next submitting?",
+    "Extension CFBundleVersion warning (10 vs 12) — bump Share Extension + Widget extension Info.plist build numbers to match"
   ]
 }
