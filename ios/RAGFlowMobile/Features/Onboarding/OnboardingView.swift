@@ -18,7 +18,10 @@ import SwiftUI
 //   0.8.0 — Import page: added GEDCOM (.ged) and ZIP archive; updated subtitle to 30+;
 //            KB page: added export/import bullet; Chat page: New Chat button in-chat
 //   0.9.0 — Chat page: added ChatSettingsSheet per-chat LLM override bullet;
-//            theme-aware: Dossier mode applies manila background
+//            theme-aware: Dossier mode applies manila background;
+//            Sign In with Apple + iCloud sync (KBs, chats, workflows);
+//            iPhone landscape 2-column Dossier layout;
+//            iOS-native page: iCloud sync bullet replaces token-cost bullet
 // ─────────────────────────────────────────────────────────────────────────────
 
 // MARK: - Data model
@@ -144,7 +147,7 @@ private let onboardingPages: [OnboardingPage] = [
             ("siri",                              "Ask Siri to query your knowledge base — works hands-free while driving or cooking"),
             ("magnifyingglass",                   "Documents appear in Spotlight search — find anything without opening the app"),
             ("bolt.fill",                         "Live Activities show indexing and workflow progress on the lock screen and Dynamic Island"),
-            ("dollarsign.circle",                 "Every AI reply shows exact token count and cost — see what you spend per answer"),
+            ("icloud.fill",                       "Sign in with Apple to sync your knowledge bases, chats, and workflows across all your devices via iCloud"),
         ]
     ),
 
