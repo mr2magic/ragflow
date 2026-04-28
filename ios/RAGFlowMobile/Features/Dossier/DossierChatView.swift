@@ -68,6 +68,7 @@ private struct DossierChatContent: View {
             if !settings.isConfigured {
                 providerBanner   // D-CHAT9 / UI10
             }
+            kbScopeBar
             messageList
             inputBar
         }
@@ -147,6 +148,67 @@ private struct DossierChatContent: View {
         .padding(.horizontal, DT.pagePadding)
         .padding(.top, 12)
         .padding(.bottom, 8)
+    }
+
+    // MARK: - KB Scope Bar
+
+    @ViewBuilder
+    private var kbScopeBar: some View {
+        if vm.activeKBs.count > 1 || !vm.availableKBsToAdd.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 6) {
+                    Text("SCOPE")
+                        .font(DT.mono(9, weight: .bold))
+                        .tracking(1.5)
+                        .foregroundStyle(DT.inkFaint)
+                    Spacer()
+                    if !vm.availableKBsToAdd.isEmpty {
+                        Menu {
+                            ForEach(vm.availableKBsToAdd) { kb in
+                                Button { vm.addKB(kb) } label: {
+                                    Label(kb.name, systemImage: "square.stack.3d.up")
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(DT.stamp)
+                        }
+                    }
+                }
+                .padding(.horizontal, DT.pagePadding)
+                .padding(.top, 6)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(vm.activeKBs) { activeKB in
+                            HStack(spacing: 4) {
+                                Text(activeKB.name)
+                                    .font(DT.mono(9, weight: .bold))
+                                    .tracking(0.5)
+                                    .foregroundStyle(DT.stamp)
+                                if vm.activeKBs.count > 1 {
+                                    Button { vm.removeKB(activeKB) } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.system(size: 10))
+                                            .foregroundStyle(DT.stamp.opacity(0.6))
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(DT.stamp.opacity(0.1))
+                            .overlay(RoundedRectangle(cornerRadius: 3).stroke(DT.stamp.opacity(0.3), lineWidth: 1))
+                        }
+                    }
+                    .padding(.horizontal, DT.pagePadding)
+                }
+                .padding(.vertical, 6)
+
+                Rectangle().fill(DT.rule).frame(height: 0.5)
+            }
+            .background(DT.manilaDeep)
+        }
     }
 
     // MARK: - Provider banner (D-CHAT9)

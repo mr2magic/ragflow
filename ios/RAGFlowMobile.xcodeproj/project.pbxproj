@@ -45,6 +45,8 @@
 		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
 		74EB4ACE4DD58465CCEE452C /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */; };
 		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
+		EDDAABF5BCDA4E559E60983A /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */; };
+		30F24B3D600648E3B7504715 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B525D49DDB3C4C009DA9890D /* AuthView.swift */; };
 		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
 		7B4CAF19114DA7822A23BD0D /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */; };
 		80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */; };
@@ -153,6 +155,8 @@
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		B525D49DDB3C4C009DA9890D /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
 		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
 		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
@@ -442,6 +446,7 @@
 		C171203E89874902CCACD3F1 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				73BFC6B3F1614178B75EC7DD /* Auth */,
 				3980C7FFB7D0F975FB69F4CF /* Chat */,
 				AA0100000000001AABB0003 /* Dossier */,
 				41EEB10A6AB5188C60573CCE /* KB */,
@@ -538,6 +543,22 @@
 			path = Sync;
 			sourceTree = "<group>";
 		};
+		267898D339AF4BC79DE8F539 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		73BFC6B3F1614178B75EC7DD /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				B525D49DDB3C4C009DA9890D /* AuthView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
 		E0A29533DCA640BB60C1B658 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -551,6 +572,7 @@
 		F95BA93CBD769006D0A43843 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				267898D339AF4BC79DE8F539 /* Auth */,
 				3B19236A7AA25378849B5D61 /* Agent */,
 				16095CB1EC327D1C600843C0 /* ExportImport */,
 				13F74B3288CE861004AEA4F9 /* Intents */,
@@ -746,6 +768,8 @@
 				01DA2AE3FE568E10159797C2 /* ClaudeService.swift in Sources */,
 				57AAE3086287F7E7E7423B24 /* CloudKitSyncService.swift in Sources */,
 				76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */,
+				EDDAABF5BCDA4E559E60983A /* AuthService.swift in Sources */,
+				30F24B3D600648E3B7504715 /* AuthView.swift in Sources */,
 				3DD9F0BE3F9D7EC73B621EFF /* ConversationsListView.swift in Sources */,
 				7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */,
 				88C7CBCA080801E02D4FA3D5 /* DocumentCameraView.swift in Sources */,

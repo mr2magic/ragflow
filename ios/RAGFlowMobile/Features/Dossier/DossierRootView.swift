@@ -27,12 +27,14 @@ private struct DossierIPadLayout: View {
     @State private var selectedMessage: Message?
 
     var body: some View {
-        HStack(spacing: 0) {
-            sidebarColumn
-            Divider().background(DT.rule)
-            mainColumn
-            Divider().background(DT.rule)
-            sourcesColumn
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                sidebarColumn
+                Divider().background(DT.rule)
+                mainColumn
+                Divider().background(DT.rule)
+                sourcesPanel(width: max(280, geo.size.width * 0.30))
+            }
         }
         .background(DT.manila)
         .onAppear {
@@ -190,10 +192,10 @@ private struct DossierIPadLayout: View {
         .background(DT.manila)
     }
 
-    // MARK: - Right sources panel (340pt)
+    // MARK: - Right sources panel (proportional ~30% of width)
 
-    private var sourcesColumn: some View {
+    private func sourcesPanel(width: CGFloat) -> some View {
         DossierSourcesPanel(message: selectedMessage)
-            .frame(width: 340)
+            .frame(width: width)
     }
 }

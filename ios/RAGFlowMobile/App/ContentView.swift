@@ -31,6 +31,7 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage("app_theme") private var themeRaw: String = AppTheme.simple.rawValue
+    @StateObject private var auth = AuthService.shared
 
     private var theme: AppTheme { AppTheme(rawValue: themeRaw) ?? .simple }
 
@@ -60,15 +61,22 @@ struct ContentView: View {
                 padLayout
             }
         }
-        // Hard block: OS too old — shown before onboarding, not dismissable.
+        // Hard block: OS too old — shown before everything, not dismissable.
         .fullScreenCover(isPresented: Binding(
             get: { !osSupported },
             set: { _ in }
         )) {
             UnsupportedOSView()
         }
+        // Auth gate — must sign in before anything else.
         .fullScreenCover(isPresented: Binding(
-            get: { osSupported && !hasCompletedOnboarding },
+            get: { osSupported && !auth.isAuthenticated },
+            set: { _ in }
+        )) {
+            AuthView()
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { osSupported && auth.isAuthenticated && !hasCompletedOnboarding },
             set: { _ in }
         )) {
             OnboardingView()

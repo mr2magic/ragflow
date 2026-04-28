@@ -8,6 +8,7 @@ import Foundation
 /// - `Book` records: id, kbId, title, author, fileType, wordCount, pageCount, chunkCount
 /// - `ChatSession` records: id, kbId, name, createdAt
 /// - `Message` records: id, sessionId, kbId, role, content, timestamp
+/// - `Workflow` records: id, name, templateId, kbId, stepsJSON, createdAt
 ///
 /// ## What is NOT synced
 /// - API keys (stored in Keychain, never leave the device)
@@ -63,6 +64,10 @@ final class CloudKitSyncService: ObservableObject {
     // MARK: - Full Sync
 
     func sync() async {
+        guard AuthService.shared.isAuthenticated else {
+            syncError = "Sign in to enable sync."
+            return
+        }
         guard !isSyncing else { return }
         isSyncing = true
         syncError = nil
@@ -76,6 +81,8 @@ final class CloudKitSyncService: ObservableObject {
             try await pullSessions()
             try await pushMessages()
             try await pullMessages()
+            try await pushWorkflows()
+            try await pullWorkflows()
 
             lastSyncDate = Date()
             UserDefaults.standard.set(lastSyncDate, forKey: "ck_last_sync_date")
@@ -268,6 +275,42 @@ final class CloudKitSyncService: ObservableObject {
             msg.id = id
             msg.timestamp = ts
             try? db.saveMessages([msg], sessionId: sessionId, kbId: kbId)
+        }
+    }
+
+    // MARK: - Workflows
+
+    private func pushWorkflows() async throws {
+        let workflows = (try? db.allWorkflows()) ?? []
+        guard !workflows.isEmpty else { return }
+
+        let records: [CKRecord] = workflows.map { wf in
+            let record = CKRecord(recordType: "Workflow",
+                                  recordID: CKRecord.ID(recordName: "WF-\(wf.id)"))
+            record["id"]         = wf.id
+            record["name"]       = wf.name
+            record["templateId"] = wf.templateId
+            record["kbId"]       = wf.kbId
+            record["stepsJSON"]  = wf.stepsJSON
+            record["createdAt"]  = wf.createdAt
+            return record
+        }
+        try await saveRecords(records)
+    }
+
+    private func pullWorkflows() async throws {
+        let results = try await fetchAll(recordType: "Workflow")
+        for record in results {
+            guard let id         = record["id"]         as? String,
+                  let name       = record["name"]       as? String,
+                  let templateId = record["templateId"] as? String,
+                  let kbId       = record["kbId"]       as? String,
+                  let stepsJSON  = record["stepsJSON"]  as? String,
+                  let createdAt  = record["createdAt"]  as? Date else { continue }
+
+            let wf = Workflow(id: id, name: name, templateId: templateId,
+                              kbId: kbId, stepsJSON: stepsJSON, createdAt: createdAt)
+            try? db.saveWorkflow(wf)
         }
     }
 

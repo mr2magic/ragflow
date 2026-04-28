@@ -5,6 +5,8 @@ struct DossierMessageBubble: View {
     let index: Int
     var onTap: (() -> Void)? = nil
 
+    @AppStorage("showAttachmentChips") private var showAttachmentChips = true
+
     private var isUser: Bool { message.role == .user }
 
     private var groundingStamp: (label: String, color: Color) {
@@ -61,10 +63,40 @@ struct DossierMessageBubble: View {
                     .italic()
                     .foregroundStyle(DT.ink)
                     .lineSpacing(3)
+
+                if showAttachmentChips && !message.attachmentNames.isEmpty {
+                    attachmentChips
+                        .padding(.top, 8)
+                }
             }
             .padding(DT.cardPadding)
             .background(DT.card)
             .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+        }
+    }
+
+    // MARK: - Attachment chips
+
+    private var attachmentChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(message.attachmentNames, id: \.self) { name in
+                    HStack(spacing: 4) {
+                        Image(systemName: "doc.fill")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(DT.stamp)
+                        Text(name)
+                            .font(DT.mono(9, weight: .bold))
+                            .tracking(0.3)
+                            .foregroundStyle(DT.inkSoft)
+                            .lineLimit(1)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(DT.manila)
+                    .overlay(RoundedRectangle(cornerRadius: 3).stroke(DT.rule, lineWidth: 1))
+                }
+            }
         }
     }
 

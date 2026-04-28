@@ -10,6 +10,13 @@ struct DossierWorkflowView: View {
     @State private var workflowToDelete: Workflow?       // D-WF3
     @State private var workflowToRename: Workflow?       // D-WF2
     @State private var renameText = ""                   // D-WF2
+    @State private var showWorkflowImporter = false      // D-WF5
+    @State private var exportURL: URL? = nil             // D-WF6
+    @State private var showExportSheet = false           // D-WF6
+    @State private var exportError: String? = nil
+    @State private var showExportError = false
+    @State private var importError: String? = nil
+    @State private var showImportError = false
 
     var kbWorkflows: [Workflow] {
         vm.workflows.filter { $0.kbId == kb.id }
@@ -71,10 +78,32 @@ struct DossierWorkflowView: View {
                     }
             }
         }
+        // D-WF6 — Export share sheet
+        .sheet(isPresented: $showExportSheet) {
+            if let url = exportURL {
+                ShareSheet(url: url)
+            }
+        }
+        // D-WF5 — Import file picker
+        .fileImporter(
+            isPresented: $showWorkflowImporter,
+            allowedContentTypes: [.init(importedAs: "com.dhorn.ragflowmobile.ragflow-workflow")],
+            allowsMultipleSelection: false
+        ) { handleWorkflowImport(result: $0) }
         .alert("Error", isPresented: $vm.showError) {
             Button("OK") {}
         } message: {
             Text(vm.errorMessage)
+        }
+        .alert("Export Failed", isPresented: $showExportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportError ?? "Unknown error")
+        }
+        .alert("Import Failed", isPresented: $showImportError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(importError ?? "Unknown error")
         }
     }
 
@@ -88,6 +117,14 @@ struct DossierWorkflowView: View {
                     .tracking(2)
                     .foregroundStyle(DT.inkFaint)
                 Spacer()
+                // D-WF5 — Import workflow
+                Button { showWorkflowImporter = true } label: {
+                    Image(systemName: "square.and.arrow.down")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(DT.inkSoft)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 8)
                 // D-WF4 — All workflows
                 Button { showAllWorkflows = true } label: {
                     Text("ALL")
@@ -125,8 +162,11 @@ struct DossierWorkflowView: View {
                 ForEach(Array(kbWorkflows.enumerated()), id: \.element.id) { i, workflow in
                     workflowRow(workflow, index: i)
                         .onTapGesture { selectedWorkflow = workflow }
-                        // D-WF2/3 — Context menu
+                        // D-WF2/3/6 — Context menu
                         .contextMenu {
+                            Button { exportWorkflow(workflow) } label: {
+                                Label("Export", systemImage: "square.and.arrow.up")
+                            }
                             Button("Rename") {
                                 renameText = workflow.name
                                 workflowToRename = workflow
@@ -135,6 +175,12 @@ struct DossierWorkflowView: View {
                             Button("Delete", role: .destructive) {
                                 workflowToDelete = workflow
                             }
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button { exportWorkflow(workflow) } label: {
+                                Label("Export", systemImage: "square.and.arrow.up")
+                            }
+                            .tint(.blue)
                         }
                 }
             }
@@ -211,6 +257,46 @@ struct DossierWorkflowView: View {
     }
 
     // MARK: - Actions
+
+    // D-WF6 — Export workflow
+    private func exportWorkflow(_ workflow: Workflow) {
+        do {
+            exportURL = try ExportImportService.shared.workflowExportURL(for: workflow)
+            showExportSheet = true
+        } catch {
+            exportError = error.localizedDescription
+            showExportError = true
+        }
+    }
+
+    // D-WF5 — Import workflow
+    private func handleWorkflowImport(result: Result<[URL], Error>) {
+        switch result {
+        case .failure(let error):
+            importError = error.localizedDescription
+            showImportError = true
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            guard url.startAccessingSecurityScopedResource() else { return }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let tmp = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("ragflow-workflow")
+            guard (try? FileManager.default.copyItem(at: url, to: tmp)) != nil else {
+                importError = "Could not read the file."
+                showImportError = true
+                return
+            }
+            do {
+                let workflow = try ExportImportService.shared.importWorkflow(from: tmp)
+                try DatabaseService.shared.saveWorkflow(workflow)
+                vm.reload()
+            } catch {
+                importError = error.localizedDescription
+                showImportError = true
+            }
+        }
+    }
 
     // D-WF2 — Commit rename
     private func commitRename() {

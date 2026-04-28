@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DossierKBDetailView: View {
     let kb: KnowledgeBase
+    var onMessageTap: ((Message) -> Void)? = nil
 
     @State private var selectedTab: DossierTab = .kb
     @State private var docCount: Int = 0
@@ -37,7 +38,7 @@ struct DossierKBDetailView: View {
         case .docs:
             DossierDocumentListView(kb: kb)
         case .query:
-            DossierChatView(kb: kb)
+            DossierChatView(kb: kb, onMessageTap: onMessageTap)
         case .flow:
             DossierWorkflowView(kb: kb)
         case .arch:

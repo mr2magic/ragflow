@@ -53,10 +53,11 @@ struct DossierKBListView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView()
         }
-        // D-KBL2 — Workflows
+        // D-KBL2 — Workflows — .toolbar(.visible) overrides parent's .toolbar(.hidden) for this sheet
         .sheet(isPresented: $showWorkflows) {
             NavigationStack {
                 WorkflowListView()
+                    .toolbar(.visible, for: .navigationBar)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Done") { showWorkflows = false }
