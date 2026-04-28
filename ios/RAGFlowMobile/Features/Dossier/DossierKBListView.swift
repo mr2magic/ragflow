@@ -110,6 +110,7 @@ struct DossierKBListView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.trailing, 8)
+                .accessibilityLabel("Settings")
                 // D-KBL2 — Workflows
                 Button { showWorkflows = true } label: {
                     Image(systemName: "cpu")
@@ -118,6 +119,7 @@ struct DossierKBListView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.trailing, 10)
+                .accessibilityLabel("Workflows")
                 // New dossier
                 Button { vm.showCreateAlert = true } label: {
                     Text("NEW")

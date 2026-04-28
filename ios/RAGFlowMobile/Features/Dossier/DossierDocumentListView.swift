@@ -170,6 +170,7 @@ struct DossierDocumentListView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 6)
+                .accessibilityLabel("Export knowledge base")
                 // D-DOC1 — import
                 Button { showImportOptions = true } label: {
                     Image(systemName: "plus")
@@ -178,6 +179,7 @@ struct DossierDocumentListView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 6)
+                .accessibilityLabel("Import documents")
             }
             Rectangle().fill(DT.rule).frame(height: 0.5)
         }
@@ -196,6 +198,7 @@ struct DossierDocumentListView: View {
                 Image(systemName: "exclamationmark.circle")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(.orange)
+                    .accessibilityHidden(true)
             }
             Text("\(total)/\(cap)")
                 .font(DT.mono(10))
@@ -226,6 +229,7 @@ struct DossierDocumentListView: View {
                 .foregroundStyle(DT.inkSoft)
         }
         .padding(.leading, 6)
+        .accessibilityLabel("Sort documents — \(vm.sortOrder.rawValue)")
     }
 
     // D-DOC2 — search bar
@@ -234,6 +238,7 @@ struct DossierDocumentListView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(DT.inkFaint)
+                .accessibilityHidden(true)
             TextField("Search documents", text: $vm.searchText)
                 .font(DT.serif(13))
                 .foregroundStyle(DT.ink)
@@ -244,6 +249,7 @@ struct DossierDocumentListView: View {
                         .font(.system(size: 12))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
             }
         }
         .padding(.horizontal, 10)
@@ -262,6 +268,7 @@ struct DossierDocumentListView: View {
             if isDropTargeted {
                 HStack {
                     Image(systemName: "arrow.down.doc.fill")
+                        .accessibilityHidden(true)
                     Text("Drop to import")
                         .font(DT.mono(11, weight: .bold))
                         .tracking(1)

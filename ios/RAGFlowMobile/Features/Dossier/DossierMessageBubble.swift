@@ -27,6 +27,7 @@ struct DossierMessageBubble: View {
         }
         .contentShape(Rectangle())
         .onTapGesture { onTap?() }
+        .accessibilityLabel(isUser ? "You: \(message.content)" : "Response: \(message.content)")
         // D-CHAT4 — Copy message via long-press
         .contextMenu {
             Button {
@@ -85,6 +86,7 @@ struct DossierMessageBubble: View {
                         Image(systemName: "doc.fill")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundStyle(DT.stamp)
+                            .accessibilityHidden(true)
                         Text(name)
                             .font(DT.mono(9, weight: .bold))
                             .tracking(0.3)

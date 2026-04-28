@@ -133,6 +133,7 @@ struct DossierQueryView: View {
                         .foregroundStyle(DT.inkSoft)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Edit retrieval settings")
             }
 
             Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)

@@ -66,5 +66,7 @@ struct DossierTabBar: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(tab.label)
+        .accessibilityAddTraits(isActive ? .isSelected : [])
     }
 }

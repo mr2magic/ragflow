@@ -115,6 +115,7 @@ private struct DossierChatContent: View {
                 .buttonStyle(.plain)
                 .disabled(vm.messages.isEmpty)
                 .opacity(vm.messages.isEmpty ? 0.3 : 1)
+                .accessibilityLabel("Share conversation")
                 // D-CHAT6 — Clear
                 Button { showClearConfirm = true } label: {
                     Image(systemName: "trash")
@@ -124,6 +125,7 @@ private struct DossierChatContent: View {
                 .buttonStyle(.plain)
                 .disabled(vm.messages.isEmpty)
                 .opacity(vm.messages.isEmpty ? 0.3 : 1)
+                .accessibilityLabel("Clear conversation")
                 // Chat settings (LLM override)
                 Button { showChatSettings = true } label: {
                     Image(systemName: "slider.horizontal.3")
@@ -131,6 +133,7 @@ private struct DossierChatContent: View {
                         .foregroundStyle(DT.inkSoft)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Chat settings")
                 // D-CHAT7 — New chat
                 Button { newChat() } label: {
                     Image(systemName: "square.and.pencil")
@@ -138,6 +141,7 @@ private struct DossierChatContent: View {
                         .foregroundStyle(DT.inkSoft)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("New chat")
                 Text(String(kb.name.prefix(20)))
                     .font(DT.mono(10))
                     .tracking(1)
@@ -174,6 +178,7 @@ private struct DossierChatContent: View {
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundStyle(DT.stamp)
                         }
+                        .accessibilityLabel("Add knowledge base to scope")
                     }
                 }
                 .padding(.horizontal, DT.pagePadding)
@@ -193,6 +198,7 @@ private struct DossierChatContent: View {
                                             .font(.system(size: 10))
                                             .foregroundStyle(DT.stamp.opacity(0.6))
                                     }
+                                    .accessibilityLabel("Remove \(activeKB.name) from scope")
                                 }
                             }
                             .padding(.horizontal, 8)
@@ -218,6 +224,7 @@ private struct DossierChatContent: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 11))
                 .foregroundStyle(.white)
+                .accessibilityHidden(true)
             Text("LLM not configured — open Settings to add a provider")
                 .font(DT.mono(10))
                 .foregroundStyle(.white)
@@ -288,6 +295,7 @@ private struct DossierChatContent: View {
                             .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Stop generating")
                 } else {
                     Button(action: sendMessage) {
                         Text("⏎")
@@ -297,6 +305,7 @@ private struct DossierChatContent: View {
                     }
                     .disabled(vm.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Send message")
                 }
             }
             .padding(.horizontal, DT.pagePadding)
@@ -314,6 +323,7 @@ private struct DossierChatContent: View {
                 Image(systemName: "tray")
                     .font(.system(size: 36))
                     .foregroundStyle(DT.inkFaint)
+                    .accessibilityHidden(true)
                 Text("NO DOCUMENTS")
                     .font(DT.mono(11, weight: .bold))
                     .tracking(2)
