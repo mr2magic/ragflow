@@ -214,6 +214,14 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v11") { db in
+            // C4: Per-chat LLM history window (last N messages). NULL = unlimited.
+            let cols = try db.columns(in: "chat_sessions").map { $0.name }
+            if !cols.contains("historyWindow") {
+                try db.alter(table: "chat_sessions") { t in t.add(column: "historyWindow", .integer) }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 
@@ -409,23 +417,24 @@ final class DatabaseService {
         try dbQueue.write { db in
             try db.execute(sql: """
                 INSERT OR REPLACE INTO chat_sessions
-                    (id, kbId, name, createdAt, modelOverride, temperature, topP, systemPrompt)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    (id, kbId, name, createdAt, modelOverride, temperature, topP, systemPrompt, historyWindow)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, arguments: [
                     session.id, session.kbId, session.name, session.createdAt,
-                    session.modelOverride, session.temperature, session.topP, session.systemPrompt
+                    session.modelOverride, session.temperature, session.topP,
+                    session.systemPrompt, session.historyWindow
                 ])
         }
     }
 
     func updateSessionParams(id: String, modelOverride: String?, temperature: Double?,
-                             topP: Double?, systemPrompt: String?) throws {
+                             topP: Double?, systemPrompt: String?, historyWindow: Int?) throws {
         try dbQueue.write { db in
             try db.execute(sql: """
                 UPDATE chat_sessions
-                SET modelOverride = ?, temperature = ?, topP = ?, systemPrompt = ?
+                SET modelOverride = ?, temperature = ?, topP = ?, systemPrompt = ?, historyWindow = ?
                 WHERE id = ?
-                """, arguments: [modelOverride, temperature, topP, systemPrompt, id])
+                """, arguments: [modelOverride, temperature, topP, systemPrompt, historyWindow, id])
         }
     }
 
@@ -433,7 +442,8 @@ final class DatabaseService {
         ChatSession(
             id: row["id"], kbId: row["kbId"], name: row["name"], createdAt: row["createdAt"],
             modelOverride: row["modelOverride"], temperature: row["temperature"],
-            topP: row["topP"], systemPrompt: row["systemPrompt"]
+            topP: row["topP"], systemPrompt: row["systemPrompt"],
+            historyWindow: row["historyWindow"]
         )
     }
 

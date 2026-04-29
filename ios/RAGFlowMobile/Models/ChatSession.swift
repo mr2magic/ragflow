@@ -13,4 +13,6 @@ struct ChatSession: Identifiable, Hashable {
     var topP: Double?
     /// Extra instructions appended to the system prompt for this chat only.
     var systemPrompt: String?
+    /// How many recent messages to include in the LLM context window. Nil = unlimited.
+    var historyWindow: Int?
 }

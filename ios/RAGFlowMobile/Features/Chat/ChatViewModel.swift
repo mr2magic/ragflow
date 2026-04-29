@@ -20,10 +20,12 @@ final class ChatViewModel: ObservableObject {
     private var loadedOffset = 0
 
     // MARK: Per-chat LLM overrides
-    @Published var modelOverride: String? { didSet { persistParams() } }
-    @Published var temperature: Double?   { didSet { persistParams() } }
-    @Published var topP: Double?          { didSet { persistParams() } }
-    @Published var systemPrompt: String?  { didSet { persistParams() } }
+    @Published var modelOverride: String?  { didSet { persistParams() } }
+    @Published var temperature: Double?    { didSet { persistParams() } }
+    @Published var topP: Double?           { didSet { persistParams() } }
+    @Published var systemPrompt: String?   { didSet { persistParams() } }
+    /// Nil = send full history. N = send only the last N messages to the LLM.
+    @Published var historyWindow: Int?     { didSet { persistParams() } }
 
     let kb: KnowledgeBase
     let session: ChatSession
@@ -46,6 +48,7 @@ final class ChatViewModel: ObservableObject {
         self.temperature = session.temperature
         self.topP = session.topP
         self.systemPrompt = session.systemPrompt
+        self.historyWindow = session.historyWindow
         let page = (try? db.loadMessages(sessionId: session.id,
                                          limit: Self.pageSize, offset: 0)) ?? []
         self.messages = page
@@ -133,7 +136,8 @@ final class ChatViewModel: ObservableObject {
             modelOverride: modelOverride,
             temperature: temperature,
             topP: topP,
-            systemPrompt: systemPrompt
+            systemPrompt: systemPrompt,
+            historyWindow: historyWindow
         )
     }
 
@@ -194,9 +198,10 @@ final class ChatViewModel: ObservableObject {
                     extraSystemPrompt: systemPrompt ?? ""
                 )
                 let llm = makeLLMService(config: settings.config, params: chatParams)
-                let history = messages.dropLast().map {
+                let fullHistory = messages.dropLast().map {
                     LLMMessage(role: $0.role == .user ? .user : .assistant, content: $0.content)
                 }
+                let history = historyWindow.map { Array(fullHistory.suffix($0)) } ?? fullHistory
                 let allBooks = activeKBs.flatMap { (try? db.allBooks(kbId: $0.id)) ?? [] }
 
                 let stream = try await llm.complete(messages: Array(history), context: chunks, books: allBooks)

@@ -530,6 +530,8 @@ struct ChatSettingsSheet: View {
     @State private var originalTemperature: Double? = nil
     @State private var originalTopP: Double? = nil
     @State private var originalSystemPrompt: String? = nil
+    @State private var originalHistoryWindow: Int? = nil
+    @State private var useHistoryWindow = false
 
     var body: some View {
         NavigationStack {
@@ -537,6 +539,7 @@ struct ChatSettingsSheet: View {
                 modelSection
                 temperatureSection
                 topPSection
+                historyWindowSection
                 systemPromptSection
             }
             .scrollContentBackground(.hidden)
@@ -553,21 +556,24 @@ struct ChatSettingsSheet: View {
             }
         }
         .onAppear {
-            useModelOverride = vm.modelOverride != nil
-            useTemperature   = vm.temperature != nil
-            useTopP          = vm.topP != nil
-            originalModelOverride = vm.modelOverride
-            originalTemperature   = vm.temperature
-            originalTopP          = vm.topP
-            originalSystemPrompt  = vm.systemPrompt
+            useModelOverride  = vm.modelOverride != nil
+            useTemperature    = vm.temperature != nil
+            useTopP           = vm.topP != nil
+            useHistoryWindow  = vm.historyWindow != nil
+            originalModelOverride  = vm.modelOverride
+            originalTemperature    = vm.temperature
+            originalTopP           = vm.topP
+            originalSystemPrompt   = vm.systemPrompt
+            originalHistoryWindow  = vm.historyWindow
         }
     }
 
     private func cancel() {
-        vm.modelOverride = originalModelOverride
-        vm.temperature   = originalTemperature
-        vm.topP          = originalTopP
-        vm.systemPrompt  = originalSystemPrompt
+        vm.modelOverride   = originalModelOverride
+        vm.temperature     = originalTemperature
+        vm.topP            = originalTopP
+        vm.systemPrompt    = originalSystemPrompt
+        vm.historyWindow   = originalHistoryWindow
         dismiss()
     }
 
@@ -667,6 +673,32 @@ struct ChatSettingsSheet: View {
             Text("Top-P (Nucleus Sampling)")
         } footer: {
             Text("Limits token selection to the top cumulative probability mass. Usually leave at default unless you also set temperature.")
+        }
+    }
+
+    // MARK: History Window
+
+    private var historyWindowSection: some View {
+        Section {
+            Toggle("Limit history", isOn: $useHistoryWindow)
+                .onChange(of: useHistoryWindow) { _, on in
+                    vm.historyWindow = on ? 20 : nil
+                }
+            if useHistoryWindow {
+                Stepper(
+                    "Last \(vm.historyWindow ?? 20) messages",
+                    value: Binding(
+                        get: { vm.historyWindow ?? 20 },
+                        set: { vm.historyWindow = $0 }
+                    ),
+                    in: 2...100,
+                    step: 2
+                )
+            }
+        } header: {
+            Text("History Window")
+        } footer: {
+            Text("Limits how many recent messages are sent to the LLM each turn. Useful for very long chats that approach the model's context limit.")
         }
     }
 
