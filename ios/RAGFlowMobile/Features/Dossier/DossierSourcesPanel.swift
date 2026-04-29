@@ -5,10 +5,12 @@ import SwiftUI
 struct DossierSourcesPanel: View {
     let message: Message?
 
+    @State private var expanded = true
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             panelHeader
-            if let msg = message, !msg.sources.isEmpty {
+            if expanded, let msg = message, !msg.sources.isEmpty {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(Array(msg.sources.enumerated()), id: \.element.id) { i, src in
@@ -33,10 +35,22 @@ struct DossierSourcesPanel: View {
     private var panelHeader: some View {
         VStack(alignment: .leading, spacing: 6) {
             let count = message?.sources.count ?? 0
-            Text("SOURCES · \(count) ATTACHED")
-                .font(DT.mono(10, weight: .bold))
-                .tracking(2)
-                .foregroundStyle(DT.inkFaint)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() }
+            } label: {
+                HStack {
+                    Text("SOURCES · \(count) ATTACHED")
+                        .font(DT.mono(10, weight: .bold))
+                        .tracking(2)
+                        .foregroundStyle(DT.inkFaint)
+                    Spacer()
+                    Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(DT.inkFaint)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
             Rectangle().fill(DT.rule).frame(height: 0.5)
         }
         .padding(.horizontal, DT.pagePadding)

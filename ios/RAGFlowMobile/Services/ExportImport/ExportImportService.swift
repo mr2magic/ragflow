@@ -173,7 +173,7 @@ enum ExportImportError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .kbNotFound:       return "Knowledge base not found."
-        case .invalidFileFormat: return "The file is not a valid RAGFlow export."
+        case .invalidFileFormat: return "The file is not a valid Ragion export."
         }
     }
 }

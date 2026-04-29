@@ -4,9 +4,9 @@ import Foundation
 // MARK: - Query Knowledge Base (Siri voice query)
 
 struct QueryKBIntent: AppIntent {
-    static var title: LocalizedStringResource = "Ask RAGFlow"
+    static var title: LocalizedStringResource = "Ask Ragion"
     static var description = IntentDescription(
-        "Ask a question against one of your RAGFlow knowledge bases and get a cited AI answer."
+        "Ask a question against one of your Ragion knowledge bases and get a cited AI answer."
     )
     static var openAppWhenRun: Bool = false
 
@@ -37,9 +37,9 @@ struct QueryKBIntent: AppIntent {
 // MARK: - Quick Query (Action Button / Shortcuts)
 
 struct QuickQueryIntent: AppIntent {
-    static var title: LocalizedStringResource = "Quick RAGFlow Query"
+    static var title: LocalizedStringResource = "Quick Ragion Query"
     static var description = IntentDescription(
-        "Open RAGFlow ready to type a question. Assign this to the Action Button in Settings."
+        "Open Ragion ready to type a question. Assign this to the Action Button in Settings."
     )
     static var openAppWhenRun: Bool = true
 
@@ -51,9 +51,9 @@ struct QuickQueryIntent: AppIntent {
 // MARK: - Run Workflow
 
 struct RunWorkflowIntent: AppIntent {
-    static var title: LocalizedStringResource = "Run RAGFlow Workflow"
+    static var title: LocalizedStringResource = "Run Ragion Workflow"
     static var description = IntentDescription(
-        "Open RAGFlow and navigate to a saved workflow."
+        "Open Ragion and navigate to a saved workflow."
     )
     static var openAppWhenRun: Bool = true
 
@@ -67,9 +67,9 @@ struct RunWorkflowIntent: AppIntent {
 // MARK: - Import URL
 
 struct ImportURLToRAGFlowIntent: AppIntent {
-    static var title: LocalizedStringResource = "Import URL to RAGFlow"
+    static var title: LocalizedStringResource = "Import URL to Ragion"
     static var description = IntentDescription(
-        "Download and index a web page into a RAGFlow knowledge base."
+        "Download and index a web page into a Ragion knowledge base."
     )
     static var openAppWhenRun: Bool = true
 
@@ -95,7 +95,7 @@ struct RAGFlowAppShortcuts: AppShortcutsProvider {
                 "Ask \(.applicationName)",
                 "Query \(.applicationName)"
             ],
-            shortTitle: "Ask RAGFlow",
+            shortTitle: "Ask Ragion",
             systemImageName: "books.vertical.fill"
         )
     }
@@ -110,7 +110,7 @@ enum RAGFlowIntentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .kbNotFound:           return "Knowledge base not found."
-        case .providerNotConfigured: return "No AI provider configured. Open RAGFlow Settings to add an API key."
+        case .providerNotConfigured: return "No AI provider configured. Open Ragion Settings to add an API key."
         }
     }
 }

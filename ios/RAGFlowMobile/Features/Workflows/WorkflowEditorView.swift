@@ -72,6 +72,7 @@ struct WorkflowEditorView: View {
             }
             .navigationTitle("Edit Workflow")
             .navigationBarTitleDisplayMode(.inline)
+            .tint(DT.stamp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -260,6 +261,7 @@ struct StepTypePicker: View {
             }
             .navigationTitle("Add Step")
             .navigationBarTitleDisplayMode(.inline)
+            .tint(DT.stamp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -311,6 +313,7 @@ struct StepConfigSheet: View {
             }
             .navigationTitle(step.type.displayName)
             .navigationBarTitleDisplayMode(.inline)
+            .tint(DT.stamp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -712,6 +715,7 @@ struct WorkflowHelpSheet: View {
             .listStyle(.insetGrouped)
             .navigationTitle("Workflow Help")
             .navigationBarTitleDisplayMode(.inline)
+            .tint(DT.stamp)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }

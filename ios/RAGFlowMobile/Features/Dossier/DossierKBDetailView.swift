@@ -5,10 +5,6 @@ struct DossierKBDetailView: View {
     var onMessageTap: ((Message) -> Void)? = nil
 
     @State private var selectedTab: DossierTab = .kb
-    @State private var docCount: Int = 0
-    @State private var chunkCount: Int = 0
-
-    private let db = DatabaseService.shared
 
     var body: some View {
         tabContent
@@ -25,7 +21,6 @@ struct DossierKBDetailView: View {
                     .foregroundStyle(DT.ink)
             }
         }
-        .onAppear { loadCounts() }
     }
 
     // MARK: - Tab content
@@ -34,7 +29,7 @@ struct DossierKBDetailView: View {
     private var tabContent: some View {
         switch selectedTab {
         case .kb:
-            DossierQueryView(kb: kb, docCount: docCount, chunkCount: chunkCount)
+            DossierQueryView(kb: kb)
         case .docs:
             DossierDocumentListView(kb: kb)
         case .query:
@@ -46,11 +41,4 @@ struct DossierKBDetailView: View {
         }
     }
 
-    // MARK: - Data
-
-    private func loadCounts() {
-        let books = (try? db.allBooks(kbId: kb.id)) ?? []
-        docCount = books.count
-        chunkCount = books.reduce(0) { $0 + $1.chunkCount }
-    }
 }

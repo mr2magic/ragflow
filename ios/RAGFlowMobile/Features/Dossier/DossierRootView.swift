@@ -56,6 +56,7 @@ private struct DossierIPadLayout: View {
             Button("Create") {
                 if let created = vm.createKB() {
                     selectedKB = created
+                    selectedTab = .docs
                 }
             }
             Button("Cancel", role: .cancel) { vm.newKBName = "" }
@@ -235,7 +236,7 @@ private struct DossierIPadLayout: View {
     private func tabContent(for kb: KnowledgeBase) -> some View {
         switch selectedTab {
         case .kb:
-            DossierQueryView(kb: kb, docCount: 0, chunkCount: 0)
+            DossierQueryView(kb: kb)
         case .docs:
             DossierDocumentListView(kb: kb)
         case .query:

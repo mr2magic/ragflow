@@ -21,6 +21,12 @@ struct KBRetrievalSettingsSheet: View {
     @State private var chunkSize: Int
     @State private var chunkOverlap: Int
 
+    // Re-index state
+    @State private var isReindexing = false
+    @State private var showReindexConfirm = false
+    @State private var reindexMessage: String?
+    @State private var showReindexResult = false
+
     init(kb: KnowledgeBase, onSave: @escaping (KnowledgeBase) -> Void) {
         self.kb = kb
         self.onSave = onSave
@@ -37,6 +43,7 @@ struct KBRetrievalSettingsSheet: View {
             Form {
                 retrievalSection
                 chunkingSection
+                reindexSection
                 infoSection
             }
             .scrollContentBackground(.hidden)
@@ -51,6 +58,24 @@ struct KBRetrievalSettingsSheet: View {
                     Button("Cancel") { dismiss() }
                 }
             }
+            .confirmationDialog(
+                "Re-index All Documents?",
+                isPresented: $showReindexConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Save & Re-index All", role: .destructive) {
+                    save()
+                    Task { await reindexAll() }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This will save your settings and re-chunk every document in this knowledge base using the new settings. Documents without their original file on disk will be skipped.")
+            }
+            .alert("Re-index Complete", isPresented: $showReindexResult) {
+                Button("OK") {}
+            } message: {
+                Text(reindexMessage ?? "")
+            }
         }
     }
 
@@ -60,7 +85,7 @@ struct KBRetrievalSettingsSheet: View {
         Section {
             Stepper(value: $topK, in: 1...100) {
                 labeledValue("Top-K (returned passages)", value: topK,
-                             help: "Number of passages actually sent to the AI model. Lower = faster; higher = more context. RAGflow default: 10.")
+                             help: "Number of passages actually sent to the AI model. Lower = faster; higher = more context. Default: 10.")
             }
             .onChange(of: topK) { _, newK in
                 if topN < newK { topN = newK }
@@ -68,13 +93,13 @@ struct KBRetrievalSettingsSheet: View {
 
             Stepper(value: $topN, in: max(topK, 1)...500, step: 10) {
                 labeledValue("Top-N (candidate pool)", value: topN,
-                             help: "Wider candidate pool scored before selecting Top-K. Must be ≥ Top-K. RAGflow default: 50.")
+                             help: "Wider candidate pool scored before selecting Top-K. Must be ≥ Top-K. Default: 50.")
             }
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 4) {
                     Text("Similarity Threshold")
-                    SettingHelpButton(text: "Minimum relevance score a passage must reach to be included. 0 = accept all candidates; 1 = exact match only. RAGflow default: 0.2.")
+                    SettingHelpButton(text: "Minimum relevance score a passage must reach to be included. 0 = accept all candidates; 1 = exact match only. Default: 0.2.")
                     Spacer()
                     Text(String(format: "%.2f", threshold))
                         .foregroundStyle(.secondary)
@@ -86,7 +111,7 @@ struct KBRetrievalSettingsSheet: View {
         } header: {
             Text("Retrieval")
         } footer: {
-            Text("Top-K: passages sent to the model. Top-N: wider candidate pool before scoring. Threshold: minimum relevance score (0 = all candidates, 1 = exact matches only). RAGflow default: K=10, N=50, threshold=0.2.")
+            Text("Top-K: passages sent to the model. Top-N: wider candidate pool before scoring. Threshold: minimum relevance score (0 = all candidates, 1 = exact matches only). Default: K=10, N=50, threshold=0.2.")
                 .font(.footnote)
         }
     }
@@ -123,6 +148,32 @@ struct KBRetrievalSettingsSheet: View {
         }
     }
 
+    // MARK: - Re-index
+
+    private var reindexSection: some View {
+        Section {
+            Button {
+                showReindexConfirm = true
+            } label: {
+                HStack {
+                    if isReindexing {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .padding(.trailing, 4)
+                        Text("Re-indexing…")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Label("Re-index All Documents", systemImage: "arrow.triangle.2.circlepath")
+                    }
+                }
+            }
+            .disabled(isReindexing)
+        } footer: {
+            Text("Applies current chunking settings to every document already in this knowledge base. Useful after changing chunk size, overlap, or method.")
+                .font(.footnote)
+        }
+    }
+
     // MARK: - Info
 
     private var infoSection: some View {
@@ -136,7 +187,7 @@ struct KBRetrievalSettingsSheet: View {
         } header: {
             Text("Pipeline")
         } footer: {
-            Text("Retrieval uses Reciprocal Rank Fusion to merge BM25 keyword search with cosine vector similarity — the same hybrid strategy as RAGflow's backend.")
+            Text("Retrieval uses Reciprocal Rank Fusion to merge BM25 keyword search with cosine vector similarity — the same hybrid strategy as Ragion's backend.")
                 .font(.footnote)
         }
     }
@@ -154,6 +205,41 @@ struct KBRetrievalSettingsSheet: View {
                 .foregroundStyle(.secondary)
                 .monospacedDigit()
         }
+    }
+
+    private func reindexAll() async {
+        let db = DatabaseService.shared
+        let rag = RAGService.shared
+        let books = (try? db.allBooks(kbId: kb.id)) ?? []
+        guard !books.isEmpty else {
+            reindexMessage = "No documents found in this knowledge base."
+            showReindexResult = true
+            return
+        }
+        isReindexing = true
+        defer { isReindexing = false }
+        var succeeded = 0
+        var skipped = 0
+        for book in books {
+            guard FileManager.default.fileExists(atPath: book.filePath) else {
+                skipped += 1
+                continue
+            }
+            do {
+                try db.deleteBook(book.id)
+                let reindexed = try await rag.ingest(url: URL(fileURLWithPath: book.filePath), kbId: book.kbId)
+                let chunks = (try? db.chunks(bookId: reindexed.id)) ?? []
+                SpotlightIndexer.shared.index(book: reindexed, chunks: chunks)
+                succeeded += 1
+            } catch {
+                try? db.save(book)
+                skipped += 1
+            }
+        }
+        SharedGroupDefaults.syncFromApp()
+        reindexMessage = "\(succeeded) document\(succeeded == 1 ? "" : "s") re-indexed successfully" +
+            (skipped > 0 ? ", \(skipped) skipped (file not found or error)." : ".")
+        showReindexResult = true
     }
 
     private func save() {

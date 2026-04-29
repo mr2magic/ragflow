@@ -21,26 +21,31 @@ struct WorkflowDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 12) {
                 pipelineCard
                 inputSection
                 if runner.isRunning { runningCard }
                 if !runs.isEmpty { historySection }
             }
-            .padding()
+            .padding(.horizontal, DT.pagePadding)
+            .padding(.vertical, 12)
         }
+        .background(DT.manila)
         .navigationTitle(workflow.name)
         .navigationBarTitleDisplayMode(.inline)
+        .tint(DT.stamp)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 HStack(spacing: 16) {
-                    Button {
-                        exportWorkflow()
-                    } label: {
+                    Button { exportWorkflow() } label: {
                         Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(DT.inkSoft)
                     }
                     .accessibilityLabel("Export workflow")
                     Button("Edit") { showEditor = true }
+                        .font(DT.mono(11, weight: .bold))
+                        .foregroundStyle(DT.stamp)
                 }
             }
         }
@@ -65,46 +70,76 @@ struct WorkflowDetailView: View {
 
     private var pipelineCard: some View {
         VStack(alignment: .leading, spacing: 0) {
+            Text("PIPELINE")
+                .font(DT.mono(9, weight: .bold))
+                .tracking(1.5)
+                .foregroundStyle(DT.inkFaint)
+                .padding(.horizontal, DT.cardPadding)
+                .padding(.top, DT.cardPadding)
+                .padding(.bottom, 8)
+
+            Rectangle().fill(DT.rule).frame(height: 0.5).padding(.horizontal, DT.cardPadding)
+
             ForEach(Array(workflow.steps.enumerated()), id: \.element.id) { idx, step in
                 HStack(spacing: 10) {
                     StepTypeIcon(type: step.type)
                         .frame(width: 28, height: 28)
                     Text(step.label)
-                        .font(.subheadline)
+                        .font(DT.serif(14))
+                        .foregroundStyle(DT.ink)
                     Spacer()
-                    Text(step.type.displayName)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(.quaternary, in: Capsule())
+                    Text(step.type.displayName.uppercased())
+                        .font(DT.mono(8, weight: .bold))
+                        .tracking(0.8)
+                        .foregroundStyle(runner.currentStep == step.label ? .white : DT.inkFaint)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(runner.currentStep == step.label ? DT.stamp : DT.rule.opacity(0.3))
+                        .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                 }
                 .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(runner.currentStep == step.label ? Color.accentColor.opacity(0.12) : Color.clear)
+                .padding(.horizontal, DT.cardPadding)
+                .background(runner.currentStep == step.label ? DT.stamp.opacity(0.07) : Color.clear)
 
                 if idx < workflow.steps.count - 1 {
                     let isBranching = step.type == .switchStep || step.type == .categorize
                     Image(systemName: isBranching ? "arrow.triangle.branch" : "arrow.down")
                         .font(.caption)
-                        .foregroundStyle(isBranching ? Color.yellow : Color.secondary.opacity(0.5))
-                        .padding(.leading, 22)
+                        .foregroundStyle(isBranching ? DT.amber : DT.rule)
+                        .padding(.leading, DT.cardPadding + 22)
                         .accessibilityHidden(true)
                 }
             }
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.separator, lineWidth: 0.5))
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
     }
 
     // MARK: - Input Section
 
     private var inputSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Query").font(.headline)
-            HStack {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("QUERY")
+                .font(DT.mono(9, weight: .bold))
+                .tracking(1.5)
+                .foregroundStyle(DT.inkFaint)
+                .padding(.horizontal, DT.cardPadding)
+                .padding(.top, DT.cardPadding)
+                .padding(.bottom, 8)
+
+            Rectangle().fill(DT.rule).frame(height: 0.5)
+
+            HStack(alignment: .bottom, spacing: 8) {
+                Text("INPUT →")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1)
+                    .foregroundStyle(DT.stamp)
+
                 TextField("Enter your question…", text: $input, axis: .vertical)
+                    .font(DT.serif(14))
+                    .italic()
+                    .foregroundStyle(DT.ink)
                     .lineLimit(3...6)
-                    .textFieldStyle(.roundedBorder)
                     .disabled(runner.isRunning)
                     .modifier(WritingToolsLimitedModifier())
 
@@ -112,95 +147,151 @@ struct WorkflowDetailView: View {
                     Task { await runWorkflow() }
                 } label: {
                     if runner.isRunning {
-                        Image(systemName: "stop.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(.red)
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(.white)
+                            .frame(width: 30, height: 30)
+                            .background(Color.red.opacity(0.85))
+                            .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                     } else {
-                        Image(systemName: "play.circle.fill")
-                            .font(.title2)
-                            .foregroundStyle(.tint)
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.white)
+                            .frame(width: 30, height: 30)
+                            .background(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                        ? DT.inkFaint : DT.stamp)
+                            .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
                     }
                 }
                 .accessibilityLabel(runner.isRunning ? "Stop workflow" : "Run workflow")
                 .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !runner.isRunning)
             }
+            .padding(.horizontal, DT.cardPadding)
+            .padding(.vertical, 10)
         }
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
     }
 
     // MARK: - Running Card
 
     private var runningCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 8) {
+                Text("PROCESSING")
+                    .font(DT.mono(9, weight: .bold))
+                    .tracking(1.5)
+                    .foregroundStyle(DT.inkFaint)
                 ProgressView()
-                    .scaleEffect(0.8)
-                Text(runner.currentStep.isEmpty ? "Running…" : runner.currentStep)
-                    .font(.subheadline.weight(.medium))
+                    .scaleEffect(0.6)
+                    .tint(DT.inkFaint)
+                if !runner.currentStep.isEmpty {
+                    Text("— \(runner.currentStep)")
+                        .font(DT.mono(9))
+                        .foregroundStyle(DT.inkFaint)
+                }
             }
+            .padding(.horizontal, DT.cardPadding)
+            .padding(.top, DT.cardPadding)
+            .padding(.bottom, 8)
 
             if !runner.streamingOutput.isEmpty {
-                Divider()
+                Rectangle().fill(DT.rule).frame(height: 0.5)
                 Text(runner.streamingOutput)
-                    .font(.body)
+                    .font(DT.serif(14))
+                    .foregroundStyle(DT.ink)
                     .textSelection(.enabled)
+                    .padding(DT.cardPadding)
             }
 
-            Divider()
-            ForEach(runner.stepLog, id: \.self) { entry in
-                Text(entry)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            if !runner.stepLog.isEmpty {
+                Rectangle().fill(DT.rule).frame(height: 0.5)
+                VStack(alignment: .leading, spacing: 3) {
+                    ForEach(runner.stepLog, id: \.self) { entry in
+                        Text(entry)
+                            .font(DT.mono(9))
+                            .foregroundStyle(DT.inkFaint)
+                    }
+                }
+                .padding(DT.cardPadding)
             }
         }
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
     }
 
     // MARK: - History Section
 
     private var historySection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("History").font(.headline)
-            ForEach(runs) { run in
-                runRow(run)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("RUN HISTORY")
+                .font(DT.mono(9, weight: .bold))
+                .tracking(1.5)
+                .foregroundStyle(DT.inkFaint)
+                .padding(.horizontal, DT.cardPadding)
+                .padding(.top, DT.cardPadding)
+                .padding(.bottom, 8)
+
+            Rectangle().fill(DT.rule).frame(height: 0.5)
+
+            ForEach(Array(runs.enumerated()), id: \.element.id) { idx, run in
+                runRow(run, index: idx)
             }
         }
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
     }
 
-    private func runRow(_ run: WorkflowRun) -> some View {
+    private func runRow(_ run: WorkflowRun, index: Int) -> some View {
         let isExpanded = expandedRunId == run.id
         return VStack(alignment: .leading, spacing: 0) {
+            if index > 0 {
+                Rectangle().fill(DT.rule.opacity(0.4)).frame(height: 0.5)
+            }
+
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     expandedRunId = isExpanded ? nil : run.id
                 }
             } label: {
-                HStack {
+                HStack(spacing: 10) {
+                    Text(String(format: "%02d", index + 1))
+                        .font(DT.mono(9, weight: .bold))
+                        .tracking(1)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(DT.ribbon)
+                        .clipShape(RoundedRectangle(cornerRadius: 2))
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text(run.input)
-                            .font(.subheadline.weight(.medium))
+                            .font(DT.serif(13))
+                            .foregroundStyle(DT.ink)
                             .lineLimit(1)
                         Text(run.createdAt.formatted(.relative(presentation: .named)))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .font(DT.mono(9))
+                            .foregroundStyle(DT.inkFaint)
                     }
                     Spacer()
                     statusBadge(run.status)
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(DT.inkFaint)
                         .accessibilityHidden(true)
                 }
                 .contentShape(Rectangle())
+                .padding(.vertical, 10)
+                .padding(.horizontal, DT.cardPadding)
             }
             .buttonStyle(.plain)
-            .padding(12)
 
             if isExpanded {
-                Divider().padding(.horizontal, 12)
+                Rectangle().fill(DT.rule.opacity(0.4)).frame(height: 0.5)
                 VStack(alignment: .leading, spacing: 8) {
                     Text(run.output)
-                        .font(.body)
+                        .font(DT.serif(14))
+                        .foregroundStyle(DT.ink)
                         .textSelection(.enabled)
                     HStack {
                         Spacer()
@@ -209,21 +300,44 @@ struct WorkflowDetailView: View {
                             copiedOutput = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) { copiedOutput = false }
                         } label: {
-                            Label(copiedOutput ? "Copied" : "Copy", systemImage: copiedOutput ? "checkmark" : "doc.on.doc")
-                                .font(.caption)
+                            HStack(spacing: 4) {
+                                Image(systemName: copiedOutput ? "checkmark" : "doc.on.doc")
+                                    .font(.system(size: 10))
+                                Text(copiedOutput ? "COPIED" : "COPY")
+                                    .font(DT.mono(9, weight: .bold))
+                                    .tracking(1)
+                            }
+                            .foregroundStyle(copiedOutput ? DT.green : DT.stamp)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background((copiedOutput ? DT.green : DT.stamp).opacity(0.1))
+                            .overlay(RoundedRectangle(cornerRadius: DT.stampCorner)
+                                .stroke((copiedOutput ? DT.green : DT.stamp).opacity(0.3), lineWidth: 0.5))
                         }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(12)
+                .padding(DT.cardPadding)
             }
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.separator, lineWidth: 0.5))
     }
 
     // MARK: - Helpers
+
+    private func statusBadge(_ status: String) -> some View {
+        let isDone = status == "completed"
+        let label = isDone ? "DONE" : "FAIL"
+        let color = isDone ? DT.green : DT.stamp
+        return Text(label)
+            .font(DT.mono(8, weight: .bold))
+            .tracking(0.5)
+            .foregroundStyle(color)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.12))
+            .overlay(RoundedRectangle(cornerRadius: 2).stroke(color.opacity(0.3), lineWidth: 0.5))
+            .accessibilityLabel("Status: \(label)")
+    }
 
     private func exportWorkflow() {
         do {
@@ -246,17 +360,5 @@ struct WorkflowDetailView: View {
 
     private func reloadRuns() {
         runs = (try? db.runsForWorkflow(workflow.id)) ?? []
-    }
-
-    private func statusBadge(_ status: String) -> some View {
-        let (label, color): (String, Color) = status == "completed"
-            ? ("Done", .green)
-            : ("Failed", .red)
-        return Text(label)
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 6).padding(.vertical, 2)
-            .background(color.opacity(0.12), in: Capsule())
-            .accessibilityLabel("Status: \(label)")
     }
 }

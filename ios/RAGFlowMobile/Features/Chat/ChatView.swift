@@ -55,7 +55,7 @@ struct ChatView: View {
                     ShareLink(
                         item: vm.conversationExport,
                         subject: Text(vm.sessionTitle),
-                        message: Text("Exported from RAGFlow")
+                        message: Text("Exported from Ragion")
                     ) {
                         Image(systemName: "square.and.arrow.up")
                     }

@@ -17,7 +17,7 @@ enum WorkflowTemplates {
     static let custom = WorkflowTemplate(
         id: "custom",
         name: "Custom",
-        description: "Write your own system prompt. RAGFlow will retrieve relevant context and send it to your LLM with your instructions.",
+        description: "Write your own system prompt. Ragion will retrieve relevant context and send it to your LLM with your instructions.",
         icon: "pencil.and.outline",
         steps: []   // populated dynamically from the user's prompt
     )

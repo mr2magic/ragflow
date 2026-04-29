@@ -3,16 +3,30 @@ import SwiftUI
 /// KB overview card — shown on the KB tab of DossierKBDetailView.
 struct DossierQueryView: View {
     let kb: KnowledgeBase
-    let docCount: Int
-    let chunkCount: Int
     var onSaveSettings: ((KnowledgeBase) -> Void)?
 
+    @State private var docCount: Int = 0
+    @State private var chunkCount: Int = 0
     @State private var showRetrievalSettings = false
+    @ObservedObject private var settings = SettingsStore.shared
+
+    private let db = DatabaseService.shared
 
     private var createdLabel: String {
         let fmt = DateFormatter()
         fmt.dateFormat = "MMM d, yyyy"
         return fmt.string(from: kb.createdAt)
+    }
+
+    private var llmLabel: String {
+        let p = settings.config.provider
+        switch p {
+        case .ollama:
+            let m = settings.config.ollamaModel.isEmpty ? "—" : settings.config.ollamaModel
+            return "\(p.rawValue) · \(m)"
+        default:
+            return "\(p.rawValue) · \(p.defaultModel)"
+        }
     }
 
     var body: some View {
@@ -28,12 +42,20 @@ struct DossierQueryView: View {
             .padding(.top, 12)
         }
         .background(DT.manila)
+        .onAppear { loadCounts() }
         .sheet(isPresented: $showRetrievalSettings) {
             KBRetrievalSettingsSheet(kb: kb) { updated in
                 try? DatabaseService.shared.saveKB(updated)
                 onSaveSettings?(updated)
+                loadCounts()
             }
         }
+    }
+
+    private func loadCounts() {
+        let books = (try? db.allBooks(kbId: kb.id)) ?? []
+        docCount = books.count
+        chunkCount = books.reduce(0) { $0 + $1.chunkCount }
     }
 
     // MARK: - Header
@@ -80,6 +102,17 @@ struct DossierQueryView: View {
                 .font(DT.mono(10))
                 .tracking(0.8)
                 .foregroundStyle(DT.inkFaint)
+
+            HStack(spacing: 6) {
+                Image(systemName: "cpu")
+                    .font(.system(size: 10))
+                    .foregroundStyle(DT.inkFaint)
+                    .accessibilityHidden(true)
+                Text(llmLabel)
+                    .font(DT.mono(10))
+                    .tracking(0.8)
+                    .foregroundStyle(settings.isConfigured ? DT.ink : DT.inkFaint)
+            }
         }
         .padding(DT.cardPadding)
         .background(DT.card)

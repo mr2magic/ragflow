@@ -28,7 +28,7 @@ final class SpotlightIndexer {
             book.fileType.isEmpty ? nil : book.fileType.uppercased(),
             book.chunkCount > 0  ? "\(book.chunkCount) passages" : nil
         ].compactMap { $0 }.joined(separator: " · ")
-        bookAttr.keywords = [book.title, book.author, book.fileType, "RAGFlow"]
+        bookAttr.keywords = [book.title, book.author, book.fileType, "Ragion"]
             .filter { !$0.isEmpty }
 
         items.append(CSSearchableItem(

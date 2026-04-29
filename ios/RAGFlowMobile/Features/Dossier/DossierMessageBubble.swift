@@ -5,6 +5,7 @@ struct DossierMessageBubble: View {
     let index: Int
     var onTap: (() -> Void)? = nil
 
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @AppStorage("showAttachmentChips") private var showAttachmentChips = true
     @State private var sourcesExpanded = false
 
@@ -133,7 +134,7 @@ struct DossierMessageBubble: View {
                         .foregroundStyle(DT.ink)
                         .lineSpacing(4)
 
-                    if !message.sources.isEmpty {
+                    if !message.sources.isEmpty && hSizeClass == .compact {
                         sourcesAccordion
                     }
                 }
@@ -168,7 +169,7 @@ struct DossierMessageBubble: View {
                 withAnimation(.easeInOut(duration: 0.2)) { sourcesExpanded.toggle() }
             } label: {
                 HStack(spacing: 4) {
-                    Text("ATTACHMENTS · \(message.sources.count)")
+                    Text("SOURCES · \(message.sources.count)")
                         .font(DT.mono(9))
                         .tracking(1.5)
                         .foregroundStyle(DT.inkSoft)
@@ -179,6 +180,7 @@ struct DossierMessageBubble: View {
                 }
                 .padding(.top, 6)
                 .padding(.bottom, sourcesExpanded ? 4 : 6)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 

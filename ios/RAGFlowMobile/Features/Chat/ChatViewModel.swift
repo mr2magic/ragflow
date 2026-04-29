@@ -121,7 +121,7 @@ final class ChatViewModel: ObservableObject {
     var conversationExport: String {
         let header = "Chat in \(kb.name) — \(session.createdAt.formatted(date: .abbreviated, time: .shortened))\n\n"
         let body = messages.map { msg -> String in
-            let role = msg.role == .user ? "You" : "RAGFlow"
+            let role = msg.role == .user ? "You" : "Ragion"
             return "\(role): \(msg.content)"
         }.joined(separator: "\n\n")
         return header + body

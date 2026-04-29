@@ -269,6 +269,9 @@ private struct DossierChatContent: View {
             }
             .onChange(of: vm.messages.count) { _, _ in
                 withAnimation { proxy.scrollTo("bottom") }
+                if let last = vm.messages.last(where: { $0.role == .assistant }) {
+                    onMessageTap?(last)
+                }
             }
             .onChange(of: vm.isTyping) { _, _ in
                 withAnimation { proxy.scrollTo("bottom") }
@@ -293,6 +296,13 @@ private struct DossierChatContent: View {
                     .foregroundStyle(DT.ink)
                     .lineLimit(1...5)
                     .focused($inputFocused)
+                    .onKeyPress(keys: [.return]) { press in
+                        if press.modifiers.contains(.shift) {
+                            vm.input += "\n"
+                            return .handled
+                        }
+                        return .ignored
+                    }
 
                 // D-CHAT3 — Stop button when streaming
                 if vm.isLoading {
