@@ -3,6 +3,7 @@ import SwiftUI
 /// Shows all chat sessions for a knowledge base.
 /// Tapping a session navigates to ChatView for that session.
 /// "New Chat" toolbar button creates a fresh session.
+/// Supports search (C5) and batch delete via edit mode (C6).
 struct ConversationsListView: View {
     let kb: KnowledgeBase
 
@@ -12,7 +13,20 @@ struct ConversationsListView: View {
     @State private var renameText = ""
     @State private var sessionToDelete: ChatSession?
 
+    // C5: Search
+    @State private var searchText = ""
+
+    // C6: Batch delete
+    @State private var editMode: EditMode = .inactive
+    @State private var selectedIDs: Set<String> = []
+    @State private var showBatchDeleteConfirm = false
+
     private let db = DatabaseService.shared
+
+    private var filteredSessions: [ChatSession] {
+        guard !searchText.isEmpty else { return sessions }
+        return sessions.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+    }
 
     var body: some View {
         Group {
@@ -24,15 +38,32 @@ struct ConversationsListView: View {
         }
         .navigationTitle("Chats")
         .navigationBarTitleDisplayMode(.large)
+        .searchable(text: $searchText, prompt: "Search chats")
         .navigationDestination(item: $selectedSession) { session in
             ChatView(kb: kb, session: session, onNewChat: createNewSession)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(action: createNewSession) {
-                    Label("New Chat", systemImage: "square.and.pencil")
+                if editMode == .inactive {
+                    Button(action: createNewSession) {
+                        Label("New Chat", systemImage: "square.and.pencil")
+                    }
+                } else {
+                    Button("Delete (\(selectedIDs.count))", role: .destructive) {
+                        showBatchDeleteConfirm = true
+                    }
+                    .disabled(selectedIDs.isEmpty)
                 }
             }
+            ToolbarItem(placement: .cancellationAction) {
+                if !sessions.isEmpty {
+                    EditButton()
+                }
+            }
+        }
+        .environment(\.editMode, $editMode)
+        .onChange(of: editMode) { _, mode in
+            if mode == .inactive { selectedIDs = [] }
         }
         // MARK: - Rename Chat
         .sheet(item: $sessionToRename) { _ in
@@ -53,20 +84,32 @@ struct ConversationsListView: View {
         } message: {
             Text("All messages in this chat will be permanently deleted.")
         }
+        .confirmationDialog(
+            "Delete \(selectedIDs.count) chat\(selectedIDs.count == 1 ? "" : "s")?",
+            isPresented: $showBatchDeleteConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) { confirmBatchDelete() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("All messages in the selected chats will be permanently deleted.")
+        }
         .onAppear { reload() }
     }
 
     // MARK: - Session List
 
     private var sessionList: some View {
-        List {
-            ForEach(sessions) { session in
+        List(selection: $selectedIDs) {
+            ForEach(filteredSessions) { session in
                 Button {
+                    guard editMode == .inactive else { return }
                     selectedSession = session
                 } label: {
                     sessionRow(session)
                 }
                 .buttonStyle(.plain)
+                .tag(session.id)
                 .contextMenu {
                     Button("Rename") {
                         renameText = session.name
@@ -182,5 +225,12 @@ struct ConversationsListView: View {
         try? db.deleteSession(session.id)
         reload()
         sessionToDelete = nil
+    }
+
+    private func confirmBatchDelete() {
+        try? db.deleteSessions(Array(selectedIDs))
+        selectedIDs = []
+        editMode = .inactive
+        reload()
     }
 }

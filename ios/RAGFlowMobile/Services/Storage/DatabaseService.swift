@@ -444,6 +444,16 @@ final class DatabaseService {
         }
     }
 
+    func deleteSessions(_ ids: [String]) throws {
+        guard !ids.isEmpty else { return }
+        try dbQueue.write { db in
+            for id in ids {
+                try db.execute(sql: "DELETE FROM messages WHERE sessionId = ?", arguments: [id])
+                try db.execute(sql: "DELETE FROM chat_sessions WHERE id = ?", arguments: [id])
+            }
+        }
+    }
+
     func renameSession(id: String, name: String) throws {
         try dbQueue.write { db in
             try db.execute(sql: "UPDATE chat_sessions SET name = ? WHERE id = ?", arguments: [name, id])
