@@ -507,6 +507,40 @@ final class RAGService: ObservableObject {
     /// Set by ChatViewModel before calling retrieve(), cleared after.
     var currentQueryEmbedding: [Float]?
 
+    /// Cross-KB RRF: retrieves from each KB independently (using per-KB settings),
+    /// then applies a second RRF pass over all KB result lists to produce a globally
+    /// ranked result. Chunks appearing in multiple KBs get a combined score boost.
+    func retrieveMultiKB(query: String, kbs: [KnowledgeBase]) throws -> [Chunk] {
+        guard kbs.count > 1 else {
+            return (try? retrieve(query: query, kb: kbs[0])) ?? []
+        }
+
+        let k = 60.0
+        var rrfScores: [String: Double] = [:]
+        var chunkById: [String: Chunk] = [:]
+
+        for kb in kbs {
+            // Expand topK per KB to cast a wider net for cross-KB fusion
+            var expansionKB = kb
+            expansionKB.topK = kb.topK * 2
+            let ranked = (try? retrieve(query: query, kb: expansionKB)) ?? []
+            for (rank, chunk) in ranked.enumerated() {
+                chunkById[chunk.id] = chunk
+                rrfScores[chunk.id, default: 0] += 1.0 / (k + Double(rank + 1))
+            }
+        }
+
+        let globalTopK = kbs.map(\.topK).max() ?? 5
+        return rrfScores
+            .compactMap { id, score -> (Chunk, Double)? in
+                guard let chunk = chunkById[id] else { return nil }
+                return (chunk, score)
+            }
+            .sorted { $0.1 > $1.1 }
+            .prefix(globalTopK)
+            .map(\.0)
+    }
+
     // Retained for WorkflowRunner compatibility
     func retrieve(query: String, kbId: String, topK: Int = 5) throws -> [Chunk] {
         let kb = (try? db.kb(id: kbId)) ?? KnowledgeBase(id: kbId, name: "", createdAt: Date())

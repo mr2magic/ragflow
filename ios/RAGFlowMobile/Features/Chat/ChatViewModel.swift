@@ -264,22 +264,21 @@ final class ChatViewModel: ObservableObject {
         }
         defer { rag.currentQueryEmbedding = nil }
 
-        var results: [Chunk] = []
+        // Build title lookup for all active KBs
         var docTitles: [String: String] = [:]
-
         for activeKB in activeKBs {
-            // Re-fetch KB from DB so retrieval always uses current settings
-            // (topK, topN, threshold). Without this, changes made in Retrieval
-            // Settings after navigation are ignored because activeKBs holds a
-            // value-type snapshot from init time.
-            let liveKB = (try? db.kb(id: activeKB.id)) ?? activeKB
-
-            // Build title lookup for all documents in this KB
             let docs = (try? db.allBooks(kbId: activeKB.id)) ?? []
             for doc in docs { docTitles[doc.id] = doc.title }
+        }
 
-            let chunks = try rag.retrieve(query: query, kb: liveKB)
-            results.append(contentsOf: chunks)
+        let liveKBs = activeKBs.map { (try? db.kb(id: $0.id)) ?? $0 }
+
+        let results: [Chunk]
+        if liveKBs.count > 1 {
+            // M1: cross-KB RRF — second fusion pass over all KB result lists
+            results = try rag.retrieveMultiKB(query: query, kbs: liveKBs)
+        } else {
+            results = try rag.retrieve(query: query, kb: liveKBs[0])
         }
         return (results, docTitles)
     }
