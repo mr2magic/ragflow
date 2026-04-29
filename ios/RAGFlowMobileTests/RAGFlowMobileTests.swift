@@ -1322,6 +1322,55 @@ final class ImportParserTests: XCTestCase {
         XCTAssertTrue(text.contains("Hello World"), "ODT: expected text not found; got: \(text.prefix(120))")
     }
 
+    // MARK: – GEDCOM
+
+    func testImportGEDCOM() throws {
+        let ged = """
+        0 HEAD
+        1 SOUR Test
+        0 @I1@ INDI
+        1 NAME Alice /Wonderland/
+        1 SEX F
+        1 BIRT
+        2 DATE 4 JUL 1852
+        2 PLAC Oxford, England
+        0 @I2@ INDI
+        1 NAME Bob /Wonderland/
+        1 SEX M
+        0 @F1@ FAM
+        1 HUSB @I2@
+        1 WIFE @I1@
+        1 MARR
+        2 DATE 12 DEC 1875
+        0 TRLR
+        """
+        let f = url("sample.ged")
+        try ged.write(to: f, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: f) }
+        let sections = try GEDCOMParser().parse(url: f)
+        XCTAssertFalse(sections.isEmpty, "GEDCOM: no sections parsed")
+        let titles = sections.map(\.title)
+        XCTAssertTrue(titles.contains("Alice Wonderland"), "GEDCOM: expected individual not found; titles=\(titles)")
+        let allText = sections.map(\.text).joined()
+        XCTAssertTrue(allText.contains("Oxford, England"), "GEDCOM: birth place missing from parsed text")
+    }
+
+    // MARK: – ZIP bundle (structure only — Zip library unzip is implicitly tested via the app)
+    // Verifies makeZip produces a valid ZIP archive that RAGService.ingestZIP can open.
+
+    func testImportZIPBundleStructure() throws {
+        let entry = "This is a document inside a ZIP bundle. \(Self.content)"
+        let f = url("bundle.zip")
+        try Self.makeZip(to: f, entries: [("readme.txt", entry)])
+        defer { try? FileManager.default.removeItem(at: f) }
+        let raw = try Data(contentsOf: f)
+        // ZIP local file header magic: PK\x03\x04
+        let magic = Data([0x50, 0x4B, 0x03, 0x04])
+        XCTAssertNotNil(raw.range(of: magic), "ZIP: local file header signature missing")
+        XCTAssertNotNil(raw.range(of: Data("readme.txt".utf8)), "ZIP: entry filename not found in archive")
+        XCTAssertNotNil(raw.range(of: Data(Self.content.utf8)), "ZIP: entry content not found in archive")
+    }
+
     // MARK: – EPUB (ZIP structure only — EPUBKit is main-target only)
     // Full EPUB parse is tested implicitly when importing via the app; here we verify
     // that our makeZip helper produces a valid EPUB-shaped archive.
@@ -2917,5 +2966,112 @@ final class PaginatedMessageLoadingTests: XCTestCase {
         XCTAssertEqual(page1.count, 10)
         XCTAssertEqual(page2.count, 5)
         XCTAssertEqual(page1.count + page2.count, total)
+    }
+}
+
+// MARK: - Scanned document / Vision OCR tests
+
+final class ScannedDocumentTests: XCTestCase {
+
+    private var tmp: URL { FileManager.default.temporaryDirectory.resolvingSymlinksInPath() }
+    private func url(_ name: String) -> URL { tmp.appendingPathComponent("ragflow_scan_test_\(name)") }
+
+    /// Returns a single-page PDF containing a rasterised bitmap of `text`.
+    /// The PDF has no PDFKit text layer — PDFParser.parse() returns empty for it.
+    private func makeImageOnlyPDF(text: String) -> Data {
+        let pageRect = CGRect(x: 0, y: 0, width: 612, height: 792)
+        let imgRenderer = UIGraphicsImageRenderer(size: pageRect.size)
+        let img = imgRenderer.image { _ in
+            UIColor.white.setFill()
+            UIRectFill(pageRect)
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 36),
+                .foregroundColor: UIColor.black
+            ]
+            text.draw(in: CGRect(x: 50, y: 200, width: 512, height: 350), withAttributes: attrs)
+        }
+        let pdfRenderer = UIGraphicsPDFRenderer(bounds: pageRect)
+        return pdfRenderer.pdfData { ctx in
+            ctx.beginPage()
+            img.draw(in: pageRect)
+        }
+    }
+
+    // MARK: - PDFParser.hasTextLayer
+
+    func testHasTextLayerReturnsFalseForImageOnlyPDF() throws {
+        let f = url("has_text_false.pdf")
+        try makeImageOnlyPDF(text: "Hello World").write(to: f)
+        defer { try? FileManager.default.removeItem(at: f) }
+        XCTAssertFalse(PDFParser().hasTextLayer(url: f),
+                       "image-only PDF should report no text layer")
+    }
+
+    func testHasTextLayerReturnsTrueForTextPDF() throws {
+        let pageRect = CGRect(x: 0, y: 0, width: 612, height: 792)
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+        let data = renderer.pdfData { ctx in
+            ctx.beginPage()
+            let attrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 14)]
+            "Hello World text layer verification string with enough characters to pass".draw(
+                in: CGRect(x: 50, y: 50, width: 500, height: 600), withAttributes: attrs)
+        }
+        let f = url("has_text_true.pdf")
+        try data.write(to: f)
+        defer { try? FileManager.default.removeItem(at: f) }
+        XCTAssertTrue(PDFParser().hasTextLayer(url: f),
+                      "text-layer PDF should be detected as having text")
+    }
+
+    // MARK: - PDFParser: image-only PDF returns no usable text sections
+
+    func testPDFParserYieldsNoTextForImageOnlyPDF() throws {
+        let f = url("pdf_parser_blank.pdf")
+        try makeImageOnlyPDF(text: "invisible to PDFKit").write(to: f)
+        defer { try? FileManager.default.removeItem(at: f) }
+        let sections = PDFParser().parse(url: f)
+        let hasText = sections.contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        XCTAssertFalse(hasText,
+                       "PDFParser should not extract text from image-only PDF; got: \(sections.map(\.text).joined().prefix(80))")
+    }
+
+    // MARK: - VisionOCRParser: scanned PDF fallback
+
+    func testVisionOCRExtractsTextFromImageOnlyPDF() async throws {
+        let f = url("ocr_pdf.pdf")
+        try makeImageOnlyPDF(text: "Hello World").write(to: f)
+        defer { try? FileManager.default.removeItem(at: f) }
+
+        // Confirm PDFParser sees no text (exercising the RAGService branch condition)
+        let pdfSections = PDFParser().parse(url: f)
+        let pdfText = pdfSections.map(\.text).joined().trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertTrue(pdfText.isEmpty,
+                      "precondition: PDFParser should see no text; got '\(pdfText.prefix(60))'")
+
+        // VisionOCR should recover text from the rasterised page
+        let pageTexts = await VisionOCRParser().extractText(fromPDFAt: f)
+        XCTAssertFalse(pageTexts.isEmpty, "VisionOCR should return at least one page result")
+        let ocrText = pageTexts.joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertFalse(ocrText.isEmpty,
+                       "VisionOCR should extract non-empty text from image-only PDF")
+    }
+
+    // MARK: - VisionOCRParser: camera-captured UIImage (document scanner path)
+
+    func testVisionOCRExtractsTextFromUIImage() async {
+        let size = CGSize(width: 800, height: 300)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let img = renderer.image { _ in
+            UIColor.white.setFill()
+            UIRectFill(CGRect(origin: .zero, size: size))
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 44),
+                .foregroundColor: UIColor.black
+            ]
+            "Hello World".draw(in: CGRect(x: 50, y: 80, width: 700, height: 150), withAttributes: attrs)
+        }
+        let text = await VisionOCRParser().extractText(from: img)
+        XCTAssertFalse(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                       "VisionOCR should extract text from UIImage; got empty")
     }
 }

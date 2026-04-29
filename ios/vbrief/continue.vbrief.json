@@ -2,56 +2,62 @@
   "version": "1.0",
   "project": "RAGFlowMobile",
   "date": "2026-04-29",
-  "status": "v0.9.0 build 13 — 9-issue Dossier fix wave complete — build green",
-  "phase": "Backlog reduction — Dossier UI stabilization wave",
+  "status": "v0.9.0 build 15 — file format tests complete — 175 tests, 0 failures",
+  "phase": "All format tests passing — ready for next milestone",
 
   "completed_this_session": [
-    "Issue 1: DossierQueryView now self-loads docCount/chunkCount via loadCounts() on onAppear — removed hardcoded zeros from DossierRootView and DossierKBDetailView callers",
-    "Issue 2: Sources accordion fixed — .contentShape(Rectangle()) on button label HStack so full row (including chevron) is tappable",
-    "Issue 3: New KB creation now sets selectedTab = .docs immediately after selectedKB = created in DossierRootView alert",
-    "Issue 4: DossierQueryView coverCard now shows LLM provider+model via llmLabel computed from SettingsStore.shared.config",
-    "Issue 5: DossierChatContent onChange(of: vm.messages.count) now calls onMessageTap?(last) to auto-update sources panel on new assistant response",
-    "Issue 6: Same .contentShape fix as issue 2 — accordion arrow now fully tappable",
-    "Issue 7: Renamed ATTACHMENTS → SOURCES in DossierMessageBubble.sourcesAccordion",
-    "Issue 8: Inline accordion in DossierMessageBubble hidden on iPad (hSizeClass != .compact); DossierSourcesPanel header is now collapsible accordion with chevron",
-    "Issue 9: .onKeyPress(keys: [.return]) on TextField in inputBar — Shift+Return inserts newline, plain Return falls through to send"
+    "ScannedDocumentTests (5): hasTextLayer false/true, PDFParser empty for image-only, VisionOCR from PDF, VisionOCR from UIImage",
+    "ImportParserTests additions: testImportGEDCOM (GEDCOMParser.parse from file), testImportZIPBundleStructure (ZIP magic bytes + content)",
+    "Full test suite: 175 tests, 0 failures"
   ],
 
   "prior_session_completed": [
+    "RAGFlow → Ragion rename: 8 files edited — all user-visible 'RAGFlow'/'RAGflow' strings replaced with 'Ragion'",
+    "KB Re-index All: full implementation in KBRetrievalSettingsSheet — confirmation dialog, progress state, result alert, reindexAll() async method",
+    "Build bumped 14→15 across all 3 Info.plist targets (RAGFlowMobile, RAGFlowWidget, RAGFlowShareExtension)",
+    "Issue 1: DossierQueryView now self-loads docCount/chunkCount via loadCounts() on onAppear",
+    "Issue 2: Sources accordion fixed — .contentShape(Rectangle()) on button label HStack",
+    "Issue 3: New KB creation now sets selectedTab = .docs immediately",
+    "Issue 4: DossierQueryView coverCard now shows LLM provider+model",
+    "Issue 5: DossierChatContent onChange auto-updates sources panel on new assistant response",
+    "Issue 6: Same .contentShape fix as issue 2",
+    "Issue 7: Renamed ATTACHMENTS → SOURCES in DossierMessageBubble.sourcesAccordion",
+    "Issue 8: Inline accordion hidden on iPad; DossierSourcesPanel header is collapsible",
+    "Issue 9: .onKeyPress(keys: [.return]) — Shift+Return inserts newline, plain Return sends",
     "M4: Accessibility audit — accessibilityLabel on all interactive elements across Dossier views",
-    "DossierRootView: sidebarTabRow .contentShape(Rectangle()) fixes tab hit targets on iPad 3-column layout",
-    "DossierRootView: sidebarKBRow context menu — Rename (via RenameSheet) + Delete (via confirmationDialog)",
-    "DossierChatView: QUERY tab — LLM banner, NO DOCUMENTS empty state, all header icons verified",
-    "DossierArchView: LOG tab — date-grouped sessions, REOPEN button, trash-icon delete with confirmation dialog",
-    "KB CRUD: add (+button → alert), rename (long-press), delete (long-press) all verified end-to-end",
-    "Info.plist: CFBundleVersion 12→13 across all 3 targets",
-    "Committed 6f4c733d4 (M4 accessibility) + build 13 bump"
+    "KB CRUD: add, rename, delete all verified end-to-end"
   ],
 
   "next": [
-    "Bump CFBundleVersion to 14 and commit this fix wave",
-    "Configure LLM in Settings (Claude or OpenAI API key) to test sources accordion + auto-update live",
     "M1: Multi-KB RRF ranking across KBs",
     "M2: Workflow parallel steps",
     "M3: Chat history pagination",
     "C4: Chat history window config (last N messages)",
     "C5: Search conversations",
     "C6: Batch delete conversations",
-    "TestFlight: archive + upload 0.9.0 build 14 via Xcode GUI",
+    "TestFlight: archive + upload 0.9.0 build 15 via Xcode GUI",
     "CloudKit container: confirm iCloud.com.dhorn.ragflowmobile created in Apple developer portal"
   ],
+
+  "test_coverage_summary": {
+    "total_tests": 175,
+    "failures": 0,
+    "format_tests_ImportParserTests": ["TXT","MD","CSV","JSON","YAML","Swift","Python","SQL","HTML","RTF","PDF-text-layer","EML","EMLX","DOCX","XLSX","PPTX","ODT","GEDCOM","ZIP-bundle-structure","EPUB-zip-structure"],
+    "scanned_document_tests": ["hasTextLayer-false-image-only","hasTextLayer-true-text-PDF","PDFParser-empty-for-image-only","VisionOCR-from-image-only-PDF","VisionOCR-from-UIImage"],
+    "coverage_gaps_remaining": ["ZIP full ingest via RAGService.ingestZIP (requires Zip library + DB — tested implicitly via app)", "EPUB full parse via EPUBKit (main-target only — tested implicitly via app)"]
+  },
 
   "key_facts": {
     "app_name": "Ragion",
     "app_tagline": "Where retrieval meets reason",
     "app_version": "0.9.0",
-    "build_number": "13",
+    "build_number": "15",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "3ba68168b",
+    "last_commit": "3debe8442",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_build_udid": "67A6D96F-116E-46BF-8943-C1E064EFD0FB",
@@ -66,7 +72,8 @@
     "cloudkit_container": "iCloud.com.dhorn.ragflowmobile — private DB only; syncs KBs, Books, Sessions, Messages, Workflows",
     "chat_params_note": "ChatParams(modelOverride, temperature, topP, extraSystemPrompt) — all 3 LLM services accept params",
     "sources_accordion_ipad": "Inline accordion hidden on iPad (hSizeClass != .compact) — sources show in DossierSourcesPanel right column only",
-    "sources_auto_update": "onChange(of: vm.messages.count) in DossierChatContent calls onMessageTap?(last) to auto-select newest assistant message in sources panel"
+    "sources_auto_update": "onChange(of: vm.messages.count) in DossierChatContent calls onMessageTap?(last) to auto-select newest assistant message in sources panel",
+    "ragion_rename_complete": "All user-visible RAGFlow/RAGflow strings replaced with Ragion — only internal identifiers (bundle IDs, file extensions, Swift type names, code comments) remain"
   },
 
   "open_questions": [
