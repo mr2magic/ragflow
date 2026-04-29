@@ -245,7 +245,17 @@ private struct DossierChatContent: View {
                         emptyState
                     } else {
                         ForEach(Array(vm.messages.enumerated()), id: \.element.id) { i, msg in
-                            DossierMessageBubble(message: msg, index: i, onTap: msg.role == .assistant ? { onMessageTap?(msg) } : nil)
+                            let tapAction: (() -> Void)? = {
+                                if msg.role == .assistant {
+                                    return { onMessageTap?(msg) }
+                                }
+                                // User query tap → show the following assistant reply's sources
+                                if let next = vm.messages[(i + 1)...].first(where: { $0.role == .assistant }) {
+                                    return { onMessageTap?(next) }
+                                }
+                                return nil
+                            }()
+                            DossierMessageBubble(message: msg, index: i, onTap: tapAction)
                                 .id(msg.id)
                         }
                     }

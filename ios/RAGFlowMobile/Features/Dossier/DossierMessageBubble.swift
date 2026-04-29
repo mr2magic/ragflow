@@ -6,6 +6,7 @@ struct DossierMessageBubble: View {
     var onTap: (() -> Void)? = nil
 
     @AppStorage("showAttachmentChips") private var showAttachmentChips = true
+    @State private var sourcesExpanded = false
 
     private var isUser: Bool { message.role == .user }
 
@@ -133,7 +134,7 @@ struct DossierMessageBubble: View {
                         .lineSpacing(4)
 
                     if !message.sources.isEmpty {
-                        sourcesSection
+                        sourcesAccordion
                     }
                 }
                 .padding(DT.cardPadding)
@@ -158,17 +159,37 @@ struct DossierMessageBubble: View {
         }
     }
 
-    // MARK: - Sources
+    // MARK: - Sources accordion
+
+    private var sourcesAccordion: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { sourcesExpanded.toggle() }
+            } label: {
+                HStack(spacing: 4) {
+                    Text("ATTACHMENTS · \(message.sources.count)")
+                        .font(DT.mono(9))
+                        .tracking(1.5)
+                        .foregroundStyle(DT.inkSoft)
+                    Spacer()
+                    Image(systemName: sourcesExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(DT.inkFaint)
+                }
+                .padding(.top, 6)
+                .padding(.bottom, sourcesExpanded ? 4 : 6)
+            }
+            .buttonStyle(.plain)
+
+            if sourcesExpanded {
+                sourcesSection
+            }
+        }
+    }
 
     private var sourcesSection: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Rectangle().fill(DT.rule.opacity(0.6)).frame(height: 0.5)
-            Text("ATTACHMENTS · \(message.sources.count)")
-                .font(DT.mono(9))
-                .tracking(1.5)
-                .foregroundStyle(DT.inkSoft)
-                .padding(.top, 4)
-
             ForEach(Array(message.sources.enumerated()), id: \.element.id) { i, src in
                 HStack(alignment: .top, spacing: 8) {
                     Text("[\(i + 1)]")

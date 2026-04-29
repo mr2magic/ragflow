@@ -56,12 +56,6 @@ struct DossierArchiveView: View {
                     .tracking(2)
                     .foregroundStyle(DT.inkFaint)
                 Spacer()
-                Button { newChat() } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(DT.stamp)
-                }
-                .buttonStyle(.plain)
             }
             Rectangle().fill(DT.rule).frame(height: 0.5)
         }
@@ -197,6 +191,13 @@ struct DossierArchiveView: View {
                         .foregroundStyle(DT.ribbon)
                 }
                 .buttonStyle(.plain)
+                Button { sessionToDelete = es.session } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(DT.inkFaint)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Delete session")
             }
         }
         .padding(.vertical, 6)
@@ -210,6 +211,7 @@ struct DossierArchiveView: View {
             Image(systemName: "doc.text")
                 .font(.system(size: 44))
                 .foregroundStyle(DT.inkFaint)
+                .accessibilityHidden(true)
             Text("NO SESSIONS")
                 .font(DT.mono(12, weight: .bold))
                 .tracking(2)
@@ -220,17 +222,6 @@ struct DossierArchiveView: View {
                 .foregroundStyle(DT.inkSoft)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            Button { newChat() } label: {
-                Text("NEW CHAT")
-                    .font(DT.mono(10, weight: .bold))
-                    .tracking(1.5)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(DT.stamp)
-                    .clipShape(RoundedRectangle(cornerRadius: DT.stampCorner))
-            }
-            .buttonStyle(.plain)
             Spacer()
         }
         .frame(maxWidth: .infinity)

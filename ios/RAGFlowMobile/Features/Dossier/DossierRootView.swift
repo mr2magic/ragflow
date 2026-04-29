@@ -31,6 +31,7 @@ private struct DossierIPadLayout: View {
     @State private var selectedKB: KnowledgeBase?
     @State private var selectedTab: DossierTab = .query
     @State private var selectedMessage: Message?
+    @State private var showSettings = false
 
     var body: some View {
         GeometryReader { geo in
@@ -50,6 +51,42 @@ private struct DossierIPadLayout: View {
         .onChange(of: vm.kbs) { _, kbs in
             if selectedKB == nil { selectedKB = kbs.first }
         }
+        .alert("New Knowledge Base", isPresented: $vm.showCreateAlert) {
+            TextField("Name", text: $vm.newKBName)
+            Button("Create") {
+                if let created = vm.createKB() {
+                    selectedKB = created
+                }
+            }
+            Button("Cancel", role: .cancel) { vm.newKBName = "" }
+        }
+        .confirmationDialog(
+            "Delete \"\(vm.kbToDelete?.name ?? "this dossier")\"?",
+            isPresented: Binding(
+                get: { vm.kbToDelete != nil },
+                set: { if !$0 { vm.cancelDelete() } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                let deleted = vm.kbToDelete
+                vm.confirmDelete()
+                if let d = deleted, selectedKB?.id == d.id {
+                    selectedKB = vm.kbs.first
+                }
+            }
+            Button("Cancel", role: .cancel) { vm.cancelDelete() }
+        } message: {
+            Text("All documents and chat sessions in this dossier will be permanently deleted.")
+        }
+        .sheet(item: $vm.kbToRename) { _ in
+            RenameSheet(title: "Rename Dossier", text: $vm.renameText) {
+                vm.commitRename()
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
     }
 
     // MARK: - Left sidebar (240pt)
@@ -66,14 +103,31 @@ private struct DossierIPadLayout: View {
     }
 
     private var sidebarBrand: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("RAGION")
-                .font(DT.mono(10, weight: .bold))
-                .tracking(3)
-                .foregroundStyle(DT.stamp)
-            Text("Dossier")
-                .font(DT.serif(20, weight: .semibold))
-                .foregroundStyle(DT.ink)
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("RAGION")
+                    .font(DT.mono(10, weight: .bold))
+                    .tracking(3)
+                    .foregroundStyle(DT.stamp)
+                Text("Dossier")
+                    .font(DT.serif(20, weight: .semibold))
+                    .foregroundStyle(DT.ink)
+            }
+            Spacer()
+            Button { showSettings = true } label: {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(DT.inkSoft)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Settings")
+            Button { vm.showCreateAlert = true } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(DT.stamp)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("New knowledge base")
         }
         .padding(.horizontal, DT.pagePadding)
         .padding(.top, 20)
@@ -105,6 +159,7 @@ private struct DossierIPadLayout: View {
             }
             .frame(height: 36)
             .background(isActive ? DT.stamp.opacity(0.08) : Color.clear)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -144,6 +199,7 @@ private struct DossierIPadLayout: View {
                     .tracking(0.5)
                     .foregroundStyle(isSelected ? DT.ink : DT.inkSoft)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Spacer()
             }
             .padding(.horizontal, DT.pagePadding)
@@ -151,6 +207,16 @@ private struct DossierIPadLayout: View {
             .background(isSelected ? DT.stamp.opacity(0.1) : Color.clear)
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            Button("Rename") {
+                vm.renameText = kb.name
+                vm.kbToRename = kb
+            }
+            Divider()
+            Button("Delete", role: .destructive) {
+                vm.requestDelete(kb: kb)
+            }
+        }
     }
 
     // MARK: - Middle column (flex)
