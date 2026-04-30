@@ -3075,3 +3075,400 @@ final class ScannedDocumentTests: XCTestCase {
                        "VisionOCR should extract text from UIImage; got empty")
     }
 }
+
+// MARK: - H3: Shared schema helper
+
+/// Creates an in-memory DatabaseService with the full v1–v11 schema applied.
+private func makeFullDB() throws -> DatabaseService {
+    let queue = try DatabaseQueue()
+    try queue.write { db in
+        try db.create(table: "books") { t in
+            t.column("id", .text).primaryKey()
+            t.column("title", .text).notNull()
+            t.column("author", .text).notNull().defaults(to: "")
+            t.column("filePath", .text).notNull()
+            t.column("addedAt", .datetime).notNull()
+            t.column("chunkCount", .integer).notNull().defaults(to: 0)
+            t.column("kbId", .text).notNull().defaults(to: KnowledgeBase.defaultID)
+            t.column("fileType", .text).notNull().defaults(to: "")
+            t.column("pageCount", .integer).notNull().defaults(to: 0)
+            t.column("wordCount", .integer).notNull().defaults(to: 0)
+            t.column("sourceURL", .text).notNull().defaults(to: "")
+        }
+        try db.create(table: "chunks") { t in
+            t.column("id", .text).primaryKey()
+            t.column("bookId", .text).notNull().references("books", onDelete: .cascade)
+            t.column("content", .text).notNull()
+            t.column("chapterTitle", .text)
+            t.column("position", .integer).notNull()
+            t.column("embedding", .blob)
+        }
+        try db.create(virtualTable: "chunks_fts", using: FTS5()) { t in
+            t.tokenizer = .porter()
+            t.column("chunk_id")
+            t.column("content")
+            t.column("chapterTitle")
+        }
+        try db.create(table: "knowledge_bases") { t in
+            t.column("id", .text).primaryKey()
+            t.column("name", .text).notNull()
+            t.column("createdAt", .datetime).notNull()
+            t.column("topK", .integer).notNull().defaults(to: 10)
+            t.column("topN", .integer).notNull().defaults(to: 50)
+            t.column("chunkMethod", .text).notNull().defaults(to: "General")
+            t.column("chunkSize", .integer).notNull().defaults(to: 512)
+            t.column("chunkOverlap", .integer).notNull().defaults(to: 64)
+            t.column("similarityThreshold", .double).notNull().defaults(to: 0.2)
+        }
+        try db.create(table: "messages") { t in
+            t.column("id", .text).primaryKey()
+            t.column("kbId", .text).notNull()
+            t.column("role", .text).notNull()
+            t.column("content", .text).notNull()
+            t.column("timestamp", .datetime).notNull()
+            t.column("sessionId", .text).notNull().defaults(to: "")
+        }
+        try db.create(table: "message_sources") { t in
+            t.column("id", .text).primaryKey()
+            t.column("messageId", .text).notNull().references("messages", onDelete: .cascade)
+            t.column("chapterTitle", .text)
+            t.column("preview", .text).notNull()
+            t.column("documentTitle", .text).notNull().defaults(to: "")
+        }
+        try db.create(table: "workflows") { t in
+            t.column("id", .text).primaryKey()
+            t.column("name", .text).notNull()
+            t.column("templateId", .text).notNull()
+            t.column("kbId", .text).notNull()
+            t.column("stepsJSON", .text).notNull()
+            t.column("createdAt", .datetime).notNull()
+        }
+        try db.create(table: "workflow_runs") { t in
+            t.column("id", .text).primaryKey()
+            t.column("workflowId", .text).notNull().references("workflows", onDelete: .cascade)
+            t.column("input", .text).notNull()
+            t.column("output", .text).notNull()
+            t.column("status", .text).notNull()
+            t.column("stepLogJSON", .text).notNull().defaults(to: "[]")
+            t.column("createdAt", .datetime).notNull()
+        }
+        try db.create(table: "chat_sessions") { t in
+            t.column("id", .text).primaryKey()
+            t.column("kbId", .text).notNull()
+            t.column("name", .text).notNull()
+            t.column("createdAt", .datetime).notNull()
+            t.column("modelOverride", .text)
+            t.column("temperature", .double)
+            t.column("topP", .double)
+            t.column("systemPrompt", .text)
+            t.column("historyWindow", .integer)
+        }
+    }
+    return DatabaseService(queue: queue)
+}
+
+// MARK: - H3: DatabaseService — ChatSession CRUD
+
+final class DatabaseServiceSessionTests: XCTestCase {
+    private var sut: DatabaseService!
+
+    override func setUp() {
+        super.setUp()
+        sut = try! makeFullDB()
+    }
+
+    private func makeSession(id: String = UUID().uuidString,
+                              kbId: String = "kb1",
+                              name: String = "Chat",
+                              offset: TimeInterval = 0) -> ChatSession {
+        ChatSession(id: id, kbId: kbId, name: name,
+                    createdAt: Date(timeIntervalSinceReferenceDate: offset))
+    }
+
+    func testSaveAndFetchSessionById() throws {
+        let s = makeSession(id: "s-round-trip", name: "My Chat")
+        try sut.saveSession(s)
+        let fetched = try sut.session(id: "s-round-trip")
+        XCTAssertNotNil(fetched)
+        XCTAssertEqual(fetched?.name, "My Chat")
+        XCTAssertEqual(fetched?.kbId, "kb1")
+    }
+
+    func testSessionNotFoundReturnsNil() throws {
+        let result = try sut.session(id: "does-not-exist")
+        XCTAssertNil(result)
+    }
+
+    func testAllSessionsScopedToKB() throws {
+        try sut.saveSession(makeSession(id: "s-a1", kbId: "kb-A"))
+        try sut.saveSession(makeSession(id: "s-a2", kbId: "kb-A"))
+        try sut.saveSession(makeSession(id: "s-b1", kbId: "kb-B"))
+        let sessions = try sut.allSessions(kbId: "kb-A")
+        XCTAssertEqual(sessions.count, 2)
+        XCTAssertTrue(sessions.allSatisfy { $0.kbId == "kb-A" })
+    }
+
+    func testAllSessionsOrderedNewestFirst() throws {
+        try sut.saveSession(makeSession(id: "s-old", offset: 1))
+        try sut.saveSession(makeSession(id: "s-new", offset: 100))
+        let sessions = try sut.allSessions(kbId: "kb1")
+        XCTAssertEqual(sessions.first?.id, "s-new")
+        XCTAssertEqual(sessions.last?.id, "s-old")
+    }
+
+    func testDeleteSessionRemovesIt() throws {
+        try sut.saveSession(makeSession(id: "s-del"))
+        try sut.deleteSession("s-del")
+        let result = try sut.session(id: "s-del")
+        XCTAssertNil(result)
+    }
+
+    func testDeleteSessionsBatch() throws {
+        try sut.saveSession(makeSession(id: "s-b1"))
+        try sut.saveSession(makeSession(id: "s-b2"))
+        try sut.saveSession(makeSession(id: "s-b3"))
+        try sut.deleteSessions(["s-b1", "s-b3"])
+        XCTAssertNil(try sut.session(id: "s-b1"))
+        XCTAssertNil(try sut.session(id: "s-b3"))
+        XCTAssertNotNil(try sut.session(id: "s-b2"))
+    }
+
+    func testRenameSession() throws {
+        try sut.saveSession(makeSession(id: "s-ren", name: "Old Name"))
+        try sut.renameSession(id: "s-ren", name: "New Name")
+        let fetched = try sut.session(id: "s-ren")
+        XCTAssertEqual(fetched?.name, "New Name")
+    }
+
+    func testUpdateSessionParams() throws {
+        try sut.saveSession(makeSession(id: "s-params"))
+        try sut.updateSessionParams(id: "s-params",
+                                    modelOverride: "claude-opus-4-7",
+                                    temperature: 0.7,
+                                    topP: 0.9,
+                                    systemPrompt: "Be concise.",
+                                    historyWindow: 20)
+        let fetched = try sut.session(id: "s-params")
+        XCTAssertEqual(fetched?.modelOverride, "claude-opus-4-7")
+        XCTAssertEqual(fetched?.temperature, 0.7)
+        XCTAssertEqual(fetched?.topP, 0.9)
+        XCTAssertEqual(fetched?.systemPrompt, "Be concise.")
+        XCTAssertEqual(fetched?.historyWindow, 20)
+    }
+}
+
+// MARK: - H3: DatabaseService — Workflow + WorkflowRun CRUD
+
+final class DatabaseServiceWorkflowTests: XCTestCase {
+    private var sut: DatabaseService!
+
+    override func setUp() {
+        super.setUp()
+        sut = try! makeFullDB()
+    }
+
+    private func makeWorkflow(id: String = UUID().uuidString,
+                               name: String = "Test Flow",
+                               offset: TimeInterval = 0) -> Workflow {
+        Workflow(id: id, name: name, templateId: "tmpl-1", kbId: "kb1",
+                 stepsJSON: "[]", createdAt: Date(timeIntervalSinceReferenceDate: offset))
+    }
+
+    private func makeRun(id: String = UUID().uuidString,
+                          workflowId: String,
+                          status: String = "completed") -> WorkflowRun {
+        WorkflowRun(id: id, workflowId: workflowId, input: "query",
+                    output: "answer", status: status, stepLogJSON: "[]",
+                    createdAt: Date())
+    }
+
+    func testSaveAndFetchAllWorkflows() throws {
+        let w = makeWorkflow(id: "wf-round-trip", name: "My Workflow")
+        try sut.saveWorkflow(w)
+        let all = try sut.allWorkflows()
+        XCTAssertTrue(all.contains { $0.id == "wf-round-trip" && $0.name == "My Workflow" })
+    }
+
+    func testAllWorkflowsOrderedNewestFirst() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-old", offset: 1))
+        try sut.saveWorkflow(makeWorkflow(id: "wf-new", offset: 100))
+        let all = try sut.allWorkflows()
+        XCTAssertEqual(all.first?.id, "wf-new")
+        XCTAssertEqual(all.last?.id, "wf-old")
+    }
+
+    func testDeleteWorkflow() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-del"))
+        try sut.deleteWorkflow("wf-del")
+        let all = try sut.allWorkflows()
+        XCTAssertFalse(all.contains { $0.id == "wf-del" })
+    }
+
+    func testSaveAndFetchWorkflowRun() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-run-parent"))
+        let run = makeRun(id: "run-1", workflowId: "wf-run-parent", status: "completed")
+        try sut.saveWorkflowRun(run)
+        let runs = try sut.runsForWorkflow("wf-run-parent")
+        XCTAssertEqual(runs.count, 1)
+        XCTAssertEqual(runs[0].id, "run-1")
+        XCTAssertEqual(runs[0].status, "completed")
+    }
+
+    func testRunsForWorkflowScopedToWorkflow() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-A"))
+        try sut.saveWorkflow(makeWorkflow(id: "wf-B"))
+        try sut.saveWorkflowRun(makeRun(id: "r-A1", workflowId: "wf-A"))
+        try sut.saveWorkflowRun(makeRun(id: "r-B1", workflowId: "wf-B"))
+        let runsA = try sut.runsForWorkflow("wf-A")
+        XCTAssertEqual(runsA.count, 1)
+        XCTAssertEqual(runsA[0].id, "r-A1")
+    }
+
+    func testRunsForWorkflowRespectsLimit() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-lim"))
+        for i in 0..<5 {
+            var run = makeRun(id: "r-lim-\(i)", workflowId: "wf-lim")
+            run.createdAt = Date(timeIntervalSinceReferenceDate: Double(i))
+            try sut.saveWorkflowRun(run)
+        }
+        let runs = try sut.runsForWorkflow("wf-lim", limit: 3)
+        XCTAssertEqual(runs.count, 3)
+    }
+
+    func testDeleteRunsForWorkflow() throws {
+        try sut.saveWorkflow(makeWorkflow(id: "wf-del-runs"))
+        try sut.saveWorkflowRun(makeRun(id: "r-dr1", workflowId: "wf-del-runs"))
+        try sut.saveWorkflowRun(makeRun(id: "r-dr2", workflowId: "wf-del-runs"))
+        try sut.deleteRunsForWorkflow("wf-del-runs")
+        let runs = try sut.runsForWorkflow("wf-del-runs")
+        XCTAssertTrue(runs.isEmpty)
+    }
+}
+
+// MARK: - H3: DatabaseService — Utility methods
+
+final class DatabaseServiceUtilityTests: XCTestCase {
+    private var sut: DatabaseService!
+
+    override func setUp() {
+        super.setUp()
+        sut = try! makeFullDB()
+    }
+
+    // MARK: bookTitles
+
+    func testBookTitlesReturnsMostRecentFirst() throws {
+        let kbId = "kb-bt"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        try sut.save(Book(id: "bt-old", kbId: kbId, title: "Older Book", author: "", filePath: "/f",
+                          addedAt: Date(timeIntervalSinceReferenceDate: 1), chunkCount: 0))
+        try sut.save(Book(id: "bt-new", kbId: kbId, title: "Newer Book", author: "", filePath: "/f",
+                          addedAt: Date(timeIntervalSinceReferenceDate: 100), chunkCount: 0))
+        let titles = try sut.bookTitles(kbId: kbId)
+        XCTAssertEqual(titles.first, "Newer Book")
+        XCTAssertEqual(titles.last, "Older Book")
+    }
+
+    func testBookTitlesRespectsLimit() throws {
+        let kbId = "kb-bt-lim"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        for i in 0..<5 {
+            try sut.save(Book(id: "bt-\(i)", kbId: kbId, title: "Book \(i)", author: "", filePath: "/f",
+                              addedAt: Date(timeIntervalSinceReferenceDate: Double(i)),
+                              chunkCount: 0))
+        }
+        let titles = try sut.bookTitles(kbId: kbId, limit: 2)
+        XCTAssertEqual(titles.count, 2)
+    }
+
+    func testBookTitlesEmptyWhenNoBooksInKB() throws {
+        let kbId = "kb-bt-empty"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        let titles = try sut.bookTitles(kbId: kbId)
+        XCTAssertTrue(titles.isEmpty)
+    }
+
+    // MARK: firstUserMessage
+
+    func testFirstUserMessageReturnsEarliestUserContent() throws {
+        let session = "sess-fum"
+        let kbId = "kb-fum"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        var msg1 = Message(role: .user, content: "First question")
+        msg1.timestamp = Date(timeIntervalSinceReferenceDate: 1)
+        var msg2 = Message(role: .user, content: "Second question")
+        msg2.timestamp = Date(timeIntervalSinceReferenceDate: 10)
+        try sut.saveMessages([msg1, msg2], sessionId: session, kbId: kbId)
+        let first = try sut.firstUserMessage(sessionId: session)
+        XCTAssertEqual(first, "First question")
+    }
+
+    func testFirstUserMessageReturnsNilForEmptySession() throws {
+        let result = try sut.firstUserMessage(sessionId: "nonexistent-session")
+        XCTAssertNil(result)
+    }
+
+    // MARK: sourceCount
+
+    func testSourceCountReturnsTotal() throws {
+        let session = "sess-sc"
+        let kbId = "kb-sc"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        var msg = Message(role: .assistant, content: "Answer with sources")
+        msg.sources = [
+            ChunkSource(id: "src-1", chapterTitle: "Ch1", documentTitle: "Doc", preview: "p1"),
+            ChunkSource(id: "src-2", chapterTitle: "Ch2", documentTitle: "Doc", preview: "p2"),
+        ]
+        try sut.saveMessages([msg], sessionId: session, kbId: kbId)
+        let count = try sut.sourceCount(sessionId: session)
+        XCTAssertEqual(count, 2)
+    }
+
+    func testSourceCountZeroForSessionWithNoSources() throws {
+        let count = try sut.sourceCount(sessionId: "no-sources-session")
+        XCTAssertEqual(count, 0)
+    }
+
+    // MARK: updateEmbeddingsBatch
+
+    func testUpdateEmbeddingsBatchPersistsData() throws {
+        let kbId = "kb-emb"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        let book = Book(id: "bk-emb", kbId: kbId, title: "T", author: "", filePath: "/f",
+                        addedAt: Date(), chunkCount: 1)
+        try sut.save(book)
+        let chunk = Chunk(id: "ck-emb", bookId: "bk-emb",
+                          content: "embedding test content", chapterTitle: nil, position: 0)
+        try sut.saveChunks([chunk])
+        let vector: [Float] = [0.1, 0.2, 0.3]
+        let embData = EmbeddingService.floatsToData(vector)
+        try sut.updateEmbeddingsBatch([(id: "ck-emb", embedding: embData)])
+        let embedded = try sut.allChunksWithEmbeddings(kbId: kbId)
+        XCTAssertEqual(embedded.count, 1)
+        let decoded = EmbeddingService.dataToFloats(embedded[0].1)
+        XCTAssertEqual(decoded.count, 3)
+        XCTAssertEqual(decoded[0], 0.1, accuracy: 0.001)
+    }
+
+    // MARK: wipeAllData
+
+    #if DEBUG
+    func testWipeAllDataClearsAllTables() throws {
+        let kbId = "kb-wipe"
+        try sut.saveKB(KnowledgeBase(id: kbId, name: "KB", createdAt: Date()))
+        try sut.save(Book(id: "bk-wipe", kbId: kbId, title: "T", author: "", filePath: "/f",
+                          addedAt: Date(), chunkCount: 0))
+        try sut.saveSession(ChatSession(id: "s-wipe", kbId: kbId, name: "Chat", createdAt: Date()))
+        try sut.saveWorkflow(Workflow(id: "wf-wipe", name: "Flow", templateId: "t",
+                                     kbId: kbId, stepsJSON: "[]", createdAt: Date()))
+        try sut.wipeAllData()
+        XCTAssertTrue((try sut.allBooks(kbId: kbId)).isEmpty)
+        XCTAssertTrue((try sut.allSessions(kbId: kbId)).isEmpty)
+        XCTAssertTrue((try sut.allWorkflows()).isEmpty)
+        // wipeAllData re-seeds the default KB, so only the seeded one remains
+        let kbs = try sut.allKBs()
+        XCTAssertEqual(kbs.count, 1)
+        XCTAssertEqual(kbs[0].id, KnowledgeBase.defaultID)
+    }
+    #endif
+}
