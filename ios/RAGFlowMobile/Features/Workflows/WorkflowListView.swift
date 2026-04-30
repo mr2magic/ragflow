@@ -3,9 +3,12 @@ import UniformTypeIdentifiers
 
 struct WorkflowListView: View {
     @StateObject private var vm = WorkflowListViewModel()
+    @AppStorage("activeWorkflowId") private var activeWorkflowId: String = ""
     @State private var showWorkflowImporter = false
     @State private var importError: String?
     @State private var showImportError = false
+    @State private var importedWorkflowName: String?
+    @State private var showImportSuccess = false
 
     @State private var selectedWorkflow: Workflow?
     @State private var exportURL: URL?
@@ -68,6 +71,11 @@ struct WorkflowListView: View {
         } message: {
             Text(importError ?? "Unknown error")
         }
+        .alert("Workflow Imported", isPresented: $showImportSuccess) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("\"\(importedWorkflowName ?? "Workflow")\" was imported successfully.")
+        }
         .sheet(isPresented: $showExportSheet) {
             if let url = exportURL { ShareSheet(url: url) }
         }
@@ -90,7 +98,10 @@ struct WorkflowListView: View {
             LazyVStack(spacing: 0) {
                 ForEach(Array(vm.workflows.enumerated()), id: \.element.id) { i, workflow in
                     workflowRow(workflow, index: i)
-                        .onTapGesture { selectedWorkflow = workflow }
+                        .onTapGesture {
+                            activeWorkflowId = workflow.id
+                            selectedWorkflow = workflow
+                        }
                         .contextMenu {
                             Button { exportWorkflow(workflow) } label: {
                                 Label("Export", systemImage: "square.and.arrow.up")
@@ -140,6 +151,12 @@ struct WorkflowListView: View {
             }
 
             Spacer()
+
+            if workflow.id == activeWorkflowId {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(DT.stamp)
+            }
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 10, weight: .semibold))
@@ -212,6 +229,8 @@ struct WorkflowListView: View {
                 let workflow = try ExportImportService.shared.importWorkflow(from: tmp)
                 try DatabaseService.shared.saveWorkflow(workflow)
                 vm.reload()
+                importedWorkflowName = workflow.name
+                showImportSuccess = true
             } catch {
                 importError = error.localizedDescription
                 showImportError = true

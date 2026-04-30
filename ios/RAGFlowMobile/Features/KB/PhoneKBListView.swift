@@ -5,6 +5,7 @@ import SwiftUI
 struct PhoneKBListView: View {
     @Binding var handoffKB: KnowledgeBase?
     @StateObject private var vm = KBListViewModel()
+    @AppStorage("activeKBId") private var activeKBId: String = ""
 
     /// Unified nav destination — one state drives all navigation paths:
     /// row taps, new-KB creation (with autoImport), and Handoff resumption.
@@ -13,11 +14,13 @@ struct PhoneKBListView: View {
     var body: some View {
         List {
             ForEach(vm.kbs) { kb in
-                Label(kb.name, systemImage: "square.stack.3d.up")
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                    .onTapGesture { navDest = KBNavDest(kb: kb) }
+                KBRow(kb: kb, isActive: kb.id == activeKBId)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    activeKBId = kb.id
+                    navDest = KBNavDest(kb: kb)
+                }
                     .contextMenu {
                         Button("Rename") {
                             vm.renameText = kb.name
