@@ -39,6 +39,9 @@ struct WorkflowEditorView: View {
                                 Text(kb.name).tag(kb.id)
                             }
                         }
+                    } else if let only = allKBs.first {
+                        LabeledContent("Knowledge Base", value: only.name)
+                            .foregroundStyle(.secondary)
                     }
                 }
 

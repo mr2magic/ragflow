@@ -69,6 +69,11 @@ final class WorkflowRunner: ObservableObject {
                 case .retrieve:
                     let query = ctx[step.querySlot] ?? input
                     let kbId = step.kbIdOverride ?? workflow.kbId
+                    guard !kbId.isEmpty else {
+                        ctx[step.outputSlot] = "[Retrieve skipped — no knowledge base assigned to this workflow. Edit the workflow to assign a KB.]"
+                        log(into: &entries, "  ✗ No KB assigned — retrieve skipped")
+                        break
+                    }
                     let chunks: [Chunk]
 
                     if settings.config.provider == .ollama {
@@ -245,10 +250,11 @@ final class WorkflowRunner: ObservableObject {
                     }
                     // Start all branches concurrently; they interleave at network await points.
                     let config = settings.config
+                    let wfKBId = workflow.kbId
                     let branchTasks: [Task<(String, String), Error>] = branches.map { branch in
                         let snap = ctx
                         return Task {
-                            try await WorkflowRunner.runBranchStep(branch.step, ctx: snap, config: config)
+                            try await WorkflowRunner.runBranchStep(branch.step, ctx: snap, config: config, workflowKBId: wfKBId)
                         }
                     }
                     for (i, task) in branchTasks.enumerated() {
@@ -305,12 +311,13 @@ final class WorkflowRunner: ObservableObject {
     nonisolated private static func runBranchStep(
         _ step: WorkflowStep,
         ctx: StepContext,
-        config: LLMConfig
+        config: LLMConfig,
+        workflowKBId: String
     ) async throws -> (String, String) {
         switch step.type {
         case .retrieve:
             let query = ctx[step.querySlot] ?? ctx["input"] ?? ""
-            let kbId = step.kbIdOverride ?? ""
+            let kbId = step.kbIdOverride ?? workflowKBId
             let chunks = (try? await RAGService.shared.retrieve(query: query, kbId: kbId, topK: step.topK)) ?? []
             if chunks.isEmpty {
                 return (step.outputSlot, "[No relevant content found in the knowledge base.]")
