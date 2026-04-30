@@ -16,6 +16,10 @@ final class WorkflowRunner: ObservableObject {
         stepLog = []
         streamingOutput = ""
 
+        let capturedProvider = settings.config.provider.rawValue
+        let capturedModel = effectiveModelName(config: settings.config)
+        let capturedKBName = (try? DatabaseService.shared.allKBs())?.first { $0.id == workflow.kbId }?.name ?? ""
+
         let coordinator = BackgroundTaskCoordinator.shared
         let steps = workflow.steps
         coordinator.beginWorkflow(name: workflow.name, stepCount: steps.count)
@@ -296,6 +300,9 @@ final class WorkflowRunner: ObservableObject {
             output: finalOutput,
             status: failed ? "failed" : "completed",
             stepLogJSON: encodedLog,
+            provider: capturedProvider,
+            modelName: capturedModel,
+            kbName: capturedKBName,
             createdAt: Date()
         )
     }
@@ -361,6 +368,14 @@ final class WorkflowRunner: ObservableObject {
 
         default:
             return (step.outputSlot, "")
+        }
+    }
+
+    private func effectiveModelName(config: LLMConfig) -> String {
+        switch config.provider {
+        case .claude: return LLMProvider.claude.defaultModel
+        case .openAI: return LLMProvider.openAI.defaultModel
+        case .ollama: return config.ollamaModel.isEmpty ? "Ollama" : config.ollamaModel
         }
     }
 

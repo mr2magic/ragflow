@@ -222,6 +222,26 @@ final class DatabaseService {
             }
         }
 
+        migrator.registerMigration("v12") { db in
+            // H5: Record LLM provider, model, and KB name on each workflow run.
+            let cols = try db.columns(in: "workflow_runs").map { $0.name }
+            if !cols.contains("provider") {
+                try db.alter(table: "workflow_runs") { t in
+                    t.add(column: "provider", .text).notNull().defaults(to: "")
+                }
+            }
+            if !cols.contains("modelName") {
+                try db.alter(table: "workflow_runs") { t in
+                    t.add(column: "modelName", .text).notNull().defaults(to: "")
+                }
+            }
+            if !cols.contains("kbName") {
+                try db.alter(table: "workflow_runs") { t in
+                    t.add(column: "kbName", .text).notNull().defaults(to: "")
+                }
+            }
+        }
+
         try migrator.migrate(dbQueue)
     }
 

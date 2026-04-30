@@ -23,6 +23,9 @@ struct WorkflowRun: Codable, Identifiable, FetchableRecord, MutablePersistableRe
     var output: String
     var status: String          // "completed" | "failed"
     var stepLogJSON: String     // JSON-encoded [String]
+    var provider: String        // LLMProvider.rawValue at run time
+    var modelName: String       // effective model name at run time
+    var kbName: String          // KB display name at run time
     var createdAt: Date
 
     static let databaseTableName = "workflow_runs"

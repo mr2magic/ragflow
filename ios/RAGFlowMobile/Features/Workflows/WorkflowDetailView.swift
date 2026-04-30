@@ -12,8 +12,10 @@ struct WorkflowDetailView: View {
     @State private var showExportSheet = false
     @State private var exportError: String?
     @State private var showExportError = false
+    @State private var configKBName: String = ""
 
     private let db = DatabaseService.shared
+    private let settings = SettingsStore.shared
 
     init(workflow: Workflow) {
         _workflow = State(initialValue: workflow)
@@ -23,6 +25,7 @@ struct WorkflowDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 pipelineCard
+                configCard
                 inputSection
                 if runner.isRunning { runningCard }
                 if !runs.isEmpty { historySection }
@@ -63,7 +66,10 @@ struct WorkflowDetailView: View {
                 workflow = updated
             }
         }
-        .onAppear { reloadRuns() }
+        .onAppear {
+            reloadRuns()
+            configKBName = (try? db.allKBs())?.first { $0.id == workflow.kbId }?.name ?? workflow.kbId
+        }
     }
 
     // MARK: - Pipeline Card
@@ -113,6 +119,47 @@ struct WorkflowDetailView: View {
         }
         .background(DT.card)
         .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+    }
+
+    // MARK: - Config Card
+
+    private var configCard: some View {
+        HStack(spacing: 0) {
+            configChip(icon: "books.vertical", value: configKBName.isEmpty ? "No KB" : configKBName)
+            Divider().frame(width: 0.5).background(DT.rule)
+            configChip(icon: "cpu", value: settings.config.provider.rawValue)
+            Divider().frame(width: 0.5).background(DT.rule)
+            configChip(icon: "sparkles", value: configModelLabel)
+        }
+        .frame(maxWidth: .infinity)
+        .background(DT.card)
+        .overlay(Rectangle().stroke(DT.rule, lineWidth: 0.5))
+    }
+
+    private func configChip(icon: String, value: String) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(DT.inkFaint)
+            Text(value)
+                .font(DT.mono(9))
+                .foregroundStyle(DT.inkSoft)
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 7)
+        .padding(.horizontal, 8)
+    }
+
+    private var configModelLabel: String {
+        let m: String
+        switch settings.config.provider {
+        case .claude: m = LLMProvider.claude.defaultModel
+        case .openAI: m = LLMProvider.openAI.defaultModel
+        case .ollama: m = settings.config.ollamaModel.isEmpty ? "Ollama" : settings.config.ollamaModel
+        }
+        return m.hasPrefix("claude-") ? String(m.dropFirst(7)) : m
     }
 
     // MARK: - Input Section
@@ -272,6 +319,14 @@ struct WorkflowDetailView: View {
                         Text(run.createdAt.formatted(.relative(presentation: .named)))
                             .font(DT.mono(9))
                             .foregroundStyle(DT.inkFaint)
+                        let meta = [run.provider, run.modelName, run.kbName].filter { !$0.isEmpty }.joined(separator: " · ")
+                        if !meta.isEmpty {
+                            Text(meta)
+                                .font(DT.mono(8))
+                                .foregroundStyle(DT.inkFaint.opacity(0.7))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
                     }
                     Spacer()
                     statusBadge(run.status)
