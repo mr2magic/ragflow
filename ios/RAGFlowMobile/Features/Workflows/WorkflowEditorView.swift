@@ -165,6 +165,18 @@ struct WorkflowEditorView: View {
                 outputSlot: "category",
                 categories: [StepBranch(label: "Category A", condition: "Category A")]
             )
+        case .parallel:
+            let branchA = WorkflowStep(type: .retrieve, label: "Branch A", outputSlot: "context_a")
+            let branchB = WorkflowStep(type: .retrieve, label: "Branch B", outputSlot: "context_b")
+            return WorkflowStep(
+                type: .parallel,
+                label: "Parallel",
+                outputSlot: "",
+                parallelBranches: [
+                    ParallelBranch(label: "Branch A", step: branchA),
+                    ParallelBranch(label: "Branch B", step: branchB)
+                ]
+            )
         }
     }
 }
@@ -224,6 +236,9 @@ private struct StepEditorRow: View {
         case .categorize:
             let count = step.categories?.count ?? 0
             return "\(count) categor\(count == 1 ? "y" : "ies")  → \(step.outputSlot)"
+        case .parallel:
+            let count = step.parallelBranches?.count ?? 0
+            return "\(count) branch\(count == 1 ? "" : "es") in parallel"
         }
     }
 }
@@ -299,16 +314,18 @@ struct StepConfigSheet: View {
                 // Type-specific configuration
                 stepSpecificConfig
 
-                // Output slot — shown for all step types with appropriate label
-                Section {
-                    TextField(outputSlotPlaceholder, text: $step.outputSlot)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                        .font(.system(.body, design: .monospaced))
-                } header: {
-                    Text(outputSlotHeader)
-                } footer: {
-                    Text(outputSlotFooter)
+                // Output slot — hidden for parallel (each branch declares its own slot)
+                if step.type != .parallel {
+                    Section {
+                        TextField(outputSlotPlaceholder, text: $step.outputSlot)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .font(.system(.body, design: .monospaced))
+                    } header: {
+                        Text(outputSlotHeader)
+                    } footer: {
+                        Text(outputSlotFooter)
+                    }
                 }
             }
             .navigationTitle(step.type.displayName)
@@ -619,6 +636,82 @@ struct StepConfigSheet: View {
             } footer: {
                 Text("Leave blank to use the default classification prompt. Use {input} for the text being classified.")
             }
+
+        case .parallel:
+            let branches = Binding(
+                get: { step.parallelBranches ?? [] },
+                set: { step.parallelBranches = $0 }
+            )
+            ForEach(branches) { $branch in
+                Section {
+                    TextField("Branch label", text: $branch.label)
+                    Picker("Step Type", selection: $branch.step.type) {
+                        ForEach([StepType.retrieve, .rewrite, .llm, .webSearch, .message], id: \.self) { t in
+                            Text(t.displayName).tag(t)
+                        }
+                    }
+                    HStack {
+                        Text("Output slot")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        TextField("variable", text: $branch.step.outputSlot)
+                            .multilineTextAlignment(.trailing)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .font(.system(.body, design: .monospaced))
+                            .frame(maxWidth: 140)
+                    }
+                    if branch.step.type == .retrieve {
+                        Stepper("Top \(branch.step.topK) chunks", value: $branch.step.topK, in: 1...20)
+                        if allKBs.count > 1 {
+                            Picker("Knowledge Base", selection: Binding(
+                                get: { branch.step.kbIdOverride ?? "" },
+                                set: { branch.step.kbIdOverride = $0.isEmpty ? nil : $0 }
+                            )) {
+                                Text("Workflow default").tag("")
+                                ForEach(allKBs) { kb in Text(kb.name).tag(kb.id) }
+                            }
+                        }
+                    }
+                    if branch.step.type != .retrieve {
+                        HStack {
+                            Text("Query slot")
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            TextField("input", text: $branch.step.querySlot)
+                                .multilineTextAlignment(.trailing)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                                .font(.system(.body, design: .monospaced))
+                                .frame(maxWidth: 140)
+                        }
+                        TextField("Prompt template (optional)", text: $branch.step.promptTemplate, axis: .vertical)
+                            .lineLimit(3...6)
+                            .font(.body)
+                    }
+                } header: {
+                    Text("Branch: \(branch.label.isEmpty ? "(unnamed)" : branch.label)")
+                }
+            }
+            Section {
+                Button {
+                    let n = (step.parallelBranches?.count ?? 0) + 1
+                    let newStep = WorkflowStep(type: .retrieve, label: "Branch \(n)", outputSlot: "context_\(n)")
+                    step.parallelBranches = (step.parallelBranches ?? []) + [ParallelBranch(label: "Branch \(n)", step: newStep)]
+                } label: {
+                    Label("Add Branch", systemImage: "plus.circle")
+                        .foregroundStyle(.tint)
+                }
+                if (step.parallelBranches?.count ?? 0) > 1 {
+                    Button(role: .destructive) {
+                        step.parallelBranches?.removeLast()
+                    } label: {
+                        Label("Remove Last Branch", systemImage: "minus.circle")
+                    }
+                }
+            } footer: {
+                Text("All branches run at the same time. Each writes its result to its output slot so later steps can reference them with {variable}.")
+            }
         }
     }
 
@@ -800,6 +893,8 @@ private struct HelpStepRow: View {
             return "Evaluates conditions on slot values (equals, contains, is empty, etc.) and jumps to the first matching branch. Supports AND/OR logic per branch. Falls through to the default branch if nothing matches."
         case .categorize:
             return "Asks the LLM to classify the input into one of the categories you define, then routes to the matching step. Good for intent detection and routing different query types to specialised pipelines."
+        case .parallel:
+            return "Runs all branches simultaneously. Each branch executes its own step (retrieve, LLM, web search, etc.) and writes to a dedicated output slot. After all branches finish, the combined results are available to subsequent steps."
         }
     }
 }
@@ -829,6 +924,7 @@ struct StepTypeIcon: View {
         case .variableAssigner: return "arrow.left.arrow.right.square"
         case .switchStep:       return "arrow.triangle.branch"
         case .categorize:       return "tag.fill"
+        case .parallel:         return "arrow.split.2"
         }
     }
 
@@ -844,6 +940,7 @@ struct StepTypeIcon: View {
         case .variableAssigner: return .mint
         case .switchStep:       return .yellow
         case .categorize:       return .pink
+        case .parallel:         return .red
         }
     }
 }

@@ -13,6 +13,7 @@ enum StepType: String, Codable, CaseIterable {
     case variableAssigner  // set/append/clear slots without LLM
     case switchStep        // condition-based routing — evaluates branches and sets _next
     case categorize        // LLM classifies input into one of N categories → routes to matching step
+    case parallel          // runs multiple branches concurrently; merges outputs into context
 
     var displayName: String {
         switch self {
@@ -26,6 +27,7 @@ enum StepType: String, Codable, CaseIterable {
         case .variableAssigner: return "Set Variables"
         case .switchStep:       return "Switch"
         case .categorize:       return "Categorize"
+        case .parallel:         return "Parallel"
         }
     }
 
@@ -41,6 +43,7 @@ enum StepType: String, Codable, CaseIterable {
         case .variableAssigner: return "Set, append, or clear slot values"
         case .switchStep:       return "Branch to different steps based on conditions"
         case .categorize:       return "Classify input with AI and route to matching branch"
+        case .parallel:         return "Run multiple steps at the same time"
         }
     }
 }
@@ -112,6 +115,16 @@ struct VariableAssignment: Codable, Identifiable {
     var value: String = ""
 }
 
+// MARK: - Parallel Branch
+
+/// One branch within a parallel step. Each branch holds a single step that runs
+/// concurrently with the other branches; its output is written to `step.outputSlot`.
+struct ParallelBranch: Codable, Identifiable {
+    var id: String = UUID().uuidString
+    var label: String = ""
+    var step: WorkflowStep
+}
+
 // MARK: - Step Model
 
 struct WorkflowStep: Codable, Identifiable {
@@ -150,6 +163,11 @@ struct WorkflowStep: Codable, Identifiable {
     /// Tool ID from SearchToolRegistry. Defaults to "brave_search" when nil.
     var webSearchToolId: String?
 
+    // ── Parallel step config ──────────────────────────────────────────────────
+    /// Branches executed concurrently. Each branch runs its embedded step and
+    /// writes the result to that step's outputSlot in the shared context.
+    var parallelBranches: [ParallelBranch]?
+
     init(
         id: String = UUID().uuidString,
         type: StepType,
@@ -165,7 +183,8 @@ struct WorkflowStep: Codable, Identifiable {
         switchBranches: [SwitchBranch]? = nil,
         categories: [StepBranch]? = nil,
         categoryPromptOverride: String? = nil,
-        webSearchToolId: String? = nil
+        webSearchToolId: String? = nil,
+        parallelBranches: [ParallelBranch]? = nil
     ) {
         self.id = id
         self.type = type
@@ -182,6 +201,7 @@ struct WorkflowStep: Codable, Identifiable {
         self.categories = categories
         self.categoryPromptOverride = categoryPromptOverride
         self.webSearchToolId = webSearchToolId
+        self.parallelBranches = parallelBranches
     }
 }
 

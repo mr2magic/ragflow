@@ -236,6 +236,26 @@ final class WorkflowRunner: ObservableObject {
                     } else {
                         log(into: &entries, "  Categorize — no match for '\(raw)', falling through")
                     }
+
+                case .parallel:
+                    let branches = step.parallelBranches ?? []
+                    guard !branches.isEmpty else {
+                        log(into: &entries, "  Parallel — no branches defined, skipping")
+                        break
+                    }
+                    // Start all branches concurrently; they interleave at network await points.
+                    let config = settings.config
+                    let branchTasks: [Task<(String, String), Error>] = branches.map { branch in
+                        let snap = ctx
+                        return Task {
+                            try await WorkflowRunner.runBranchStep(branch.step, ctx: snap, config: config)
+                        }
+                    }
+                    for (i, task) in branchTasks.enumerated() {
+                        let (slot, value) = try await task.value
+                        ctx[slot] = value
+                        log(into: &entries, "  Branch '\(branches[i].label)' → '\(slot)'")
+                    }
                 }
             } catch {
                 log(into: &entries, "  ✗ Error: \(error.localizedDescription)")
@@ -278,6 +298,63 @@ final class WorkflowRunner: ObservableObject {
         runTask?.cancel()
         isRunning = false
         currentStep = ""
+    }
+
+    /// Executes a single step in isolation for use inside a `.parallel` branch.
+    /// Supports: retrieve, rewrite, llm, webSearch, message. Other types return empty string.
+    nonisolated private static func runBranchStep(
+        _ step: WorkflowStep,
+        ctx: StepContext,
+        config: LLMConfig
+    ) async throws -> (String, String) {
+        switch step.type {
+        case .retrieve:
+            let query = ctx[step.querySlot] ?? ctx["input"] ?? ""
+            let kbId = step.kbIdOverride ?? ""
+            let chunks = (try? await RAGService.shared.retrieve(query: query, kbId: kbId, topK: step.topK)) ?? []
+            if chunks.isEmpty {
+                return (step.outputSlot, "[No relevant content found in the knowledge base.]")
+            }
+            let text = chunks.map { c -> String in
+                if let t = c.chapterTitle { return "[\(t)] \(c.content)" }
+                return c.content
+            }.joined(separator: "\n\n")
+            return (step.outputSlot, text)
+
+        case .rewrite:
+            let query = ctx[step.querySlot] ?? ctx["input"] ?? ""
+            let prompt = step.promptTemplate.isEmpty
+                ? "Rewrite the following as a concise search query. Return only the rewritten query.\n\nOriginal: \(query)"
+                : ctx.render(step.promptTemplate)
+            let llm = makeLLMService(config: config)
+            let stream = try await llm.complete(messages: [LLMMessage(role: .user, content: prompt)], context: [], books: [])
+            var result = ""
+            for try await token in stream { result += token }
+            return (step.outputSlot, result.trimmingCharacters(in: .whitespacesAndNewlines))
+
+        case .llm:
+            let prompt = ctx.render(step.promptTemplate)
+            let llm = makeLLMService(config: config)
+            let stream = try await llm.complete(messages: [LLMMessage(role: .user, content: prompt)], context: [], books: [])
+            var result = ""
+            for try await token in stream { result += token }
+            return (step.outputSlot, result)
+
+        case .webSearch:
+            let query = ctx[step.querySlot] ?? ctx["input"] ?? ""
+            let toolId = step.webSearchToolId ?? "brave_search"
+            let results = await SearchToolRegistry.shared
+                .tool(id: toolId)?
+                .search(query: query, apiKey: config.braveSearchApiKey)
+                ?? "Search tool '\(toolId)' not found."
+            return (step.outputSlot, results)
+
+        case .message:
+            return (step.outputSlot, ctx.render(step.promptTemplate))
+
+        default:
+            return (step.outputSlot, "")
+        }
     }
 
     private func log(into log: inout [String], _ message: String) {
