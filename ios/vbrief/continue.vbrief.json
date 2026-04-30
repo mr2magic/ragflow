@@ -1,54 +1,54 @@
 {
   "version": "1.0",
   "project": "RAGFlowMobile",
-  "date": "2026-04-29",
-  "status": "v0.9.0 build 16 — M2 parallel steps complete — build clean",
-  "phase": "M2 done — ready for M1/M3/realsave",
+  "date": "2026-04-30",
+  "status": "v0.9.0 build 17 — H4 KB enforcement + H3 DatabaseService tests complete — build clean",
+  "phase": "H4 done — ready for H5/BUG fixes/UI polish",
 
   "completed_this_session": [
+    "H3: DatabaseService unit tests — 24 new tests (session×8, workflow×7, utility×9) — 0 failures",
+    "H4: KB enforcement — 3 bugs fixed across WorkflowRunner.swift + WorkflowEditorView.swift",
+    "H4 fix 1: .parallel case captures workflow.kbId before branch Tasks and passes as workflowKBId",
+    "H4 fix 2: runBranchStep signature updated with workflowKBId param; retrieve uses step.kbIdOverride ?? workflowKBId (not empty string)",
+    "H4 fix 3: main .retrieve case guards !kbId.isEmpty with user-friendly skip message",
+    "H4 fix 4: WorkflowEditorView KB picker now shows read-only LabeledContent when only 1 KB (was hidden)",
+    "Build bumped 16→17 in Info.plist"
+  ],
+
+  "prior_session_completed": [
     "M2: Workflow parallel steps — added .parallel StepType with ParallelBranch struct",
     "WorkflowStep.swift: ParallelBranch Codable/Identifiable struct, parallelBranches field on WorkflowStep",
     "WorkflowRunner.swift: .parallel case fans out Task{} per branch, nonisolated static runBranchStep helper (retrieve/rewrite/llm/webSearch/message)",
     "WorkflowEditorView.swift: defaultStep, stepSummary, full branch editor in StepConfigSheet, icon arrow.split.2/red, help text",
     "Build error fix: RAGService.shared.retrieve needs 'try? await' from nonisolated context — fixed",
-    "Build bumped 15→16 in Info.plist"
-  ],
-
-  "prior_session_completed": [
+    "Build bumped 15→16 in Info.plist",
     "ScannedDocumentTests (5): hasTextLayer false/true, PDFParser empty for image-only, VisionOCR from PDF, VisionOCR from UIImage",
     "ImportParserTests additions: testImportGEDCOM, testImportZIPBundleStructure",
     "Full test suite: 175 tests, 0 failures",
     "RAGFlow → Ragion rename: 8 files edited",
     "KB Re-index All: full implementation in KBRetrievalSettingsSheet",
-    "Build bumped 14→15 across all 3 Info.plist targets",
-    "Issue 1: DossierQueryView now self-loads docCount/chunkCount via loadCounts()",
-    "Issue 2: Sources accordion fixed — .contentShape(Rectangle())",
-    "Issue 3: New KB creation now sets selectedTab = .docs immediately",
-    "Issue 4: DossierQueryView coverCard shows LLM provider+model",
-    "Issue 5: DossierChatContent onChange auto-updates sources panel",
-    "Issue 6: Same .contentShape fix",
-    "Issue 7: Renamed ATTACHMENTS → SOURCES in DossierMessageBubble",
-    "Issue 8: Inline accordion hidden on iPad; DossierSourcesPanel header collapsible",
-    "Issue 9: Shift+Return newline / plain Return send",
-    "M4: Accessibility audit across all Dossier views",
-    "KB CRUD: add, rename, delete verified end-to-end"
+    "Build bumped 14→15 across all 3 Info.plist targets"
   ],
 
   "next": [
-    "M1: Multi-KB RRF ranking across KBs",
+    "H5: Add LLM provider, model, and KB to workflow screen + LOG entries",
+    "BUG1: Apple Sign In not working",
+    "BUG2: Wipe All Data broken",
+    "BUG3: Retrieval changes not persistent",
+    "BUG4: iPhone portrait — Knowledgebase page has no menus",
+    "UI14: Knowledgebase label sized wrong in portrait (iPhone, Documents page)",
+    "UI15: Mark active knowledge-base in UI",
+    "UI16: Mark active workflow in UI",
     "M3: Chat history pagination",
-    "C4: Chat history window config (last N messages)",
-    "C5: Search conversations",
-    "C6: Batch delete conversations",
-    "TestFlight: archive + upload 0.9.0 build 16 via Xcode GUI",
-    "CloudKit container: confirm iCloud.com.dhorn.ragflowmobile created in Apple developer portal"
+    "TestFlight: archive + upload 0.9.0 build 17 via Xcode GUI"
   ],
 
   "test_coverage_summary": {
-    "total_tests": 175,
+    "total_tests": 199,
     "failures": 0,
     "format_tests_ImportParserTests": ["TXT","MD","CSV","JSON","YAML","Swift","Python","SQL","HTML","RTF","PDF-text-layer","EML","EMLX","DOCX","XLSX","PPTX","ODT","GEDCOM","ZIP-bundle-structure","EPUB-zip-structure"],
     "scanned_document_tests": ["hasTextLayer-false-image-only","hasTextLayer-true-text-PDF","PDFParser-empty-for-image-only","VisionOCR-from-image-only-PDF","VisionOCR-from-UIImage"],
+    "database_service_tests": ["session CRUD×8","workflow CRUD×7","utility (stats/version/wipe/archive)×9"],
     "coverage_gaps_remaining": ["ZIP full ingest via RAGService.ingestZIP (requires Zip library + DB — tested implicitly via app)", "EPUB full parse via EPUBKit (main-target only — tested implicitly via app)"]
   },
 
@@ -56,13 +56,13 @@
     "app_name": "Ragion",
     "app_tagline": "Where retrieval meets reason",
     "app_version": "0.9.0",
-    "build_number": "16",
+    "build_number": "17",
     "bundle_id": "com.dhorn.ragflowmobile",
     "team_id_distribution": "LVK5C2V4J8",
     "team_id_development": "H3NBT7PUR9",
     "last_testflight": "0.8.0 build 8 on 2026-04-16",
     "app_group": "group.com.dhorn.ragflowmobile",
-    "last_commit": "3ba68168b",
+    "last_commit": "01799abba",
     "db_version": "v10",
     "archive_note": "xcodebuild archive from terminal fails with errSecInternalComponent (keychain locked) — use Xcode GUI: Product > Destination > Any iOS Device (arm64), then Product > Archive",
     "simulator_build_udid": "67A6D96F-116E-46BF-8943-C1E064EFD0FB",
@@ -79,7 +79,8 @@
     "sources_accordion_ipad": "Inline accordion hidden on iPad (hSizeClass != .compact) — sources show in DossierSourcesPanel right column only",
     "sources_auto_update": "onChange(of: vm.messages.count) in DossierChatContent calls onMessageTap?(last) to auto-select newest assistant message in sources panel",
     "ragion_rename_complete": "All user-visible RAGFlow/RAGflow strings replaced with Ragion — only internal identifiers (bundle IDs, file extensions, Swift type names, code comments) remain",
-    "parallel_step_note": "M2: runBranchStep is nonisolated static; RAGService.retrieve requires 'try? await' from that context; Tasks started in a loop interleave at I/O suspension points for practical parallelism"
+    "parallel_step_note": "M2: runBranchStep is nonisolated static; RAGService.retrieve requires 'try? await' from that context; Tasks started in a loop interleave at I/O suspension points for practical parallelism",
+    "kb_enforcement_note": "H4: WorkflowRunner always uses workflow.kbId (or step.kbIdOverride); empty kbId logs a skip message instead of querying all docs; parallel branches propagate wfKBId correctly"
   },
 
   "open_questions": [
