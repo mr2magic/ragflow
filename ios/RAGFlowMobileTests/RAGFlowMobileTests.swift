@@ -3150,6 +3150,9 @@ private func makeFullDB() throws -> DatabaseService {
             t.column("output", .text).notNull()
             t.column("status", .text).notNull()
             t.column("stepLogJSON", .text).notNull().defaults(to: "[]")
+            t.column("provider", .text).notNull().defaults(to: "")
+            t.column("modelName", .text).notNull().defaults(to: "")
+            t.column("kbName", .text).notNull().defaults(to: "")
             t.column("createdAt", .datetime).notNull()
         }
         try db.create(table: "chat_sessions") { t in
@@ -3279,6 +3282,7 @@ final class DatabaseServiceWorkflowTests: XCTestCase {
                           status: String = "completed") -> WorkflowRun {
         WorkflowRun(id: id, workflowId: workflowId, input: "query",
                     output: "answer", status: status, stepLogJSON: "[]",
+                    provider: "claude", modelName: "claude-sonnet-4-6", kbName: "Test KB",
                     createdAt: Date())
     }
 

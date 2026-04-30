@@ -8,7 +8,11 @@ enum ChunkMethod: String, Codable, CaseIterable, Identifiable {
     case table   = "Table"
 
     var id: String { rawValue }
+}
 
+extension ChunkMethod: DatabaseValueConvertible {}
+
+extension ChunkMethod {
     var detail: String {
         switch self {
         case .general: return "Sentence-boundary paragraphs — best for prose, reports, books"

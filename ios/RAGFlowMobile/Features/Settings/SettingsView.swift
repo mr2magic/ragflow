@@ -276,6 +276,7 @@ struct SettingsView: View {
     private func resetAllData() {
         UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
         try? DatabaseService.shared.wipeAllData()
+        AuthService.shared.signOut()
         dismiss()
     }
     #endif
