@@ -13,29 +13,40 @@ struct PhoneKBListView: View {
     var body: some View {
         List {
             ForEach(vm.kbs) { kb in
-                Button {
-                    navDest = KBNavDest(kb: kb)
-                } label: {
-                    Label(kb.name, systemImage: "square.stack.3d.up")
-                        .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .buttonStyle(.plain)
-                .contentShape(Rectangle())
-                .contextMenu {
-                    Button("Rename") {
-                        vm.renameText = kb.name
-                        vm.kbToRename = kb
+                Label(kb.name, systemImage: "square.stack.3d.up")
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                    .onTapGesture { navDest = KBNavDest(kb: kb) }
+                    .contextMenu {
+                        Button("Rename") {
+                            vm.renameText = kb.name
+                            vm.kbToRename = kb
+                        }
+                        Button("Retrieval Settings") {
+                            vm.kbToSettings = kb
+                        }
+                        Button("Delete", role: .destructive) {
+                            vm.requestDelete(kb: kb)
+                        }
                     }
-                    Button("Retrieval Settings") {
-                        vm.kbToSettings = kb
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            vm.requestDelete(kb: kb)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
-                    Button("Delete", role: .destructive) {
-                        vm.requestDelete(kb: kb)
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            vm.renameText = kb.name
+                            vm.kbToRename = kb
+                        } label: {
+                            Label("Rename", systemImage: "pencil")
+                        }
+                        .tint(.blue)
                     }
-                }
             }
-            .onDelete { vm.requestDelete(at: $0) }
         }
         .navigationTitle("Knowledge Bases")
         .navigationDestination(item: $navDest) { dest in

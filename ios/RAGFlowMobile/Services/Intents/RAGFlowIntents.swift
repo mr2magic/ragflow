@@ -17,7 +17,7 @@ struct QueryKBIntent: AppIntent {
     func perform() async throws -> some ReturnsValue<String> & ProvidesDialog {
         let kbs = (try? DatabaseService.shared.allKBs()) ?? []
         guard let knowledgeBase = kbs.first(where: { $0.id == kb.id }) else {
-            throw RAGFlowIntentError.kbNotFound
+            throw RagionIntentError.kbNotFound
         }
         let chunks = (try? RAGService.shared.retrieve(query: query, kb: knowledgeBase)) ?? []
         let allBooks = (try? DatabaseService.shared.allBooks(kbId: knowledgeBase.id)) ?? []
@@ -66,7 +66,7 @@ struct RunWorkflowIntent: AppIntent {
 
 // MARK: - Import URL
 
-struct ImportURLToRAGFlowIntent: AppIntent {
+struct ImportURLToRagionIntent: AppIntent {
     static var title: LocalizedStringResource = "Import URL to Ragion"
     static var description = IntentDescription(
         "Download and index a web page into a Ragion knowledge base."
@@ -86,7 +86,7 @@ struct ImportURLToRAGFlowIntent: AppIntent {
 
 // MARK: - App Shortcuts (surfaces intents to Siri without user setup)
 
-struct RAGFlowAppShortcuts: AppShortcutsProvider {
+struct RagionAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: QuickQueryIntent(),
@@ -103,7 +103,7 @@ struct RAGFlowAppShortcuts: AppShortcutsProvider {
 
 // MARK: - Error
 
-enum RAGFlowIntentError: LocalizedError {
+enum RagionIntentError: LocalizedError {
     case kbNotFound
     case providerNotConfigured
 

@@ -2,10 +2,10 @@ import AppIntents
 
 // MARK: - Focus Filter
 //
-// Allows users to configure RAGFlow in System Settings → Focus → [Focus Mode] → App Filters.
+// Allows users to configure Ragion in System Settings → Focus → [Focus Mode] → App Filters.
 // When a Focus is active, AppState applies the configured KB filter so only relevant KBs appear.
 
-struct RAGFlowFocusFilterIntent: SetFocusFilterIntent {
+struct RagionFocusFilterIntent: SetFocusFilterIntent {
     static var title: LocalizedStringResource = "Filter Knowledge Bases"
     static var description: LocalizedStringResource =
         "Show only selected knowledge bases while this Focus is active."

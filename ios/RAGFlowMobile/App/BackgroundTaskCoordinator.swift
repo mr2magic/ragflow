@@ -2,7 +2,7 @@ import BackgroundTasks
 import UIKit
 import UserNotifications
 
-/// Central coordinator for all background processing in RAGFlow.
+/// Central coordinator for all background processing in Ragion.
 ///
 /// ## iOS 26 — BGContinuedProcessingTask
 /// Document import and workflow execution are user-initiated tasks. On iOS 26+, the system
@@ -15,7 +15,7 @@ import UserNotifications
 ///
 /// ## Registration
 /// `BGTaskScheduler` handlers must be registered before the first SwiftUI scene connects.
-/// Call site: `RAGFlowMobileApp.init()`.
+/// Call site: `RagionApp.init()`.
 @MainActor
 final class BackgroundTaskCoordinator {
     static let shared = BackgroundTaskCoordinator()

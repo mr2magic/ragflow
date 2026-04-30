@@ -2,7 +2,7 @@ import SwiftUI
 import BackgroundTasks
 
 @main
-struct RAGFlowMobileApp: App {
+struct RagionApp: App {
 
     @State private var splashDismissed = false
 

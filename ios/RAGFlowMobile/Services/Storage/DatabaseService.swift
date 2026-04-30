@@ -22,12 +22,12 @@ final class DatabaseService {
             let url = dir.appendingPathComponent("ragflow.sqlite")
             dbQueue = try DatabaseQueue(path: url.path)
         } catch {
-            fatalError("RAGFlow: cannot open database — \(error)")
+            fatalError("Ragion: cannot open database — \(error)")
         }
         do {
             try migrate()
         } catch {
-            fatalError("RAGFlow: database migration failed — \(error)")
+            fatalError("Ragion: database migration failed — \(error)")
         }
     }
 

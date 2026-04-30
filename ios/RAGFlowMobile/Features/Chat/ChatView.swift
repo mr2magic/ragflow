@@ -715,7 +715,7 @@ struct ChatSettingsSheet: View {
         } header: {
             Text("Extra System Instructions")
         } footer: {
-            Text("Appended to the built-in RAGFlow system prompt for this chat only. Leave empty to use default behaviour.")
+            Text("Appended to the built-in Ragion system prompt for this chat only. Leave empty to use default behaviour.")
         }
     }
 }

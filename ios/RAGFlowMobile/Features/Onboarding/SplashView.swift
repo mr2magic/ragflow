@@ -5,7 +5,7 @@ import SwiftUI
 /// First run  → "Get Started" button → OnboardingView → main app
 /// Returning  → "Open" button → main app directly
 ///
-/// Wire this as the initial scene in RAGFlowMobileApp; call `onDismiss`
+/// Wire this as the initial scene in RagionApp; call `onDismiss`
 /// to transition to ContentView.
 struct SplashView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false

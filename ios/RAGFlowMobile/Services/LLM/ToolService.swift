@@ -113,7 +113,7 @@ struct DuckDuckGoTool: SearchTool {
         else { return "Invalid query." }
 
         var req = URLRequest(url: url, timeoutInterval: 15)
-        req.setValue("RAGFlowMobile/1.0", forHTTPHeaderField: "User-Agent")
+        req.setValue("Ragion/1.0", forHTTPHeaderField: "User-Agent")
 
         guard let (data, _) = try? await URLSession.shared.data(for: req),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
