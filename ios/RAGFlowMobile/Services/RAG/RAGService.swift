@@ -132,61 +132,99 @@ final class RAGService: ObservableObject {
         return book
     }
 
-    // EPUB spine parse + chunk run on a background thread.
+    // EPUB spine parse + chunk — batched by 10 spine items to bound peak memory.
     private func ingestEPUB(url: URL, kbId: String, chunker c: Chunker) async throws -> Book {
         ingestPhase = "Parsing EPUB…"
-        let (book, allChunks): (Book, [Chunk]) = try await Task.detached(priority: .utility) {
-            guard let document = EPUBDocument(url: url) else { throw IngestError.parseFailure }
-            let bookId = UUID().uuidString
-            var chunks: [Chunk] = []
 
-            // Build TOC chapter title map: spine file path → chapter label
-            // EPUBTableOfContents is a recursive struct; .item holds the manifest item id.
-            var chapterTitles: [String: String] = [:]
-            func collectTOC(_ node: EPUBTableOfContents) {
-                if let manifestId = node.item,
-                   let manifestItem = document.manifest.items[manifestId] {
-                    let path = manifestItem.path.components(separatedBy: "/").last ?? manifestItem.path
-                    let base = path.components(separatedBy: "#").first ?? path
-                    chapterTitles[base] = node.label
-                    chapterTitles[manifestItem.path] = node.label
+        struct SpineItem: Sendable {
+            let fileURL: URL
+            let chapterTitle: String
+        }
+
+        // Phase 1: load document metadata + spine layout without reading chapter content.
+        let (bookId, bookTitle, bookAuthor, spineItems): (String, String, String, [SpineItem]) =
+            try await Task.detached(priority: .utility) {
+                guard let document = EPUBDocument(url: url) else {
+                    throw RAGService.IngestError.parseFailure
                 }
-                node.subTable?.forEach { collectTOC($0) }
-            }
-            collectTOC(document.tableOfContents)
 
-            for spineItem in document.spine.items {
-                guard let manifestItem = document.manifest.items[spineItem.idref] else { continue }
-                let fileURL = document.contentDirectory.appendingPathComponent(manifestItem.path)
-                guard let html = try? String(contentsOf: fileURL, encoding: .utf8) else { continue }
-                let text = RAGService.stripHTMLStatic(html)
-                guard text.count > 150 else { continue }  // skip cover/nav/metadata pages
+                var chapterTitles: [String: String] = [:]
+                func collectTOC(_ node: EPUBTableOfContents) {
+                    if let manifestId = node.item,
+                       let manifestItem = document.manifest.items[manifestId] {
+                        let path = manifestItem.path.components(separatedBy: "/").last ?? manifestItem.path
+                        let base = path.components(separatedBy: "#").first ?? path
+                        chapterTitles[base] = node.label
+                        chapterTitles[manifestItem.path] = node.label
+                    }
+                    node.subTable?.forEach { collectTOC($0) }
+                }
+                collectTOC(document.tableOfContents)
 
-                // Use NCX title if available, fall back to filename-derived label
-                let baseName = manifestItem.path.components(separatedBy: "/").last ?? manifestItem.path
-                let chapterTitle = chapterTitles[baseName]
-                    ?? chapterTitles[manifestItem.path]
-                    ?? baseName.components(separatedBy: ".").first?.replacingOccurrences(of: "_", with: " ").capitalized
+                let bookId = UUID().uuidString
+                var items: [SpineItem] = []
+                for spineItem in document.spine.items {
+                    guard let manifestItem = document.manifest.items[spineItem.idref] else { continue }
+                    let fileURL = document.contentDirectory.appendingPathComponent(manifestItem.path)
+                    let baseName = manifestItem.path.components(separatedBy: "/").last ?? manifestItem.path
+                    let chapterTitle = chapterTitles[baseName]
+                        ?? chapterTitles[manifestItem.path]
+                        ?? baseName.components(separatedBy: ".").first?
+                            .replacingOccurrences(of: "_", with: " ").capitalized
+                        ?? ""
+                    items.append(SpineItem(fileURL: fileURL, chapterTitle: chapterTitle))
+                }
+                return (
+                    bookId,
+                    document.metadata.title ?? url.deletingPathExtension().lastPathComponent,
+                    document.metadata.creator?.name ?? "",
+                    items
+                )
+            }.value
 
-                chunks.append(contentsOf: c.chunk(text: text, bookId: bookId, chapterTitle: chapterTitle))
-            }
-            guard !chunks.isEmpty else { throw RAGService.IngestError.parseFailure }
-            let wordCount = chunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
-            var book = Book(
-                id: bookId, kbId: kbId,
-                title: document.metadata.title ?? url.deletingPathExtension().lastPathComponent,
-                author: document.metadata.creator?.name ?? "",
-                filePath: url.path, addedAt: Date(), chunkCount: chunks.count
-            )
-            book.fileType = "epub"
-            book.wordCount = wordCount
-            return (book, chunks)
-        }.value
-        ingestPhase = "Saving chunks…"
+        guard !spineItems.isEmpty else { throw IngestError.parseFailure }
+
+        var book = Book(id: bookId, kbId: kbId, title: bookTitle, author: bookAuthor,
+                        filePath: url.path, addedAt: Date(), chunkCount: 0)
+        book.fileType = "epub"
         try db.save(book)
-        try db.saveChunks(allChunks)
-        ingestPhase = "Embedding…"
-        await embedChunks(allChunks)
+
+        // Phase 2: read, chunk, save, and embed 10 spine items at a time.
+        let batchSize = 10
+        let total = spineItems.count
+        var totalChunks = 0
+        var totalWordCount = 0
+
+        for batchStart in Swift.stride(from: 0, to: total, by: batchSize) {
+            let batchEnd = min(batchStart + batchSize, total)
+            let batch = Array(spineItems[batchStart..<batchEnd])
+            ingestPhase = "Parsing EPUB (\(batchStart + 1)–\(batchEnd) of \(total))…"
+
+            let batchChunks: [Chunk] = await Task.detached(priority: .utility) {
+                var out: [Chunk] = []
+                for item in batch {
+                    guard let html = try? String(contentsOf: item.fileURL, encoding: .utf8) else { continue }
+                    let text = RAGService.stripHTMLStatic(html)
+                    guard text.count > 150 else { continue }
+                    out.append(contentsOf: c.chunk(text: text, bookId: bookId, chapterTitle: item.chapterTitle))
+                }
+                return out
+            }.value
+
+            guard !batchChunks.isEmpty else { continue }
+            totalWordCount += batchChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
+            ingestPhase = "Saving chunks…"
+            try db.saveChunks(batchChunks)
+            ingestPhase = "Embedding…"
+            await embedChunks(batchChunks)
+            totalChunks += batchChunks.count
+        }
+
+        guard totalChunks > 0 else { throw IngestError.parseFailure }
+
+        book.chunkCount = totalChunks
+        book.wordCount = totalWordCount
+        try db.save(book)
         ingestPhase = ""
         return book
     }
@@ -226,19 +264,35 @@ final class RAGService: ObservableObject {
     private func ingestOffice(url: URL, kbId: String, chunker c: Chunker,
                                sections: [OfficeParser.Section], ext: String) async throws -> Book {
         let bookId = UUID().uuidString
-        let allChunks: [Chunk] = await Task.detached(priority: .utility) {
-            sections.flatMap { c.chunk(text: $0.text, bookId: bookId, chapterTitle: $0.title) }
-        }.value
-        guard !allChunks.isEmpty else { throw IngestError.parseFailure }
-        let wordCount = allChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
         var book = Book(id: bookId, kbId: kbId,
                         title: url.deletingPathExtension().lastPathComponent, author: "",
-                        filePath: url.path, addedAt: Date(), chunkCount: allChunks.count)
+                        filePath: url.path, addedAt: Date(), chunkCount: 0)
         book.fileType = ext
-        book.wordCount = wordCount
         try db.save(book)
-        try db.saveChunks(allChunks)
-        await embedChunks(allChunks)
+
+        // Process sections in batches of 20 to bound peak chunk-array memory.
+        let batchSize = 20
+        var totalChunks = 0
+        var totalWordCount = 0
+
+        for batchStart in Swift.stride(from: 0, to: sections.count, by: batchSize) {
+            let batchEnd = min(batchStart + batchSize, sections.count)
+            let batch = Array(sections[batchStart..<batchEnd])
+            let batchChunks: [Chunk] = await Task.detached(priority: .utility) {
+                batch.flatMap { c.chunk(text: $0.text, bookId: bookId, chapterTitle: $0.title) }
+            }.value
+            guard !batchChunks.isEmpty else { continue }
+            totalWordCount += batchChunks.reduce(0) { $0 + $1.content.split(separator: " ").count }
+            try db.saveChunks(batchChunks)
+            await embedChunks(batchChunks)
+            totalChunks += batchChunks.count
+        }
+
+        guard totalChunks > 0 else { throw IngestError.parseFailure }
+
+        book.chunkCount = totalChunks
+        book.wordCount = totalWordCount
+        try db.save(book)
         ingestPhase = ""
         return book
     }
