@@ -74,6 +74,21 @@ struct LibraryView: View {
     }
 
     var body: some View {
+        baseView
+            .confirmationDialog(
+                "Duplicate Document\(vm.duplicateFilenames.count == 1 ? "" : "s") Found",
+                isPresented: $vm.showDuplicatePrompt,
+                titleVisibility: .visible
+            ) {
+                Button("Replace Existing", role: .destructive) { Task { await vm.importReplacingDuplicates() } }
+                Button("Skip Duplicates") { Task { await vm.importSkippingDuplicates() } }
+                Button("Cancel", role: .cancel) { vm.cancelDuplicateImport() }
+            } message: {
+                Text("Already in this knowledge base: \(vm.duplicateFilenames.joined(separator: ", ")). Replace or skip?")
+            }
+    }
+
+    private var baseView: some View {
         Group {
             if vm.books.isEmpty && !vm.isIngesting {
                 emptyState

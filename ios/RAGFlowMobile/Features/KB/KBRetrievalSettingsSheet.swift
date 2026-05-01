@@ -26,6 +26,7 @@ struct KBRetrievalSettingsSheet: View {
     @State private var showReindexConfirm = false
     @State private var reindexMessage: String?
     @State private var showReindexResult = false
+    @State private var showChunkingChangedPrompt = false
 
     init(kb: KnowledgeBase, onSave: @escaping (KnowledgeBase) -> Void) {
         self.kb = kb
@@ -52,7 +53,13 @@ struct KBRetrievalSettingsSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
+                    Button("Save") {
+                        if chunkingChanged {
+                            showChunkingChangedPrompt = true
+                        } else {
+                            save()
+                        }
+                    }
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -75,6 +82,20 @@ struct KBRetrievalSettingsSheet: View {
                 Button("OK") {}
             } message: {
                 Text(reindexMessage ?? "")
+            }
+            .confirmationDialog(
+                "Chunk Settings Changed",
+                isPresented: $showChunkingChangedPrompt,
+                titleVisibility: .visible
+            ) {
+                Button("Save & Re-index All") {
+                    save()
+                    Task { await reindexAll() }
+                }
+                Button("Save Only") { save() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("You changed chunking settings. Re-indexing existing documents applies the new settings to your current library.")
             }
         }
     }
@@ -205,6 +226,12 @@ struct KBRetrievalSettingsSheet: View {
                 .foregroundStyle(.secondary)
                 .monospacedDigit()
         }
+    }
+
+    private var chunkingChanged: Bool {
+        chunkMethod != kb.chunkMethod ||
+        chunkSize != kb.chunkSize ||
+        chunkOverlap != kb.chunkOverlap
     }
 
     private func reindexAll() async {

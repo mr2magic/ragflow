@@ -133,6 +133,17 @@ struct DossierDocumentListView: View {
         } message: {
             Text("This removes the document and all its indexed chunks. This cannot be undone.")
         }
+        .confirmationDialog(
+            "Duplicate Document\(vm.duplicateFilenames.count == 1 ? "" : "s") Found",
+            isPresented: $vm.showDuplicatePrompt,
+            titleVisibility: .visible
+        ) {
+            Button("Replace Existing", role: .destructive) { Task { await vm.importReplacingDuplicates() } }
+            Button("Skip Duplicates") { Task { await vm.importSkippingDuplicates() } }
+            Button("Cancel", role: .cancel) { vm.cancelDuplicateImport() }
+        } message: {
+            Text("Already in this knowledge base: \(vm.duplicateFilenames.joined(separator: ", ")). Replace the existing version or skip?")
+        }
         .alert("Export Failed", isPresented: $showKBExportError) {
             Button("OK", role: .cancel) {}
         } message: { Text(kbExportError ?? "") }

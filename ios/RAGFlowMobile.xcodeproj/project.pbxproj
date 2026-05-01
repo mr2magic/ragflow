@@ -15,6 +15,7 @@
 		25D0491968ECB22F20B7D0BE /* WorkflowListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */; };
 		266E8924286BABA1832F7E02 /* WorkflowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */; };
 		28F1F601173239B3FA994EA0 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3134F9E7523B881974419D8 /* EPUBKit */; };
+		30F24B3D600648E3B7504715 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B525D49DDB3C4C009DA9890D /* AuthView.swift */; };
 		31E00E9BC0EA47C23819AC98 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FB4F648B15E2886D93E7B52 /* PrivacyInfo.xcprivacy */; };
 		37390FFA35AA3A4A3966C160 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 950FA6A816B52A68ED5B96AB /* CloudKit.framework */; };
 		37725E9322A026246FA48F19 /* EPUBKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7C656411F0EC6BEC984A8B73 /* EPUBKit */; };
@@ -45,8 +46,6 @@
 		7426CA8DFC91E5931D82C02B /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591BB74C177FF6F2F6A35A08 /* DatabaseService.swift */; };
 		74EB4ACE4DD58465CCEE452C /* ExportBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D4FDD60E1F2A73070E6A1D /* ExportBundle.swift */; };
 		76FAB1AADF79A0D9AB6DDC49 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */; };
-		EDDAABF5BCDA4E559E60983A /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */; };
-		30F24B3D600648E3B7504715 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B525D49DDB3C4C009DA9890D /* AuthView.swift */; };
 		7AAB941784A2E49BD9F141BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C03803E49D972603BC3295 /* ChatView.swift */; };
 		7B4CAF19114DA7822A23BD0D /* ExportImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A1D7E324F1CE202EFF8481 /* ExportImportService.swift */; };
 		80D6C828A42E05872433F500 /* WorkflowEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */; };
@@ -57,6 +56,21 @@
 		9DC2F086C747905AA84C7966 /* KBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1F5ED1B4802A9A0DF164B5 /* KBDetailView.swift */; };
 		A61FC992FA65A90E82F8FD4B /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F6FA6D9254B5C4C021D0D /* OnboardingView.swift */; };
 		A628BA1D90A7198A9316FED0 /* RAGFlowWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CD4B49D1A3196EC708948B6D /* RAGFlowWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA0100000000001AABB0002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0001 /* AppTheme.swift */; };
+		AA0100000000001AABB0005 /* DossierTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0004 /* DossierTokens.swift */; };
+		AA0100000000001AABB0007 /* DossierTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0006 /* DossierTabBar.swift */; };
+		AA0100000000001AABB0009 /* DossierKBCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0008 /* DossierKBCard.swift */; };
+		AA0100000000001AABB000B /* DossierMessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000A /* DossierMessageBubble.swift */; };
+		AA0100000000001AABB000D /* DossierDocumentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000C /* DossierDocumentRow.swift */; };
+		AA0100000000001AABB000F /* DossierDocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000E /* DossierDocumentListView.swift */; };
+		AA0100000000001AABB0011 /* DossierChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0010 /* DossierChatView.swift */; };
+		AA0100000000001AABB0013 /* DossierWorkflowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0012 /* DossierWorkflowView.swift */; };
+		AA0100000000001AABB0015 /* DossierQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0014 /* DossierQueryView.swift */; };
+		AA0100000000001AABB0017 /* DossierKBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0016 /* DossierKBDetailView.swift */; };
+		AA0100000000001AABB0019 /* DossierArchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0018 /* DossierArchView.swift */; };
+		AA0100000000001AABB001B /* DossierKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001A /* DossierKBListView.swift */; };
+		AA0100000000001AABB001D /* DossierRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001C /* DossierRootView.swift */; };
+		AA0100000000001AABB001F /* DossierSourcesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001E /* DossierSourcesPanel.swift */; };
 		AA11BB22CC33DD44EE55FF66 /* GEDCOMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */; };
 		AE3393060D1B9B36CC94706B /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C55E4DFC20F82FFB9F1A3A4C /* PDFKit.framework */; };
 		AFCEF03F70E19376BD2F510F /* RAGFlowIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B497537E20C04D181D22A226 /* RAGFlowIntents.swift */; };
@@ -82,26 +96,12 @@
 		EAE2889CD72E6B880892D299 /* SharedViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0C200AFF79243F9927DF9E /* SharedViews.swift */; };
 		EC0FAD7B89BCEBE9D953E64F /* KBStatusWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8096B55B1F04C0A4BC6A8354 /* KBStatusWidget.swift */; };
 		EC8AE51A1EA5904E4213D5ED /* SharedGroupDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE525604A0FFE91815BCEE5D /* SharedGroupDefaults.swift */; };
+		EDDAABF5BCDA4E559E60983A /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */; };
 		F1983D9F52E47F0AEE4A24E4 /* KBRetrievalSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */; };
 		F245B2779F853180C8F1A332 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */; };
 		F3FEE3F6A62B03FB86D89002 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517DD24EB6DEDFFE17CE7DFD /* LLMService.swift */; };
 		F4407F04452450652E04B3D0 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9353E6D15D48987663551AC9 /* LibraryViewModel.swift */; };
 		FF0EB80FADF04E3AB2189E00 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DA2C6B1F583FA39B5E7614 /* LibraryView.swift */; };
-		AA0100000000001AABB0002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0001 /* AppTheme.swift */; };
-		AA0100000000001AABB0005 /* DossierTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0004 /* DossierTokens.swift */; };
-		AA0100000000001AABB0007 /* DossierTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0006 /* DossierTabBar.swift */; };
-		AA0100000000001AABB0009 /* DossierKBCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0008 /* DossierKBCard.swift */; };
-		AA0100000000001AABB000B /* DossierMessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000A /* DossierMessageBubble.swift */; };
-		AA0100000000001AABB000D /* DossierDocumentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000C /* DossierDocumentRow.swift */; };
-		AA0100000000001AABB000F /* DossierDocumentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB000E /* DossierDocumentListView.swift */; };
-		AA0100000000001AABB0011 /* DossierChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0010 /* DossierChatView.swift */; };
-		AA0100000000001AABB0013 /* DossierWorkflowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0012 /* DossierWorkflowView.swift */; };
-		AA0100000000001AABB0015 /* DossierQueryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0014 /* DossierQueryView.swift */; };
-		AA0100000000001AABB0017 /* DossierKBDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0016 /* DossierKBDetailView.swift */; };
-		AA0100000000001AABB0019 /* DossierArchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB0018 /* DossierArchView.swift */; };
-		AA0100000000001AABB001B /* DossierKBListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001A /* DossierKBListView.swift */; };
-		AA0100000000001AABB001D /* DossierRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001C /* DossierRootView.swift */; };
-		AA0100000000001AABB001F /* DossierSourcesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0100000000001AABB001E /* DossierSourcesPanel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -155,12 +155,11 @@
 		128F2EAAA5212296A082D6F9 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		161CD4EC4C9E72E2DB7C13A6 /* OpenAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		1AE3A8B9CB1BB8362A6CC45B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
-		B525D49DDB3C4C009DA9890D /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		1DE5B8F42B7302E37B1E403D /* RAGFlowMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileTests.swift; sourceTree = "<group>"; };
 		23157B24B0E2E44B3978039A /* OfficeParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeParser.swift; sourceTree = "<group>"; };
 		2403241BC27588A9D3E14398 /* ConversationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
 		263CBB31672CF4A187FAF3B6 /* LLMConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfig.swift; sourceTree = "<group>"; };
+		2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		30AA166907EB447DD28FB0C6 /* Workflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workflow.swift; sourceTree = "<group>"; };
 		35CF9C30EF1F09D4197C4BD9 /* VisionOCRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOCRParser.swift; sourceTree = "<group>"; };
 		361023027BFA9947E21BBA35 /* RAGFlowMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowMobileApp.swift; sourceTree = "<group>"; };
@@ -182,7 +181,7 @@
 		6B2155FC378724F13FD87256 /* WorkflowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListView.swift; sourceTree = "<group>"; };
 		6C439D2675FE12994A8429DF /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
 		77463E7A7D0A6BF89964A4A9 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
-		7A8CC59E4434DC822DB3998A /* RAGFlowShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RAGFlowShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A8CC59E4434DC822DB3998A /* RAGFlowShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.extensionkit-extension"; path = RAGFlowShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8096B55B1F04C0A4BC6A8354 /* KBStatusWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBStatusWidget.swift; sourceTree = "<group>"; };
 		8308457EC93E4AE662E21429 /* Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
 		84BC045E6BF7651A193C4F12 /* BackgroundTaskCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskCoordinator.swift; sourceTree = "<group>"; };
@@ -196,6 +195,21 @@
 		950FA6A816B52A68ED5B96AB /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		972D2FCF7944353E5066F615 /* AppEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntities.swift; sourceTree = "<group>"; };
 		9C8640ED7E26380313612CCA /* WorkflowEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowEditorView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0001 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0004 /* DossierTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTokens.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0006 /* DossierTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTabBar.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0008 /* DossierKBCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBCard.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000A /* DossierMessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierMessageBubble.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000C /* DossierDocumentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentRow.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB000E /* DossierDocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentListView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0010 /* DossierChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierChatView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0012 /* DossierWorkflowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierWorkflowView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0014 /* DossierQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierQueryView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0016 /* DossierKBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBDetailView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB0018 /* DossierArchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierArchView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001A /* DossierKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBListView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001C /* DossierRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierRootView.swift; sourceTree = "<group>"; };
+		AA0100000000001AABB001E /* DossierSourcesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierSourcesPanel.swift; sourceTree = "<group>"; };
 		AA11BB22CC33DD44EE55FF67 /* GEDCOMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEDCOMParser.swift; sourceTree = "<group>"; };
 		AAB6D85843B9B8C8B01EE27E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AC37FEE0266F31C53ADBECF7 /* EmbeddingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddingService.swift; sourceTree = "<group>"; };
@@ -203,6 +217,7 @@
 		AE525604A0FFE91815BCEE5D /* SharedGroupDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedGroupDefaults.swift; sourceTree = "<group>"; };
 		B497537E20C04D181D22A226 /* RAGFlowIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGFlowIntents.swift; sourceTree = "<group>"; };
 		B4997ACB462149AFB6BC0D7E /* KBRetrievalSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBRetrievalSettingsSheet.swift; sourceTree = "<group>"; };
+		B525D49DDB3C4C009DA9890D /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		B8585645296370F3070DDE58 /* WorkflowStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowStep.swift; sourceTree = "<group>"; };
 		BBC6D9264B466C0103061572 /* RAGFlowWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RAGFlowWidget.entitlements; sourceTree = "<group>"; };
 		C4D5E6F7A8B9012345678901 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
@@ -211,7 +226,7 @@
 		C7CBFF80C5432D9AD5EE52A6 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C8CED5934D63CB02BDF103DA /* RAGService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGService.swift; sourceTree = "<group>"; };
 		CBF61E2991B87EBD9C18632B /* WorkflowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowDetailView.swift; sourceTree = "<group>"; };
-		CD4B49D1A3196EC708948B6D /* RAGFlowWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RAGFlowWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD4B49D1A3196EC708948B6D /* RAGFlowWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.extensionkit-extension"; path = RAGFlowWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE0338F34B2BE13AB88FDFF8 /* WorkflowListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowListViewModel.swift; sourceTree = "<group>"; };
 		CF64727531F6AB2137D87CA1 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		D3B6DDBF02735107E7AC8FA8 /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
@@ -228,21 +243,6 @@
 		F67374355D00D87ED5451AF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F7898AEF227FDFB751F71E95 /* OllamaModelsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaModelsService.swift; sourceTree = "<group>"; };
 		FC1C4C69A6DFFDC62FCBA349 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0001 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0004 /* DossierTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTokens.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0006 /* DossierTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierTabBar.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0008 /* DossierKBCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBCard.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB000A /* DossierMessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierMessageBubble.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB000C /* DossierDocumentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentRow.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB000E /* DossierDocumentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierDocumentListView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0010 /* DossierChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierChatView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0012 /* DossierWorkflowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierWorkflowView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0014 /* DossierQueryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierQueryView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0016 /* DossierKBDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBDetailView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB0018 /* DossierArchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierArchView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB001A /* DossierKBListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierKBListView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB001C /* DossierRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierRootView.swift; sourceTree = "<group>"; };
-		AA0100000000001AABB001E /* DossierSourcesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DossierSourcesPanel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,6 +316,14 @@
 				35CF9C30EF1F09D4197C4BD9 /* VisionOCRParser.swift */,
 			);
 			path = RAG;
+			sourceTree = "<group>";
+		};
+		267898D339AF4BC79DE8F539 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */,
+			);
+			path = Auth;
 			sourceTree = "<group>";
 		};
 		3670A00B9329B57656694BDF /* Spotlight */ = {
@@ -402,6 +410,14 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		73BFC6B3F1614178B75EC7DD /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				B525D49DDB3C4C009DA9890D /* AuthView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
 		7DC31A6088C99A517115B162 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
@@ -432,6 +448,27 @@
 				CF64727531F6AB2137D87CA1 /* ShareViewController.swift */,
 			);
 			path = RAGFlowShareExtension;
+			sourceTree = "<group>";
+		};
+		AA0100000000001AABB0003 /* Dossier */ = {
+			isa = PBXGroup;
+			children = (
+				AA0100000000001AABB0004 /* DossierTokens.swift */,
+				AA0100000000001AABB0006 /* DossierTabBar.swift */,
+				AA0100000000001AABB0008 /* DossierKBCard.swift */,
+				AA0100000000001AABB000A /* DossierMessageBubble.swift */,
+				AA0100000000001AABB000C /* DossierDocumentRow.swift */,
+				AA0100000000001AABB000E /* DossierDocumentListView.swift */,
+				AA0100000000001AABB0010 /* DossierChatView.swift */,
+				AA0100000000001AABB0012 /* DossierWorkflowView.swift */,
+				AA0100000000001AABB0014 /* DossierQueryView.swift */,
+				AA0100000000001AABB0016 /* DossierKBDetailView.swift */,
+				AA0100000000001AABB0018 /* DossierArchView.swift */,
+				AA0100000000001AABB001A /* DossierKBListView.swift */,
+				AA0100000000001AABB001C /* DossierRootView.swift */,
+				AA0100000000001AABB001E /* DossierSourcesPanel.swift */,
+			);
+			path = Dossier;
 			sourceTree = "<group>";
 		};
 		B23FD0D4FD825834D4F91AD0 /* LiveActivity */ = {
@@ -543,22 +580,6 @@
 			path = Sync;
 			sourceTree = "<group>";
 		};
-		267898D339AF4BC79DE8F539 /* Auth */ = {
-			isa = PBXGroup;
-			children = (
-				2B265EFB7F9E40F8814D0AE3 /* AuthService.swift */,
-			);
-			path = Auth;
-			sourceTree = "<group>";
-		};
-		73BFC6B3F1614178B75EC7DD /* Auth */ = {
-			isa = PBXGroup;
-			children = (
-				B525D49DDB3C4C009DA9890D /* AuthView.swift */,
-			);
-			path = Auth;
-			sourceTree = "<group>";
-		};
 		E0A29533DCA640BB60C1B658 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -586,29 +607,7 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-
-		AA0100000000001AABB0003 /* Dossier */ = {
-			isa = PBXGroup;
-			children = (
-				AA0100000000001AABB0004 /* DossierTokens.swift */,
-				AA0100000000001AABB0006 /* DossierTabBar.swift */,
-				AA0100000000001AABB0008 /* DossierKBCard.swift */,
-				AA0100000000001AABB000A /* DossierMessageBubble.swift */,
-				AA0100000000001AABB000C /* DossierDocumentRow.swift */,
-				AA0100000000001AABB000E /* DossierDocumentListView.swift */,
-				AA0100000000001AABB0010 /* DossierChatView.swift */,
-				AA0100000000001AABB0012 /* DossierWorkflowView.swift */,
-				AA0100000000001AABB0014 /* DossierQueryView.swift */,
-				AA0100000000001AABB0016 /* DossierKBDetailView.swift */,
-				AA0100000000001AABB0018 /* DossierArchView.swift */,
-				AA0100000000001AABB001A /* DossierKBListView.swift */,
-				AA0100000000001AABB001C /* DossierRootView.swift */,
-				AA0100000000001AABB001E /* DossierSourcesPanel.swift */,
-			);
-			path = Dossier;
-			sourceTree = "<group>";
-		};
-		/* End PBXGroup section */
+/* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		354F39B11DDAA7AE3B4BBFAA /* RAGFlowMobileTests */ = {

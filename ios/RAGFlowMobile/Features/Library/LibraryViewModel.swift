@@ -20,6 +20,11 @@ final class LibraryViewModel: ObservableObject {
     @Published var bookToDelete: Book?
     @Published var offsetsToDelete: IndexSet?
 
+    // Duplicate import resolution
+    @Published var showDuplicatePrompt = false
+    private(set) var duplicateFilenames: [String] = []
+    private var pendingImportURLs: [URL] = []
+
     let kb: KnowledgeBase
 
     enum SortOrder: String, CaseIterable, Identifiable {
@@ -75,7 +80,50 @@ final class LibraryViewModel: ObservableObject {
     }
 
     func ingestURLs(_ urls: [URL]) async {
+        let existingNames = Set(books.map { $0.title.lowercased() })
+        let dupes = urls.filter { existingNames.contains($0.deletingPathExtension().lastPathComponent.lowercased()) }
+        if !dupes.isEmpty {
+            duplicateFilenames = dupes.map { $0.lastPathComponent }
+            pendingImportURLs = urls
+            showDuplicatePrompt = true
+            return
+        }
         await ingest(urls: urls)
+    }
+
+    func importSkippingDuplicates() async {
+        let existingNames = Set(books.map { $0.title.lowercased() })
+        let filtered = pendingImportURLs.filter {
+            !existingNames.contains($0.deletingPathExtension().lastPathComponent.lowercased())
+        }
+        clearDuplicateState()
+        await ingest(urls: filtered)
+    }
+
+    func importReplacingDuplicates() async {
+        let existingNames = Set(books.map { $0.title.lowercased() })
+        for url in pendingImportURLs {
+            let name = url.deletingPathExtension().lastPathComponent.lowercased()
+            if existingNames.contains(name),
+               let existing = books.first(where: { $0.title.lowercased() == name }) {
+                SpotlightIndexer.shared.deindex(bookId: existing.id)
+                try? db.deleteBook(existing.id)
+            }
+        }
+        let urls = pendingImportURLs
+        clearDuplicateState()
+        reload()
+        await ingest(urls: urls)
+    }
+
+    func cancelDuplicateImport() {
+        clearDuplicateState()
+    }
+
+    private func clearDuplicateState() {
+        duplicateFilenames = []
+        pendingImportURLs = []
+        showDuplicatePrompt = false
     }
 
     func requestDelete(at offsets: IndexSet) {

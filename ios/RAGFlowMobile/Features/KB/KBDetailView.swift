@@ -56,7 +56,7 @@ struct KBDetailView: View {
     @ToolbarContentBuilder
     private var kbAccessMenu: some ToolbarContent {
         if sizeClass == .compact {
-            ToolbarItem(placement: .navigationBarLeading) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button { showSettings = true } label: {
                         Label("Settings", systemImage: "gearshape")
